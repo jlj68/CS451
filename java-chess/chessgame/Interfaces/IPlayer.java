@@ -1,5 +1,7 @@
 package chessgame.Interfaces;
 
+import chessgame.Classes.Move;
+
 public interface IPlayer {
-	public boolean MovePiece(String initialPosition, String destPosition);
+	public Move GetMove(IGame game);
 }

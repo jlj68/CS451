@@ -8,4 +8,8 @@ public class Position {
 		row = r;
 		column = c;
 	}
+	
+	public String toString() {
+		return "(" + Integer.toString(row) + ", " + Integer.toString(column) + ")";
+	}
 }

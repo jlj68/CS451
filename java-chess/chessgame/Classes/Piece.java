@@ -3,15 +3,13 @@ package chessgame.Classes;
 import java.util.ArrayList;
 
 public abstract class Piece {
-	public String pieceName;
-	public Color pieceColor;
+	public String name;
+	public Color color;
 	
-	public enum Color{ BLACK, WHITE };
-	
-	public Piece(String name, Color c){
-		pieceName = name;
-		pieceColor = c;
+	public Piece(String aName, Color aColor){
+		name = aName;
+		color = aColor;
 	}
 	
-	public abstract ArrayList<Position> PossibleMoves(Position position);
+	public abstract ArrayList<Move> PossibleMoves(Position position);
 }
