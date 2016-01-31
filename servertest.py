@@ -16,7 +16,7 @@ class GetChessboard(object):
     @cherrypy.tools.accept(media='text/plain')
     def GET(self):
         cb = ChessBoard()
-        return cb.board
+        board = [][]
         #return json.dumps({'username': 'test_user'})
 
 if __name__ == '__main__':
