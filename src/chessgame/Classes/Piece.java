@@ -12,4 +12,8 @@ public abstract class Piece {
 	}
 	
 	public abstract ArrayList<Move> PossibleMoves(Position position);
+	
+	public String toString(){
+		return "" + color.toString().charAt(0) + name.charAt(0);
+	}
 }

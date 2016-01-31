@@ -1,6 +1,9 @@
 import os, os.path
 import string
 import json
+import sys
+
+sys.path.append('./bin')
 
 import cherrypy
 from chessgame.Classes import ChessBoard
@@ -16,7 +19,7 @@ class GetChessboard(object):
     @cherrypy.tools.accept(media='text/plain')
     def GET(self):
         cb = ChessBoard()
-        return cb.board
+        return json.dumps(cb.board)
         #return json.dumps({'username': 'test_user'})
 
 if __name__ == '__main__':

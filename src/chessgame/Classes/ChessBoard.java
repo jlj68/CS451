@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import chessgame.Classes.Pieces.*;
 
 public class ChessBoard {
@@ -99,5 +102,10 @@ public class ChessBoard {
 			}
 			System.out.println();
 		}
+	}
+	
+	public String getBoardJson(){
+		Gson gson = new Gson();
+		return gson.toJson(board);
 	}
 }
