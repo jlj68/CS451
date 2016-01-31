@@ -20,7 +20,7 @@ public class Player implements IPlayer {
 	@Override
 	public Move GetMove(IGame game) {
 		Map<Position, List<Move>> moves = game.GenerateMoves();
-		List<Move> lMoves = new ArrayList();
+		List<Move> lMoves = new ArrayList<Move>();
 		
 		int i = 1;
 		for(Position p : moves.keySet()){

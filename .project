@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>chessgame</name>
+	<name>WebChess</name>
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
-		<buildcommand>
+		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
-		</buildcommand>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
