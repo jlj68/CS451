@@ -1,6 +1,5 @@
 package chessgame.Classes;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,7 @@ import chessgame.Classes.Pieces.*;
 
 public class ChessBoard {
 	
-	Map<Position, Piece> board = new HashMap<Position, Piece>();
+	public Map<Position, Piece> board = new HashMap<Position, Piece>();
 	public State state = State.MATCH;
 	
 	public ChessBoard() {
