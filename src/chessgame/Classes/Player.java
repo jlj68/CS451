@@ -32,11 +32,10 @@ public class Player implements IPlayer {
 			}
 		}
 		
-		System.out.println("Choose Move => ");
+		System.out.println("Choose number to move => ");
 		Scanner sc = new Scanner(System.in);
 		int choice = sc.nextInt()-1;
 
 		return lMoves.get(choice);
 	}
-
 }

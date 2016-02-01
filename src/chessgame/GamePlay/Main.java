@@ -14,6 +14,7 @@ public class Main {
 		
 		while(!game.IsGameOver()) {
 			game.DisplayGame();
+			System.out.println();
 			Move move = (game.current == Color.BLACK) ? player2.GetMove(game): player1.GetMove(game);
 			game.ApplyMove(move);
 		}

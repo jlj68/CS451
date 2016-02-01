@@ -5,11 +5,15 @@ import java.util.Map;
 
 import chessgame.Interfaces.IGame;
 
-public class Game implements IGame{
+public class Game implements IGame {
 	
 	private ChessBoard b = new ChessBoard();
 	public Color current = Color.BLACK;
 	
+	
+	public ChessBoard GetChessBoard() {
+		return b;
+	}
 	
 	public void DisplayGame() {
 		String sCurrent = (current == Color.BLACK ? "BLACK" : "WHITE");

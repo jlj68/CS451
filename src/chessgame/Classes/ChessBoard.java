@@ -9,60 +9,73 @@ import com.google.gson.JsonObject;
 
 import chessgame.Classes.Pieces.*;
 
-public class ChessBoard {
-	
-	public Map<Position, Piece> board = new HashMap<Position, Piece>();
+public class ChessBoard {	
+	public Piece[][] board;
 	public State state = State.MATCH;
 	
 	public ChessBoard() {
-		board.put(new Position(0, 0), new Rook(Color.BLACK));
-		board.put(new Position(0, 1), new Knight(Color.BLACK));
-		board.put(new Position(0, 2), new Bishop(Color.BLACK));
-		board.put(new Position(0, 3), new Queen(Color.BLACK));
-		board.put(new Position(0, 4), new King(Color.BLACK));
-		board.put(new Position(0, 5), new Bishop(Color.BLACK));
-		board.put(new Position(0, 6), new Knight(Color.BLACK));
-		board.put(new Position(0, 7), new Rook(Color.BLACK));
+		board = new Piece[8][];
+		for(int i=0; i<board.length; i++) {
+			board[i] = new Piece[8];
+			for(int j=0; j<board[i].length; j++) {
+				board[i][j] = null;
+			}
+		}
+
+		board[0][0] = new Rook(Color.BLACK);
+		board[0][1] = new Knight(Color.BLACK);
+		board[0][2] = new Bishop(Color.BLACK);
+		board[0][3] = new Queen(Color.BLACK);
+		board[0][4] = new King(Color.BLACK);
+		board[0][5] = new Bishop(Color.BLACK);
+		board[0][6] = new Knight(Color.BLACK);
+		board[0][7] = new Rook(Color.BLACK);
 		
-		board.put(new Position(1, 0), new Pawn(Color.BLACK));
-		board.put(new Position(1, 1), new Pawn(Color.BLACK));
-		board.put(new Position(1, 2), new Pawn(Color.BLACK));
-		board.put(new Position(1, 3), new Pawn(Color.BLACK));
-		board.put(new Position(1, 4), new Pawn(Color.BLACK));
-		board.put(new Position(1, 5), new Pawn(Color.BLACK));
-		board.put(new Position(1, 6), new Pawn(Color.BLACK));
-		board.put(new Position(1, 7), new Pawn(Color.BLACK));
+		board[1][0] = new Pawn(Color.BLACK);
+		board[1][1] = new Pawn(Color.BLACK);
+		board[1][2] = new Pawn(Color.BLACK);
+		board[1][3] = new Pawn(Color.BLACK);
+		board[1][4] = new Pawn(Color.BLACK);
+		board[1][5] = new Pawn(Color.BLACK);
+		board[1][6] = new Pawn(Color.BLACK);
+		board[1][7] = new Pawn(Color.BLACK);
 		
-		board.put(new Position(6, 0), new Pawn(Color.WHITE));
-		board.put(new Position(6, 1), new Pawn(Color.WHITE));
-		board.put(new Position(6, 2), new Pawn(Color.WHITE));
-		board.put(new Position(6, 3), new Pawn(Color.WHITE));
-		board.put(new Position(6, 4), new Pawn(Color.WHITE));
-		board.put(new Position(6, 5), new Pawn(Color.WHITE));
-		board.put(new Position(6, 6), new Pawn(Color.WHITE));
-		board.put(new Position(6, 7), new Pawn(Color.WHITE));
 		
-		board.put(new Position(7, 0), new Rook(Color.WHITE));
-		board.put(new Position(7, 1), new Knight(Color.WHITE));
-		board.put(new Position(7, 2), new Bishop(Color.WHITE));
-		board.put(new Position(7, 3), new King(Color.WHITE));
-		board.put(new Position(7, 4), new Queen(Color.WHITE));
-		board.put(new Position(7, 5), new Bishop(Color.WHITE));
-		board.put(new Position(7, 6), new Knight(Color.WHITE));
-		board.put(new Position(7, 7), new Rook(Color.WHITE));
+		board[6][0] = new Pawn(Color.WHITE);
+		board[6][1] = new Pawn(Color.WHITE);
+		board[6][2] = new Pawn(Color.WHITE);
+		board[6][3] = new Pawn(Color.WHITE);
+		board[6][4] = new Pawn(Color.WHITE);
+		board[6][5] = new Pawn(Color.WHITE);
+		board[6][6] = new Pawn(Color.WHITE);
+		board[6][7] = new Pawn(Color.WHITE);
+		
+		board[7][0] = new Rook(Color.WHITE);
+		board[7][1] = new Knight(Color.WHITE);
+		board[7][2] = new Bishop(Color.WHITE);
+		board[7][3] = new King(Color.WHITE);
+		board[7][4] = new Queen(Color.WHITE);
+		board[7][5] = new Bishop(Color.WHITE);
+		board[7][6] = new Knight(Color.WHITE);
+		board[7][7] = new Rook(Color.WHITE);
 	}
 	
-//	public Piece GetPiece(Position p){
-//		return board.get(p);
-//	}
+	public Piece GetPiece(Position p){
+		if(p.row<8 && p.row>-1 && p.column<8 && p.column>-1)
+			return board[p.row][p.column];
+		return null;
+	}
 	
 	public Map<Position, List<Move>> GenerateMoves(Color color) {
 		Map<Position, List<Move>> moves = new HashMap<Position, List<Move>>();
 		
-		for(Position p : board.keySet()){
-			Piece piece = board.get(p);
-			if(piece != null && piece.color == color) {
-				moves.put(p,  piece.PossibleMoves(p));
+		for(int i=0; i<8; i++) {
+			for(int j=0; j<8; j++) {
+				Position p = new Position(i, j);
+				Piece piece = board[i][j];
+				if(piece != null && piece.color == color) {
+					moves.put(p, piece.PossibleMoves(p, this));
+				}
 			}
 		}
 		
@@ -70,15 +83,13 @@ public class ChessBoard {
 	}
 	
 	public void ApplyMove(Move move) {
-		Piece fPiece = board.get(move.from);
-		Piece tPiece = board.get(move.to);
+		Piece fPiece = board[move.from.row][move.from.column];
+		Piece tPiece = board[move.to.row][move.to.column];
 		
-		board.remove(move.from);
-		//if(board.containsKey(move.to))
-		//	board.replace(move.to, fPiece);
-		//else
-		//	board.put(move.to, fPiece);
-		board.put(move.to, fPiece);
+		board[move.from.row][move.from.column] = null;
+		board[move.to.row][move.to.column] = fPiece;
+		
+		fPiece.hasMoved = true;
 		
 		if(tPiece != null && tPiece.name.equals("King")) {
 			if(tPiece.color == Color.BLACK)
@@ -89,16 +100,14 @@ public class ChessBoard {
 	}
 	
 	public void PrintBoard(){
-		Piece[][] boardArray = new Piece[8][8];
-		for(Position p : board.keySet()){
-			boardArray[p.row][p.column] = board.get(p);
-		}
+		System.out.println("  0 1 2 3 4 5 6 7");
 		for(int i = 0; i < 8; i++){
+			System.out.print(i+" ");
 			for(int j = 0; j < 8; j++){
-				if(boardArray[i][j] == null)
-					System.out.print("O ");
+				if(board[i][j] == null)
+					System.out.print("- ");
 				else
-					System.out.print(boardArray[i][j].name.charAt(0) + " ");
+					System.out.print(board[i][j].name.charAt(0) + " ");
 			}
 			System.out.println();
 		}
