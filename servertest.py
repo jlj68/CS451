@@ -2,11 +2,11 @@ import os, os.path
 import string
 import json
 import sys
-
-sys.path.append('./bin')
-
+import jchess
+import socket
 import cherrypy
-from chessgame.Classes import ChessBoard
+
+socket.IPPROTO_TCP = 6
 
 class BasePage(object):
     @cherrypy.expose
@@ -16,23 +16,30 @@ class BasePage(object):
 class GetChessboard(object):
     exposed = True
 
-    @cherrypy.tools.accept(media='text/plain')
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self):
+        ch = jchess.ChessHandler()
+        cb = ch.getBoard().getBoardJson()
+        print cb
+        if cherrypy.request.json['username']:
+            return {'valid': True}
+        return {'valid': False}
+
     def GET(self):
-        cb = ChessBoard()
-        return json.dumps(cb.board)
-        #return json.dumps({'username': 'test_user'})
+        return "this is only a test"
 
 if __name__ == '__main__':
     conf = {
         '/': {
             'tools.staticdir.on': True,
-            'tools.staticdir.dir': '/home/alex/workspace/cs451-chessgame/java-chess/webserver/public',
+            'tools.staticdir.dir': '/home/alex/workspace/cs451-chessgame/public',
             'tools.staticdir.index': 'index.html'
         },
         '/board': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
             'tools.response_headers.on': True,
-            'tools.response_headers.headers': [('Content-Type', 'text/plain')]
+            'tools.response_headers.headers': [('Content-Type', 'application/json')]
         }
     }
 
