@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>User Page</title>
+  <script type="text/javascript" src="public/scripts/jquery-1.12.0.min.js"></script>
+  <link rel="stylesheet" href="public/css/bootstrap.min.css">
+  <script type="text/javascript">
+    jQuery(document).ready(function(){
+      /*
+      var ws = new WebSocket("ws://localhost:8080/ws");
+
+      ws.onopen = function(){
+        alert("connected!");
+      };
+
+      ws.onmessage = function(evt){
+        var data = $.parseJSON(evt.data);
+        switch(data.function){
+          case "add_user":
+              $('#result_area').html(data.message);
+              break;
+          case "show_users":
+              $('#user_area').html("");
+              data.users.forEach(function(user){
+                  $('#user_area').append(user + "<br>");
+              });
+
+        }
+        $('#result_area').html(data.message);
+      };
+
+      $('#enter_name').click(function(event){
+        event.preventDefault();
+        var input = $('#username').val();
+        ws.send(JSON.stringify({'function': 'add_user', 'username': input}));
+      });
+
+      $('#show_users').click(function(event){
+        event.preventDefault();
+        ws.send(JSON.stringify({'function': 'show_users'}));
+      });*/
+
+      $('#enter_name').click(function(event){
+        event.preventDefault();
+        var uname = $('#username').val();
+        $.ajax({
+           method: "PUT",
+           url: "/user",
+           data: { username: uname },
+           statusCode: {
+             201: function(){
+               $('#result_area').html("User successfully created.");
+             },
+             409: function(){
+               $('#result_area').html("User already exists.  Please try again.");
+             }
+           }
+        });
+      });
+
+      $('#show_users').click(function(event){
+          event.preventDefault();
+          $.ajax({
+            method: "GET",
+            url: "/user"
+          }).done(function(data){
+            $('#user_area').html("");
+              var users = $.parseJSON(data).users;
+              users.forEach(function(item){
+                  $('#user_area').append(item.username + " : " + item.rating + "<br>");
+              });
+          });
+      });
+    });
+  </script>
+</head>
+<body>
+  <form>
+      <input type="text" id="username">
+      <button class="btn btn-default" id="enter_name">Submit</button>
+  </form>
+      <button class="btn btn-large" id="show_users">Show Users</button>
+
+  <div class="alert" id="result_area">
+  </div>
+
+  <div class="well" id="user_area">
+  </div>
+
+</body>
+</html>

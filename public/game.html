@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Game Page</title>
+  <script type="text/javascript" src="public/scripts/jquery-1.12.0.min.js"></script>
+  <link rel="stylesheet" href="public/css/bootstrap.min.css">
+  <script type="text/javascript">
+  var myboard;
+    function updateBoard(board){
+        var cells = document.querySelector('table').querySelectorAll('td');
+        board.forEach(function(v, i) {
+          if(v.piece != null) cells[i].textContent = v.piece.name;
+          else cells[i].textContent = '-';
+        });
+    }
+    jQuery(document).ready(function(){
+        $('#create_game').click(function(event){
+            event.preventDefault();
+            $.ajax({
+              method: "PUT",
+              url: "/game"
+            }).done(function(data){
+                var board = $.parseJSON(data);
+                updateBoard(board.board);
+            });
+        });
+    });
+  </script>
+</head>
+<body>
+  <center><button class="btn btn-default" id="create_game">Create Game</button></center>
+  <div class="well" id="board_area" style="width: 50%">
+      <table>
+        <tbody id="board_table">
+            <tr>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+            </tr>
+            <tr>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+        </tbody>
+      </table>
+  </div>
+</body>
+
+</html>
