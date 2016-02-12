@@ -379,7 +379,7 @@ class ChessBoard:
                     elem = None
                 board.append({'row': i, 'col': j, 'piece': elem})
         return board
-
+'''
 if __name__ == "__main__":
     game = Game()
 
@@ -393,3 +393,4 @@ if __name__ == "__main__":
         game.applyMove(move)
 
     print(game.state.name)
+'''
