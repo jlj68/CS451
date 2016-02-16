@@ -10,19 +10,37 @@ gamesList = {}
 activeUsers = {}
 availableUsers = {}
 
-class MainHandler(tornado.web.RequestHandler):
+class BaseHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        if self.get_secure_cookie('username'):
+            return None
+        return self.get_secure_cookie('username')
+
+class MainHandler(BaseHandler):
     def get(self):
-        self.render("./public/index.html")
+        if self.current_user is not None:
+            self.render("./public/index.html")
+        else:
+            self.write("User not logged in.")
 
 class GameHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("./public/game.html")
+        current_game = self.get_secure_cookie('current_game')
+        if current_game:
+            current_game = current_game.decode('ascii')
+            print(current_game + " " + str(list(gamesList.keys())))
+            self.render("./public/game.html", gameID=current_game, board=gamesList[int(current_game)].board.getBoardJson())
+        else:
+            self.render("./public/game.html", gameID=None)
 
     def put(self):
+        if self.get_secure_cookie('current_game'):
+            raise tornado.web.HTTPError(403)
         gameID = random.randint(1, 1024)
         while gameID in gamesList.keys():
             gameID = random.randint(1, 1024)
         gamesList[gameID] = pychess.Game()
+        self.set_secure_cookie('current_game', str(gameID))
         self.write(tornado.escape.json_encode({'game_id': gameID, 'board': gamesList[gameID].board.getBoardJson()}))
         #raise tornado.web.HTTPError(201)
 
@@ -64,7 +82,7 @@ def make_app():
         (r"/ws", MySocketHandler),
         (r"/user", UserHandler),
         (r"/game", GameHandler),
-    ])
+    ], debug=True, cookie_secret='u5sJkk6UxCQB2X1CAehe7k9wxzBbrAFO9no3BoAT0Bu+zQabEnmXbwBtQCL5WbpPo/s=')
 
 if __name__ == "__main__":
     app = make_app()
