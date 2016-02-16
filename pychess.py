@@ -373,12 +373,13 @@ class ChessBoard:
         for i in range(0, 8):
             for j in range(0, 8):
                 if self.board[i][j] is not None:
-                    elem = self.board[i][j].__dict__
+                    elem = self.board[i][j].__dict__.copy()
                     elem['color'] = elem['color'].name
                 else:
                     elem = None
                 board.append({'row': i, 'col': j, 'piece': elem})
         return board
+'''
 
 if __name__ == "__main__":
     game = Game()
@@ -393,3 +394,4 @@ if __name__ == "__main__":
         game.applyMove(move)
 
     print(game.state.name)
+'''

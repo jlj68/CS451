@@ -12,7 +12,9 @@
           if(v.piece != null) cells[i].textContent = v.piece.name;
           else cells[i].textContent = '-';
         });
+        $('#board_area').show();
     }
+
     jQuery(document).ready(function(){
         $('#create_game').click(function(event){
             event.preventDefault();
@@ -20,8 +22,9 @@
               method: "PUT",
               url: "/game"
             }).done(function(data){
-                var board = $.parseJSON(data);
-                updateBoard(board.board);
+                window.location.reload();
+                //var board = $.parseJSON(data);
+                //updateBoard(board.board);
             });
         });
     });
@@ -30,9 +33,8 @@
 <body>
   {% if gameID is None %}
     <center><button class="btn btn-default" id="create_game">Create Game</button></center>
-  {% else %}
-    
-    <div class="well" id="board_area" style="width: 50%" id="{{ gameID }}">
+  {% end %}
+    <div class="well" id="board_area" style="width: 50%" id="{{ gameID }}" hidden>
         <table>
           <tbody id="board_table">
               <tr>
@@ -182,7 +184,6 @@
           </tbody>
         </table>
     </div>
-    {% end %}
 </body>
 
 </html>
