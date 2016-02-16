@@ -24,26 +24,36 @@ class MainHandler(BaseHandler):
             #self.write("User not logged in.")
 
 class GameHandler(tornado.web.RequestHandler):
-    def get(self):
-        current_game = self.get_secure_cookie('current_game')
-        if current_game:
-            current_game = current_game.decode('ascii')
-            self.render("./public/game.html", gameID=current_game, board=gamesList[int(current_game)].board.getBoardJson())
-        else:
-            self.render("./public/game.html", gameID=None)
-
     def put(self):
-        current_game = self.get_secure_cookie('current_game')
-        if current_game and int(current_game) in list(gamesList.keys()):
-            raise tornado.web.HTTPError(403)
         gameID = random.randint(1, 1024)
         while gameID in gamesList.keys():
             gameID = random.randint(1, 1024)
         newGame = pychess.Game()
         gamesList[gameID] = newGame
-        self.set_secure_cookie('current_game', str(gameID))
-        self.write(tornado.escape.json_encode({'game_id': gameID, 'board': newGame.board.getBoardJson()}))
-        #raise tornado.web.HTTPError(201)
+        self.write(tornado.escape.json_encode({'gameID': str(gameID) }))
+
+class GamePageHandler(tornado.web.RequestHandler):
+    def get(self, id):
+        self.render("./public/game.html", gameID=id)
+
+class GameDataHandler(tornado.web.RequestHandler):
+    def get(self, id):
+        self.write(tornado.escape.json_encode({'board': gamesList[int(id)].board.getBoardJson()}))
+
+class MoveHandler(tornado.web.RequestHandler):
+    def get(self, id):
+        # get moves from a position
+        row = int(self.get_argument('row'))
+        col = int(self.get_argument('col'))
+        moves = gamesList[int(id)].board.getMovesFromPosition(row, col)
+        movesList = [{'fromPos': move.fromPos.__dict__, 'toPos': move.toPos.__dict__} for move in moves]
+        self.write(tornado.escape.json_encode({ 'moves': movesList }))
+
+    def put(self, id):
+        originPosition = pychess.Position(int(self.get_body_argument('fromPosRow')), int(self.get_body_argument('fromPosCol')))
+        destPosition = pychess.Position(int(self.get_body_argument('toPosRow')), int(self.get_body_argument('toPosCol')))
+        gamesList[int(id)].board.applyMove(pychess.Move(originPosition, destPosition))
+        raise tornado.web.HTTPError(200)
 
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
@@ -66,6 +76,10 @@ class UserHandler(tornado.web.RequestHandler):
     def post(self):
         self.write("modifying user")
 
+class UserDataHandler(tornado.web.RequestHandler):
+    def get(self, username):
+        self.write(tornado.escape.json_encode({'user_data': activeUsers[username].__dict__}))
+
 class MySocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         print("Socket opened.")
@@ -81,8 +95,12 @@ def make_app():
         (r'/public/(.*)', tornado.web.StaticFileHandler, {'path': './public/'}),
         (r"/", MainHandler),
         (r"/ws", MySocketHandler),
-        (r"/user", UserHandler),
-        (r"/game", GameHandler),
+        (r"/users", UserHandler),
+        (r"/user/([*]+)/data", UserDataHandler),
+        (r'/game', GameHandler),
+        (r"/game/([0-9]+)", GamePageHandler),
+        (r'/game/([0-9]+)/data', GameDataHandler),
+        (r'/game/([0-9]+)/move', MoveHandler),
     ], debug=True, cookie_secret='u5sJkk6UxCQB2X1CAehe7k9wxzBbrAFO9no3BoAT0Bu+zQabEnmXbwBtQCL5WbpPo/s=')
 
 if __name__ == "__main__":

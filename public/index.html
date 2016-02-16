@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <title>User Page</title>
-  <script type="text/javascript" src="public/scripts/jquery-1.12.0.min.js"></script>
-  <link rel="stylesheet" href="public/css/bootstrap.min.css">
+  <script type="text/javascript" src="/public/scripts/jquery-1.12.0.min.js"></script>
+  <link rel="stylesheet" href="/public/css/bootstrap.min.css">
   <script type="text/javascript">
     jQuery(document).ready(function(){
       /*
@@ -40,12 +40,23 @@
         ws.send(JSON.stringify({'function': 'show_users'}));
       });*/
 
+      $('#create_game').click(function(event){
+          event.preventDefault();
+          $.ajax({
+            method: "PUT",
+            url: "/game",
+          }).done(function(data){
+              var gameID = $.parseJSON(data).gameID;
+              window.location.replace('./game/'+gameID);
+          });
+      });
+
       $('#enter_name').click(function(event){
         event.preventDefault();
         var uname = $('#username').val();
         $.ajax({
            method: "PUT",
-           url: "/user",
+           url: "/users",
            data: { username: uname },
            statusCode: {
              201: function(){
@@ -62,7 +73,7 @@
           event.preventDefault();
           $.ajax({
             method: "GET",
-            url: "/user"
+            url: "/users"
           }).done(function(data){
             $('#user_area').html("");
               var users = $.parseJSON(data).users;
@@ -80,6 +91,8 @@
       <button class="btn btn-default" id="enter_name">Submit</button>
   </form>
       <button class="btn btn-large" id="show_users">Show Users</button>
+
+      <center><button class="btn btn-default" id="create_game">Create Game</button></center>
 
   <div class="alert" id="result_area">
   </div>

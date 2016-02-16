@@ -344,6 +344,15 @@ class ChessBoard:
 
         return moves
 
+    def getMovesFromPosition(self, row, col):
+        if self.board[row][col] is not None:
+            allMoves = self.generateMoves(self.board[row][col].color)
+            for position in list(allMoves.keys()):
+                if position.row == row and position.col == col:
+                    return allMoves[position]
+        else:
+            return []
+
     def applyMove(self, move):
         fromPiece = self.board[move.fromPos.row][move.fromPos.col]
         toPiece = self.board[move.toPos.row][move.toPos.col]

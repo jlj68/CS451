@@ -2,183 +2,226 @@
 <html lang="en">
 <head>
   <title>Game Page</title>
-  <script type="text/javascript" src="public/scripts/jquery-1.12.0.min.js"></script>
-  <link rel="stylesheet" href="public/css/bootstrap.min.css">
+  <script type="text/javascript" src="/public/scripts/jquery-1.12.0.min.js"></script>
+  <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/public/css/style.css">
   <script type="text/javascript">
-  var myboard;
-    function updateBoard(board){
-        var cells = document.querySelector('table').querySelectorAll('td');
-        board.forEach(function(v, i) {
-          if(v.piece != null) cells[i].textContent = v.piece.name;
-          else cells[i].textContent = '-';
+    var gameID;
+    function updateBoard(){
+        $.ajax({
+          method: "GET",
+          url: "/game/" + $('.board_area').attr('id') + "/data",
+        }).done(function(data){
+          var board = $.parseJSON(data).board;
+          var cells = document.querySelector('table').querySelectorAll('td');
+          board.forEach(function(v, i) {
+            if(v.piece != null) {
+              cells[i].textContent = v.piece.name;
+            }
+            else cells[i].textContent = 'O';
+            cells[i].setAttribute('id', v.row+"-"+v.col);
+          });
+          $('.board_area').show();
         });
-        $('#board_area').show();
     }
 
-    jQuery(document).ready(function(){
-        $('#create_game').click(function(event){
-            event.preventDefault();
-            $.ajax({
-              method: "PUT",
-              url: "/game"
-            }).done(function(data){
-                window.location.reload();
-                //var board = $.parseJSON(data);
-                //updateBoard(board.board);
-            });
+    $(document).ready(function(){
+        /*
+        $('html').click(function(){
+            $('td.chess-piece').removeClass('selected').removeClass('potential');
+        });*/
+
+        $('.chess-piece').click(function(event){
+            event.stopPropagation();
+            if($(this).hasClass('potential')){
+                var destPosition = $(this).attr('id');
+                var originPosition = $('td.chess-piece.selected').attr('id');
+
+                $.ajax({
+                    method: "PUT",
+                    url: $('.board_area').attr('id')+"/move",
+                    data: {
+                      fromPosRow: originPosition[0],
+                      fromPosCol: originPosition[2],
+                      toPosRow: destPosition[0],
+                      toPosCol: destPosition[2],
+                    }
+                }).done(function(data){
+                    $('td.chess-piece').removeClass('selected').removeClass('potential');
+                    updateBoard();
+                });
+            }
+            else if(!$(this).hasClass('selected')){
+                $('td.chess-piece').removeClass('selected').removeClass('potential');
+                $(this).addClass('selected');
+                var rowCol = $(this).attr('id');
+                var row = rowCol[0];
+                var col = rowCol[2];
+                $.ajax({
+                  method: "GET",
+                  url: $('.board_area').attr('id')+"/move",
+                  data: { row: row, col: col }
+                }).done(function(data){
+                  $.each($.parseJSON(data).moves, function(index, move){
+                    var moveID = move.toPos.row + "-" + move.toPos.col;
+                    $('td#'+moveID).addClass('potential');
+                  });
+                });
+            }else{
+                $('td.chess-piece').removeClass('selected').removeClass('potential');
+            }
         });
+        updateBoard();
+        //setInterval(updateBoard, 5000);
     });
   </script>
 </head>
 <body>
-  {% if gameID is None %}
-    <center><button class="btn btn-default" id="create_game">Create Game</button></center>
-  {% end %}
-    <div class="well" id="board_area" style="width: 50%" id="{{ gameID }}" hidden>
+    <div class="well board_area" style="width: 50%" id="{{ gameID }}" hidden>
         <table>
           <tbody id="board_table">
               <tr>
-                  <td>
+                  <td class="chess-piece">
                   </td>
-                  <td>
+                  <td class="chess-piece">
                   </td>
-                  <td>
+                  <td class="chess-piece">
                   </td>
-                  <td>
+                  <td class="chess-piece">
                   </td>
-                  <td>
+                  <td class="chess-piece">
                   </td>
-                  <td>
+                  <td class="chess-piece">
                   </td>
-                  <td>
+                  <td class="chess-piece">
                   </td>
-                  <td>
+                  <td class="chess-piece">
                   </td>
               </tr>
               <tr>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
+                <td class="chess-piece">
                 </td>
               </tr>
               <tr>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
+                <td class="chess-piece">
                 </td>
               </tr>
               <tr>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
+                <td class="chess-piece">
                 </td>
               </tr>
               <tr>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
                 </td>
-                <td>
+                <td class="chess-piece">
+                </td>
+              </tr>
+              <tr>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+              </tr>
+              <tr>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+              </tr>
+              <tr>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
+                </td>
+                <td class="chess-piece">
                 </td>
               </tr>
           </tbody>
