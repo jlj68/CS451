@@ -6,9 +6,11 @@ from user import User
 import pychess
 import random
 
+# {id: [game, player1, player2]}
 gamesList = {}
 activeUsers = {}
 availableUsers = {}
+websocketClients = {}
 
 class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -30,6 +32,7 @@ class GameHandler(tornado.web.RequestHandler):
             gameID = random.randint(1, 1024)
         newGame = pychess.Game()
         gamesList[gameID] = newGame
+        self.set_secure_cookie('current_game', str(gameID))
         self.write(tornado.escape.json_encode({'gameID': str(gameID) }))
 
 class GamePageHandler(tornado.web.RequestHandler):
@@ -42,12 +45,13 @@ class GameDataHandler(tornado.web.RequestHandler):
 
 class MoveHandler(tornado.web.RequestHandler):
     def get(self, id):
-        # get moves from a position
-        row = int(self.get_argument('row'))
-        col = int(self.get_argument('col'))
-        moves = gamesList[int(id)].board.getMovesFromPosition(row, col)
-        movesList = [{'fromPos': move.fromPos.__dict__, 'toPos': move.toPos.__dict__} for move in moves]
-        self.write(tornado.escape.json_encode({ 'moves': movesList }))
+        if id == self.get_secure_cookie('current_game'):
+            # get moves from a position
+            row = int(self.get_argument('row'))
+            col = int(self.get_argument('col'))
+            moves = gamesList[int(id)].board.getMovesFromPosition(row, col)
+            movesList = [{'fromPos': move.fromPos.__dict__, 'toPos': move.toPos.__dict__} for move in moves]
+            self.write(tornado.escape.json_encode({ 'moves': movesList }))
 
     def put(self, id):
         originPosition = pychess.Position(int(self.get_body_argument('fromPosRow')), int(self.get_body_argument('fromPosCol')))
@@ -69,6 +73,7 @@ class UserHandler(tornado.web.RequestHandler):
             newUser = User(username)
             activeUsers[username] = newUser
             availableUsers[username] = newUser
+            self.set_secure_cookie('username', username)
             raise tornado.web.HTTPError(201)
         else:
             raise tornado.web.HTTPError(409)
@@ -80,27 +85,42 @@ class UserDataHandler(tornado.web.RequestHandler):
     def get(self, username):
         self.write(tornado.escape.json_encode({'user_data': activeUsers[username].__dict__}))
 
-class MySocketHandler(tornado.websocket.WebSocketHandler):
+class TestHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('./public/test.html')
+
+    def post(self):
+        self.write(tornado.escape.json_encode({ 'clients': [name.decode('ascii') for name in list(websocketClients.keys())] }))
+
+class InviteSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        print("Socket opened.")
+        websocketClients[self.get_secure_cookie('username').decode('ascii')] = self
 
     def on_message(self, message):
-        print(message)
+        messageDict = tornado.escape.json_decode(message)
+        if messageDict['function'] == "send":
+            websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'request': 'invite'}))
+        elif messageDict['function'] == "receive":
+            print('receiving')
+        elif messageDict['function'] == "accept":
+            print('accepted')
 
     def on_close(self):
+        del websocketClients[self.get_secure_cookie('username').decode('ascii')]
         print("Socket closed")
 
 def make_app():
     return tornado.web.Application([
         (r'/public/(.*)', tornado.web.StaticFileHandler, {'path': './public/'}),
         (r"/", MainHandler),
-        (r"/ws", MySocketHandler),
+        (r"/invite", InviteSocketHandler),
         (r"/users", UserHandler),
         (r"/user/([*]+)/data", UserDataHandler),
         (r'/game', GameHandler),
         (r"/game/([0-9]+)", GamePageHandler),
         (r'/game/([0-9]+)/data', GameDataHandler),
         (r'/game/([0-9]+)/move', MoveHandler),
+        (r'/test', TestHandler),
     ], debug=True, cookie_secret='u5sJkk6UxCQB2X1CAehe7k9wxzBbrAFO9no3BoAT0Bu+zQabEnmXbwBtQCL5WbpPo/s=')
 
 if __name__ == "__main__":

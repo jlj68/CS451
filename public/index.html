@@ -6,6 +6,21 @@
   <link rel="stylesheet" href="/public/css/bootstrap.min.css">
   <script type="text/javascript">
     jQuery(document).ready(function(){
+      function userClickListener(){
+        $('.user-item').click(function(){
+            ws.send(JSON.stringify({
+              'function': 'send',
+              'target': $(this).attr('id'),
+            }));
+        });
+      }
+
+      var ws = new WebSocket("ws://localhost:8080/invite");
+
+      ws.onmessage = function(event){
+          var request = $.parseJSON(event.data).request;
+          console.log(request);
+      }
       /*
       var ws = new WebSocket("ws://localhost:8080/ws");
 
@@ -75,11 +90,13 @@
             method: "GET",
             url: "/users"
           }).done(function(data){
-            $('#user_area').html("");
+            $('#user_area').html("<ul>");
               var users = $.parseJSON(data).users;
               users.forEach(function(item){
-                  $('#user_area').append(item.username + " : " + item.rating + "<br>");
+                  $('#user_area').append("<li class=\"user-item\" id=\"" + item.username + "\">" + item.username + " : " + item.rating + "</li><br>");
               });
+              $('#user_area').append("</ul>");
+              userClickListener();
           });
       });
     });
