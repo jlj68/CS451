@@ -6,13 +6,19 @@ import os, sys
 class State(Enum):
     MATCH = 1
     DRAW = 2
-    BLACKWIN = 3
-    WHITEWIN = 4
+    BLACK_WIN = 3
+    WHITE_WIN = 4
+    BLACK_CHECK = 5
+    WHITE_CHECK = 6
+    BLACK_CHECKMATE = 7
+    WHITE_CHECKMATE = 8
+
 
 @unique
 class Color(Enum):
     BLACK = 1
     WHITE = 2
+
 
 class Position:
     def __init__(self, row, col):
@@ -22,6 +28,7 @@ class Position:
     def __str__(self):
         return "(" + str(self.row) + ", " + str(self.col) + ")"
 
+
 class Move:
     def __init__(self, fromPos, toPos):
         self.fromPos = fromPos
@@ -30,27 +37,31 @@ class Move:
     def __str__(self):
         return str(self.fromPos) + "->" + str(self.toPos)
 
+
 class Piece:
     __metaclass__ = ABCMeta
 
-    def __init__(self, name, color):
+    def __init__(self, name, ch, color):
         self.name = name
+        self.ch = ch
         self.color = color
         self.hasMoved = False
 
     def __str__(self):
-        return str(self.color)[0] + self.name[0]
+        return str(self.color)[6] + self.ch
 
     @abstractmethod
-    def possibleMoves(self, position, board): pass
+    def getPossibleMoves(self, position, board): pass
 
     def filterPositions(self, board, current, delta):
         destination = []
-        tempPosition = Position(current.row+delta.row, current.col+delta.col)
 
+        current = Position(current.row+delta.row, current.col+delta.col)
         while current.row < 8 and current.row > -1 and current.col < 8 and current.col > -1:
             piece = board[current.row][current.col]
-            if piece is None or piece.color != self.color:
+            if piece is None:
+                destination.append(current)
+            elif piece.color != self.color:
                 destination.append(current)
                 break
             else:
@@ -60,29 +71,26 @@ class Piece:
 
         return destination
 
-    def getFilterPositions(self, board, current, delta):
+    def getFilterPositions(self, board, current, directions):
         destination = []
-
-        for i in range(0, len(delta)):
-            path = self.filterPositions(board, current, delta[i])
-            for j in range(0, len(path)):
-                destination.append(path[j])
-
+        for d in directions:
+            destination += self.filterPositions(board, current, d)
         return destination
+
 
 class Bishop(Piece):
     def __init__(self, color):
-        super(Bishop, self).__init__("Bishop", color)
+        super(Bishop, self).__init__("Bishop", "B", color)
 
-    def possibleMoves(self, position, board):
-        delta = [
+    def getPossibleMoves(self, position, board):
+        directions = [
             Position(1, 1),
             Position(1, -1),
             Position(-1, 1),
             Position(-1, -1),
         ]
 
-        destinations = super(Bishop, self).getFilterPositions(board, position, delta)
+        destinations = super(Bishop, self).getFilterPositions(board, position, directions)
         positions = []
 
         for pos in destinations:
@@ -91,11 +99,12 @@ class Bishop(Piece):
 
         return positions
 
+
 class King(Piece):
     def __init__(self, color):
-        super(King, self).__init__("King", color)
+        super(King, self).__init__("King", "K", color)
 
-    def possibleMoves(self, position, board):
+    def getPossibleMoves(self, position, board):
         positions = [
             Position(position.row+1, position.col),
             Position(position.row-1, position.col),
@@ -123,11 +132,12 @@ class King(Piece):
 
         return possiblePositions
 
+
 class Knight(Piece):
     def __init__(self, color):
-        super(Knight, self).__init__("Knight", color)
+        super(Knight, self).__init__("Knight", "N", color)
 
-    def possibleMoves(self, position, board):
+    def getPossibleMoves(self, position, board):
         positions = [
             Position(position.row+2, position.col+1),
             Position(position.row+2, position.col-1),
@@ -155,49 +165,44 @@ class Knight(Piece):
 
         return possiblePositions
 
+
 class Pawn(Piece):
     def __init__(self, color):
-        super(Pawn, self).__init__("Pawn", color)
+        super(Pawn, self).__init__("Pawn", "P", color)
 
-    def possibleMoves(self, position, board):
-        destinations = []
+    def getPossibleMoves(self, position, board):
+        possiblePositions = []
         direction = 1 if self.color is Color.BLACK else -1
-
-        positions = [
+        destinations = [
             Position(position.row+direction, position.col+1),
             Position(position.row+direction, position.col-1),
         ]
 
-        for i in range(0, len(positions)):
-            if positions[i].row in range(0, 8) and positions[i].col in range(0, 8):
-                piece = board[positions[i].row][positions[i].col]
+        for p in destinations:
+            if p.row in range(0, 8) and p.col in range(0, 8):
+                piece = board[p.row][p.col]
                 if piece is not None and piece.color is not self.color:
-                    destinations.append(positions[i])
+                    possiblePositions.append(Move(position, p))
 
-        pos = []
-
+        destinations = []
         if not self.hasMoved:
-            pos.append(Position(position.row+2*direction, position.col))
-        pos.append(Position(position.row+direction, position.col))
-
-        for i in range(0, len(pos)):
-            piece = board[pos[i].row][pos[i].col]
-            if piece is None:
-                destinations.append(pos[i])
-
-        possiblePositions = []
+            destinations.append(Position(position.row+2*direction, position.col))
+        destinations.append(Position(position.row+direction, position.col))
 
         for p in destinations:
-            if p.row in range(0, 8) or p.col in range(0, 8):
-                possiblePositions.append(Move(position, p))
-
+            if p.row in range(0, 8) and p.col in range(0, 8):
+                piece = board[p.row][p.col]
+                if piece is None:
+                    possiblePositions.append(Move(position, p))
+                    
         return possiblePositions
+
 
 class Queen(Piece):
     def __init__(self, color):
-        super(Queen, self).__init__("Queen", color)
+        super(Queen, self).__init__("Queen", "Q", color)
 
-    def possibleMoves(self, position, board):
+    def getPossibleMoves(self, position, board):
         delta = [
             Position(1, 0),
             Position(-1, 0),
@@ -218,11 +223,12 @@ class Queen(Piece):
 
         return positions
 
+
 class Rook(Piece):
     def __init__(self, color):
-        super(Rook, self).__init__("Rook", color)
+        super(Rook, self).__init__("Rook", "R", color)
 
-    def possibleMoves(self, position, board):
+    def getPossibleMoves(self, position, board):
         delta = [
             Position(1, 0),
             Position(-1, 0),
@@ -239,12 +245,13 @@ class Rook(Piece):
 
         return positions
 
+
 class Player:
     def __init__(self, color):
         self.playerColor = color
 
     def getMove(self, game):
-        moves = game.generateMoves()
+        moves = game.getPossibleMoves()
         allMoves = []
 
         i = 1
@@ -261,28 +268,34 @@ class Player:
 
         return allMoves[int(moveSelection)-1]
 
+
 class Game:
     def __init__(self):
         self.board = ChessBoard()
         self.current = Color.BLACK
 
     def displayGame(self):
+        print("Game State: " + str(self.board.state.name))
         print("Current player: " + str(self.current.name))
         print(str(self.board))
 
     def isGameOver(self):
-        return self.board.state is State.MATCH
+        return self.board.state in [State.DRAW, State.BLACK_WIN, State.WHITE_WIN]
 
-    def generateMoves(self):
-        return self.board.generateMoves(self.current)
+    def getPossibleMoves(self):
+        return self.board.getPossibleMoves(self.current)
 
     def applyMove(self, move):
         self.board.applyMove(move)
         self.current = Color.BLACK if self.current is Color.WHITE else Color.WHITE
 
+    def getState(self):
+        return self.board.state;
+
+
 class ChessBoard:
     def __init__(self):
-        self.state = None
+        self.state = State.MATCH
         self.board = []
         for i in range(0, 8):
             row = []
@@ -327,12 +340,15 @@ class ChessBoard:
         self.board[7][6] = Knight(Color.WHITE)
         self.board[7][7] = Rook(Color.WHITE)
 
+    def setBoard(self, board):
+        self.board = board;
+
     def getPiece(self, position):
         if p.row in range(0, 8) and p.col in range(0, 8):
             return self.board[p.row][p.col]
         return None
 
-    def generateMoves(self, color):
+    def getPossibleMoves(self, color):
         moves = {}
 
         for i in range(0, 8):
@@ -340,16 +356,14 @@ class ChessBoard:
                 p = Position(i, j)
                 piece = self.board[i][j]
                 if piece is not None and piece.color == color:
-                    moves[p] = piece.possibleMoves(p, self.board)
+                    moves[p] = piece.getPossibleMoves(p, self.board)
 
         return moves
 
-    def getMovesFromPosition(self, row, col):
-        if self.board[row][col] is not None:
-            allMoves = self.generateMoves(self.board[row][col].color)
-            for position in list(allMoves.keys()):
-                if position.row == row and position.col == col:
-                    return allMoves[position]
+    def getMovesFromPosition(self, position):
+        piece = self.board[position.row][position.col]
+        if piece is not None:
+            return piece.getPossibleMoves(position, self.board) 
         else:
             return []
 
@@ -363,18 +377,71 @@ class ChessBoard:
         fromPiece.hasMoved = True
 
         if toPiece is not None and toPiece.name == "King":
-            self.state = State.WHITEWIN if toPiece.color is Color.BLACK else State.BLACKWIN
+            self.state = State.WHITE_WIN if toPiece.color is Color.BLACK else State.BLACK_WIN
+        else:
+            opponentColor = Color.BLACK if fromPiece.color is Color.WHITE else Color.WHITE
+            self.checkState(opponentColor)
+
+    def findKing(self, color):
+        for i in range(len(self.board)):
+            for j in range(len(self.board[i])):
+                piece = self.board[i][j]
+                if piece != None and piece.name == "King" and piece.color == color:
+                    return Position(i, j)
+        return None
+
+    def checkState(self, color):
+        self.state = State.MATCH
+        if self.isCheck(color):
+            self.state = State.BLACK_CHECK if color is Color.BLACK else State.WHITE_CHECK
+            if self.isCheckmate(color):
+                self.state = State.BLACK_CHECKMATE if color is Color.BLACK else State.WHITE_CHECKMATE
+
+
+    def isCheck(self, color):
+        opponentColor = Color.BLACK if color is Color.WHITE else Color.WHITE
+        kingPosition = self.findKing(color)
+        possibleMoves = self.getPossibleMoves(opponentColor)
+
+        for key in possibleMoves.keys():
+            for m in possibleMoves.get(key):
+                p = m.toPos;
+                if(p.row == kingPosition.row and p.col == kingPosition.col):
+                    return True
+        return False
+
+
+    def isCheckmate(self, color):
+        opponentColor = Color.BLACK if color is Color.WHITE else Color.WHITE
+        kingPosition = self.findKing(color)
+        kingPossibleMoves = self.getMovesFromPosition(kingPosition)        
+        possibleMoves = self.getPossibleMoves(opponentColor)
+
+        targeted = []
+        for km in kingPossibleMoves:
+            kp = km.toPos
+            for key in possibleMoves.keys():
+                for m in possibleMoves.get(key):
+                    p = m.toPos
+                    if(p.row == kp.row and p.col == kp.col and kp not in targeted):
+                        targeted.append(kp)
+
+        if len(targeted) == len(kingPossibleMoves):
+            return True
+        return False
+
 
     def __str__(self):
-        boardString = "  0 1 2 3 4 5 6 7\n"
-        for i in range(0, 8):
-            boardString += str(i) + " "
-            for j in range(0, 8):
-                if self.board[i][j] is None:
-                    boardString += "- "
+        boardString = "     0   1   2   3   4   5   6   7\n"
+        for i in range(len(self.board)):
+            boardString += " " + str(i)
+            for j in range(len(self.board[i])):
+                piece = self.board[i][j];
+                if piece is None:
+                    boardString += "  --"
                 else:
-                    boardString += self.board[i][j].name[0] + " "
-            boardString += '\n'
+                    boardString += "  " + piece.__str__();
+            boardString += "\n"
         return boardString
 
     def getBoardJson(self):
@@ -389,6 +456,7 @@ class ChessBoard:
                 board.append({'row': i, 'col': j, 'piece': elem})
         return board
 
+
 if __name__ == "__main__":
     game = Game()
 
@@ -401,5 +469,5 @@ if __name__ == "__main__":
         move = player2.getMove(game) if game.current is Color.BLACK else player1.getMove(game)
         game.applyMove(move)
 
-    print(game.state.name)
+    print(game.getState())
 
