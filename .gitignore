@@ -1,5 +1,2 @@
-Makefile
-bin/*
-!bin/README
-*.class
 *.pyc
+
