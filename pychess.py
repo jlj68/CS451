@@ -203,7 +203,7 @@ class Queen(Piece):
         super(Queen, self).__init__("Queen", "Q", color)
 
     def getPossibleMoves(self, position, board):
-        delta = [
+        directions = [
             Position(1, 0),
             Position(-1, 0),
             Position(0, 1),
@@ -214,7 +214,7 @@ class Queen(Piece):
             Position(0, -1),
         ]
 
-        destinations = super(Queen, self).getFilterPositions(board, position, delta)
+        destinations = super(Queen, self).getFilterPositions(board, position, directions)
         positions = []
 
         for pos in destinations:
@@ -229,14 +229,14 @@ class Rook(Piece):
         super(Rook, self).__init__("Rook", "R", color)
 
     def getPossibleMoves(self, position, board):
-        delta = [
+        directions = [
             Position(1, 0),
             Position(-1, 0),
             Position(0, 1),
             Position(0, -1),
         ]
 
-        destination = super(Rook, self).getFilterPositions(board, position, delta)
+        destination = super(Rook, self).getFilterPositions(board, position, directions)
         positions = []
 
         for pos in destination:
