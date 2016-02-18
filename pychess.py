@@ -194,7 +194,7 @@ class Pawn(Piece):
                 piece = board[p.row][p.col]
                 if piece is None:
                     possiblePositions.append(Move(position, p))
-                    
+
         return possiblePositions
 
 
@@ -363,9 +363,12 @@ class ChessBoard:
     def getMovesFromPosition(self, position):
         piece = self.board[position.row][position.col]
         if piece is not None:
-            return piece.getPossibleMoves(position, self.board) 
+            return piece.getPossibleMoves(position, self.board)
         else:
             return []
+
+    def isValidMove(self, move):
+        return True if move in getPossibleMoves(self.current) else False
 
     def applyMove(self, move):
         fromPiece = self.board[move.fromPos.row][move.fromPos.col]
@@ -414,7 +417,7 @@ class ChessBoard:
     def isCheckmate(self, color):
         opponentColor = Color.BLACK if color is Color.WHITE else Color.WHITE
         kingPosition = self.findKing(color)
-        kingPossibleMoves = self.getMovesFromPosition(kingPosition)        
+        kingPossibleMoves = self.getMovesFromPosition(kingPosition)
         possibleMoves = self.getPossibleMoves(opponentColor)
 
         targeted = []
@@ -470,4 +473,3 @@ if __name__ == "__main__":
         game.applyMove(move)
 
     print(game.getState())
-

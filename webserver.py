@@ -39,6 +39,7 @@ class GamePageHandler(tornado.web.RequestHandler):
     def get(self, id):
         self.render("./public/game.html", gameID=id)
 
+# this will be a web socket class
 class GameDataHandler(tornado.web.RequestHandler):
     def get(self, id):
         self.write(tornado.escape.json_encode({'board': gamesList[int(id)].board.getBoardJson()}))
@@ -56,8 +57,13 @@ class MoveHandler(tornado.web.RequestHandler):
     def put(self, id):
         originPosition = pychess.Position(int(self.get_body_argument('fromPosRow')), int(self.get_body_argument('fromPosCol')))
         destPosition = pychess.Position(int(self.get_body_argument('toPosRow')), int(self.get_body_argument('toPosCol')))
-        gamesList[int(id)].board.applyMove(pychess.Move(originPosition, destPosition))
-        raise tornado.web.HTTPError(200)
+        newMove = pychess.Move(originPosition, destPosition)
+
+        if gamesList[int(id)].board.isValidMove(newMove):
+            gamesList[int(id)].board.applyMove(pychess.Move(originPosition, destPosition))
+            raise tornado.web.HTTPError(200)
+        else:
+            raise tornado.web.HTTPError(403)
 
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
