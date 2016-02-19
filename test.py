@@ -10,3 +10,8 @@ class TestBishop(unittest.TestCase):
     def runTest(self):
         bishop = pychess.Bishop(pychess.Color.BLACK)
         self.assertEqual(bishop.color, pychess.Color.BLACK)
+
+class TestTemp(unittest.TestCase):
+    def runTest(self):
+        self.assertEqual(1, 1)
+
