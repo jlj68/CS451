@@ -6,11 +6,13 @@ from user import User
 import pychess
 import random
 
-# {id: [game, player1, player2]}
+# {id: (game, whitePlayerWebsocket, blackPlayerWebsocket)}
 gamesList = {}
+
 activeUsers = {}
 availableUsers = {}
 websocketClients = {}
+pendingInvites = []
 
 class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
@@ -105,11 +107,14 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         messageDict = tornado.escape.json_decode(message)
         if messageDict['function'] == "send":
+            pendingInvites.append([websocketClients[messageDict['target']]])
             websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'request': 'invite'}))
         elif messageDict['function'] == "receive":
-            print('receiving')
+            websocketClients[messageDict['sender'].decode('ascii')].write_message(tornado.escape.json_encode({'request': 'invited'}))
         elif messageDict['function'] == "accept":
             print('accepted')
+        elif messageDict['function'] == "decline":
+            print('declined')
 
     def on_close(self):
         del websocketClients[self.get_secure_cookie('username').decode('ascii')]

@@ -3,14 +3,17 @@
 <head>
   <title>User Page</title>
   <script type="text/javascript" src="/public/scripts/jquery-1.12.0.min.js"></script>
+  <script type="text/javascript" src="/public/scripts/js-cookie.js"></script>
   <link rel="stylesheet" href="/public/css/bootstrap.min.css">
   <script type="text/javascript">
     jQuery(document).ready(function(){
       function userClickListener(){
+        $('.user-item').unbind();
         $('.user-item').click(function(){
             ws.send(JSON.stringify({
               'function': 'send',
               'target': $(this).attr('id'),
+              'sender': Cookies.get('username'),
             }));
         });
       }
