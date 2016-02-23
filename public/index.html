@@ -3,14 +3,17 @@
 <head>
   <title>User Page</title>
   <script type="text/javascript" src="/public/scripts/jquery-1.12.0.min.js"></script>
+  <script type="text/javascript" src="/public/scripts/js-cookie.js"></script>
   <link rel="stylesheet" href="/public/css/bootstrap.min.css">
   <script type="text/javascript">
     jQuery(document).ready(function(){
       function userClickListener(){
+        $('.user-item').unbind();
         $('.user-item').click(function(){
             ws.send(JSON.stringify({
               'function': 'send',
               'target': $(this).attr('id'),
+              'sender': Cookies.get('username'),
             }));
         });
       }
@@ -18,8 +21,19 @@
       var ws = new WebSocket("ws://localhost:8080/invite");
 
       ws.onmessage = function(event){
-          var request = $.parseJSON(event.data).request;
-          console.log(request);
+          var response = $.parseJSON(event.data);
+          console.log(response);
+          if(response.status !== undefined){
+            console.log(response.status);
+          }
+          if(response.request !== undefined){
+            console.log(response.request);
+          }
+
+          if(response.sender !== undefined){
+            $('#invite_area').show();
+            $('#invitation_text_area').text(response.sender + " has invited you to play!");
+          }
       }
       /*
       var ws = new WebSocket("ws://localhost:8080/ws");
@@ -110,6 +124,12 @@
       <button class="btn btn-large" id="show_users">Show Users</button>
 
       <center><button class="btn btn-default" id="create_game">Create Game</button></center>
+
+  <div id="invite_area" hidden>
+    <h3 id="invitation_text_area"></h3>
+    <button class="btn btn-success" id="accept">Accept</button>
+    <button class="btn btn-failure" id="decline">Decline</button>
+  </div>
 
   <div class="alert" id="result_area">
   </div>

@@ -2,14 +2,14 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 import json
-from user import User
+from user import User, UserStatus
 import pychess
 import random
 
-# {id: [game, player1, player2]}
+# {id: (game, whitePlayerWebsocket, blackPlayerWebsocket)}
 gamesList = {}
-activeUsers = {}
-availableUsers = {}
+
+connectedUsers = {}
 websocketClients = {}
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -44,6 +44,7 @@ class GameDataHandler(tornado.web.RequestHandler):
     def get(self, id):
         self.write(tornado.escape.json_encode({'board': gamesList[int(id)].board.getBoardJson()}))
 
+# this, too
 class MoveHandler(tornado.web.RequestHandler):
     def get(self, id):
         if id == self.get_secure_cookie('current_game'):
@@ -68,17 +69,18 @@ class MoveHandler(tornado.web.RequestHandler):
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
         userList = []
-        for user in availableUsers.keys():
-            userList.append(availableUsers[user].__dict__)
+        for user in connectedUsers.keys():
+            elem = connectedUsers[user].__dict__.copy()
+            elem['status'] = elem['status'].name
+            userList.append(elem)
         userList = sorted(userList, key = lambda user: user['username'])
         self.write(tornado.escape.json_encode({'users': userList}))
 
     def put(self):
         username = self.get_body_argument("username")
-        if username not in activeUsers.keys() and username not in availableUsers.keys():
+        if username not in connectedUsers.keys():
             newUser = User(username)
-            activeUsers[username] = newUser
-            availableUsers[username] = newUser
+            connectedUsers[username] = newUser
             self.set_secure_cookie('username', username)
             raise tornado.web.HTTPError(201)
         else:
@@ -89,7 +91,7 @@ class UserHandler(tornado.web.RequestHandler):
 
 class UserDataHandler(tornado.web.RequestHandler):
     def get(self, username):
-        self.write(tornado.escape.json_encode({'user_data': activeUsers[username].__dict__}))
+        self.write(tornado.escape.json_encode({'user_data': connectedUsers[username].__dict__}))
 
 class TestHandler(tornado.web.RequestHandler):
     def get(self):
@@ -105,15 +107,36 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         messageDict = tornado.escape.json_decode(message)
         if messageDict['function'] == "send":
-            websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'request': 'invite'}))
+            if connectedUsers[messageDict['target']].status is UserStatus.AVAILABLE:
+                connectedUsers[messageDict['target']].status = UserStatus.PENDING_INVITE
+                websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'sender': self.get_secure_cookie('username').decode('ascii')}))
+            else:
+                self.write_message(tornado.escape.json_encode({'status': 'failed'}))
         elif messageDict['function'] == "receive":
-            print('receiving')
+            websocketClients[messageDict['sender']].status = UserStatus.PENDING_INVITE
+            websocketClients[messageDict['sender'].decode('ascii')].write_message(tornado.escape.json_encode({'request': 'invited'}))
         elif messageDict['function'] == "accept":
-            print('accepted')
+            connectedUsers[messageDict['sender']].status = UserStatus.IN_GAME
+            connectedUsers[messageDict['target']].status = UserStatus.IN_GAME
+            websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'function': 'joining_game'}))
+            self.write_message(tornado.escape.json_encode({'function': 'create_game'}))
+        elif messageDict['function'] == "decline":
+            connectedUsers[messageDict['sender']].status = UserStatus.AVAILABLE
+            connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
 
     def on_close(self):
         del websocketClients[self.get_secure_cookie('username').decode('ascii')]
         print("Socket closed")
+
+class GameSocketHandler(tornado.websocket.WebSocketHandler):
+    def open(self):
+        for (key, values) in gamesList.items():
+            if self.get_secure_cookie('username') in values:
+                values[values.index(self.get_secure_cookie('username'))] = self
+                break
+        print("not found!")
+
+
 
 def make_app():
     return tornado.web.Application([

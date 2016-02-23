@@ -11,6 +11,7 @@ class TestBishop(unittest.TestCase):
         bishop = pychess.Bishop(pychess.Color.BLACK)
         self.assertEqual(bishop.color, pychess.Color.BLACK)
 
+<<<<<<< HEAD
 class TestKing(unittest.TestCase):
     def runTest(self):
         king = pychess.King(pychess.Color.BLACK)
@@ -40,3 +41,4 @@ class TestChessBoard(unittest.TestCase):
    def runTest(self):
          chessBoard = pychess.ChessBoard(pychess.Color.BLACK)
          self.assertEqual(chessBoard.color, pychess.Color.BLACK)
+
