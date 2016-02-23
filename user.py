@@ -1,4 +1,12 @@
+from enum import Enum, unique
+
 K_FACTOR = 32
+
+@unique
+class UserStatus(Enum):
+    AVAILABLE = 1
+    PENDING_INVITE = 2
+    IN_GAME = 3
 
 class User:
     def __init__(self, name):
@@ -6,6 +14,7 @@ class User:
         self.wins = 0
         self.losses = 0
         self.rating = 1400
+        self.status = UserStatus.AVAILABLE
 
     def updateRating(self, opponent, outcome):
         r1 = pow(10, self.rating / 400)
