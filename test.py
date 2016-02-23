@@ -15,3 +15,7 @@ class TestTemp(unittest.TestCase):
     def runTest(self):
         self.assertEqual(1, 1)
 		
+class TestHello(unittest.TestCase):
+    def runTest(self):
+        self.assertEqual(1, 1)
+
