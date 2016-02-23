@@ -71,3 +71,39 @@ def comparePosition(position1, position2):
         return True
     return False
 
+class TestKnight(unittest.TestCase):
+    def runTest(self):
+        chessBoard = pychess.ChessBoard()
+        testPosition = pychess.Position(0, 1)
+        possibleMove =  chessBoard.getMovesFromPosition(testPosition)
+        result = [
+                pychess.Move(testPosition, pychess.Position(2, 0)),
+                pychess.Move(testPosition, pychess.Position(2, 2))
+            ]
+
+        if len(possibleMove) != len(result):
+            self.assertEqual(len(possibleMove), len(result))
+            return
+
+        flag = False
+        for answer in result:
+            for p in possibleMove:
+                if compareMove(answer, p):
+                    flag = True
+            if not flag:
+                self.assertEqual(1, 2)
+                return
+        self.assertEqual(1, 1)
+
+
+def compareMove(move1, move2):
+    if comparePosition(move1.fromPos, move2.fromPos) and
+comparePosition(move1.toPos, move2.toPos):
+        return True
+    return False
+
+def comparePosition(position1, position2):
+    if position1.row == position2.row and position1.col == position2.col:
+        return True
+    return False
+
