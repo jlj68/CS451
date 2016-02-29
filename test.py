@@ -97,8 +97,7 @@ class TestKnight(unittest.TestCase):
 
 
 def compareMove(move1, move2):
-    if comparePosition(move1.fromPos, move2.fromPos) and
-comparePosition(move1.toPos, move2.toPos):
+    if comparePosition(move1.fromPos, move2.fromPos) and comparePosition(move1.toPos, move2.toPos):
         return True
     return False
 
@@ -106,4 +105,20 @@ def comparePosition(position1, position2):
     if position1.row == position2.row and position1.col == position2.col:
         return True
     return False
+
+def getTestBoard():
+    chessBoard = pychess.ChessBoard()
+    board = []
+    for i in range(0, 8):
+        row = []
+        for j in range(0, 8):
+            row.append(None)
+        board.append(row)
+
+    board[1][4] = pychess.King(pychess.Color.BLACK)
+    
+
+
+    chessBoard.setBoard(board)
+    return chessBoard
 
