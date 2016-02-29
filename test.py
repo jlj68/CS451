@@ -97,7 +97,8 @@ class TestKnight(unittest.TestCase):
 
 
 def compareMove(move1, move2):
-    if comparePosition(move1.fromPos, move2.fromPos) and comparePosition(move1.toPos, move2.toPos):
+    if comparePosition(move1.fromPos, move2.fromPos) and
+comparePosition(move1.toPos, move2.toPos):
         return True
     return False
 
@@ -116,9 +117,16 @@ def getTestBoard():
         board.append(row)
 
     board[1][4] = pychess.King(pychess.Color.BLACK)
-    
-
-
+    board[2][5] = pychess.Pawn(pychess.Color.WHITE)
+	board[3][0] = pychess.Pawn(pychess.Color.WHITE)
+	board[3][2] = pychess.Rook(pychess.Color.BLACK)
+    board[3][7] = pychess.Pawn(pychess.Color.BLACK)
+	board[4][4] = pychess.Bishop(pychess.Color.BLACK)
+    board[5][0] = pychess.Pawn(pychess.Color.BLACK)
+    board[5][3] = pychess.Queen(pychess.Color.BLACK)
+    board[5][6] = pychess.Knight(pychess.Color.BLACK)
+	board[6][1] = pychess.Pawn(pychess.Color.WHITE)
+	board[7][5] = pychess.Pawn(pychess.Color.WHITE)
+    board[7][7] = pychess.Pawn(pychess.Color.WHITE)
     chessBoard.setBoard(board)
-    return chessBoard
-
+    return chessBoard        
