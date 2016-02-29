@@ -1,10 +1,6 @@
 import unittest
 import pychess
-
-def compareMove(move1, move2):
-    if comparePosition(move1.fromPos, move2.fromPos) and comparePosition(move1.toPos, move2.toPos):
-        return True
-    return False
+import pdb
 
 
 def comparePosition(position1, position2):
@@ -13,7 +9,27 @@ def comparePosition(position1, position2):
     return False
 
 
-def getTestBoard():
+def compareMove(move1, move2):
+    if comparePosition(move1.fromPos, move2.fromPos) and comparePosition(move1.toPos, move2.toPos):
+        return True
+    return False
+
+
+def comparePossibleMoves(possible1, possible2):
+    if len(possible1) != len(possible2):
+        return False
+
+    flag = False
+    for move1 in possible1:
+        for move2 in possible2:
+            if compareMove(move1, move2):
+                    flag = True
+        if not flag:
+            return False
+    return True
+
+
+def getTestBoard1():
     chessBoard = pychess.ChessBoard()
     board = []
     for i in range(0, 8):
@@ -36,9 +52,65 @@ def getTestBoard():
     board[7][7] = pychess.Pawn(pychess.Color.WHITE)
 
     chessBoard.setBoard(board)
+    return chessBoard
  
 
+def getPossibleMoves(testBoard, testPosition):
+    possibleMove = testBoard.getMovesFromPosition(testPosition)
+    return possibleMove
+    
+
 class TestPychess(unittest.TestCase):
+    def test_king(self):
+        testBoard = getTestBoard1()
+        testPosition = pychess.Position(1, 4)
+        possibleMove = getPossibleMoves(testBoard, testPosition)
+        answer = [
+                pychess.Move(testPosition, pychess.Position(0, 3)),
+                pychess.Move(testPosition, pychess.Position(0, 4)),
+                pychess.Move(testPosition, pychess.Position(0, 5)),
+                pychess.Move(testPosition, pychess.Position(1, 3)),
+                pychess.Move(testPosition, pychess.Position(1, 5)),
+                pychess.Move(testPosition, pychess.Position(2, 3)),
+                pychess.Move(testPosition, pychess.Position(2, 4)),
+                pychess.Move(testPosition, pychess.Position(2, 5))
+            ]
+        self.assertTrue(comparePossibleMoves(possibleMove, answer))
+
+
+    def test_queen(self):
+        testBoard = getTestBoard1()
+        testPosition = pychess.Position(5, 3)
+        possibleMove = getPossibleMoves(testBoard, testPosition)
+        # pdb.set_trace()
+        answer = [
+                pychess.Move(testPosition, pychess.Position(0, 3)),
+                pychess.Move(testPosition, pychess.Position(1, 3)),
+                pychess.Move(testPosition, pychess.Position(2, 3)),
+                pychess.Move(testPosition, pychess.Position(3, 3)),
+                pychess.Move(testPosition, pychess.Position(4, 3)),
+                pychess.Move(testPosition, pychess.Position(6, 3)),
+                pychess.Move(testPosition, pychess.Position(7, 3)),
+                
+                pychess.Move(testPosition, pychess.Position(5, 1)),
+                pychess.Move(testPosition, pychess.Position(5, 2)),
+                pychess.Move(testPosition, pychess.Position(5, 4)),
+                pychess.Move(testPosition, pychess.Position(5, 5)),
+                
+                pychess.Move(testPosition, pychess.Position(2, 0)),
+                pychess.Move(testPosition, pychess.Position(3, 1)),
+                pychess.Move(testPosition, pychess.Position(4, 2)),
+                pychess.Move(testPosition, pychess.Position(6, 4)),
+                pychess.Move(testPosition, pychess.Position(7, 5)),
+                
+                pychess.Move(testPosition, pychess.Position(6, 2)),
+                pychess.Move(testPosition, pychess.Position(7, 1))
+            ]
+        self.assertTrue(comparePossibleMoves(possibleMove, answer))
+
+
+
+
     def test_pawn(self):
         chessBoard = pychess.ChessBoard()
         testPosition = pychess.Position(1, 0)
