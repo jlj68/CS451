@@ -2,6 +2,8 @@ from enum import Enum, unique
 from abc import ABCMeta, abstractmethod
 import os, sys
 
+import pdb
+
 @unique
 class State(Enum):
     MATCH = 1
@@ -94,7 +96,7 @@ class Bishop(Piece):
         positions = []
 
         for pos in destinations:
-            if pos.row in range(1, 7) or pos.col in range(1, 7):
+            if pos.row in range(0, 8) or pos.col in range(0, 8):
                 positions.append(Move(position, pos))
 
         return positions
@@ -151,6 +153,7 @@ class Knight(Piece):
 
         destinations = []
 
+        # pdb.set_trace()
         for i in range(0, len(positions)):
             if positions[i].row in range(0, 8) and positions[i].col in range(0, 8):
                 piece = board[positions[i].row][positions[i].col]
@@ -160,7 +163,7 @@ class Knight(Piece):
         possiblePositions = []
 
         for p in destinations:
-            if p.row in range(1, 7) or p.col in range(1, 7):
+            if p.row in range(0, 8) or p.col in range(0, 8):
                 possiblePositions.append(Move(position, p))
 
         return possiblePositions

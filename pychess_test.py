@@ -82,7 +82,6 @@ class TestPychess(unittest.TestCase):
         testBoard = getTestBoard1()
         testPosition = pychess.Position(5, 3)
         possibleMove = getPossibleMoves(testBoard, testPosition)
-        # pdb.set_trace()
         answer = [
                 pychess.Move(testPosition, pychess.Position(0, 3)),
                 pychess.Move(testPosition, pychess.Position(1, 3)),
@@ -113,13 +112,69 @@ class TestPychess(unittest.TestCase):
         testBoard = getTestBoard1()
         testPosition = pychess.Position(5, 0)
         possibleMove = getPossibleMoves(testBoard, testPosition)
-        # pdb.set_trace()
         answer = [
                 pychess.Move(testPosition, pychess.Position(6, 0)),
                 pychess.Move(testPosition, pychess.Position(7, 0)),
                 pychess.Move(testPosition, pychess.Position(6, 1))
             ]
         self.assertTrue(comparePossibleMoves(possibleMove, answer))
+
+
+    def test_knight(self):
+        testBoard = getTestBoard1()
+        testPosition = pychess.Position(5, 6)
+        possibleMove = getPossibleMoves(testBoard, testPosition)
+        answer = [
+                pychess.Move(testPosition, pychess.Position(3, 5)),
+                pychess.Move(testPosition, pychess.Position(7, 5)),
+                pychess.Move(testPosition, pychess.Position(7, 7)),
+                pychess.Move(testPosition, pychess.Position(6, 4))
+            ]
+        self.assertTrue(comparePossibleMoves(possibleMove, answer))
+
+
+    def test_rook(self):
+        testBoard = getTestBoard1()
+        testPosition = pychess.Position(3, 2)
+        possibleMove = getPossibleMoves(testBoard, testPosition)
+        answer = [
+                pychess.Move(testPosition, pychess.Position(3, 0)),
+                pychess.Move(testPosition, pychess.Position(3, 1)),
+                pychess.Move(testPosition, pychess.Position(3, 3)),
+                pychess.Move(testPosition, pychess.Position(3, 4)),
+                pychess.Move(testPosition, pychess.Position(3, 5)),
+                pychess.Move(testPosition, pychess.Position(3, 6)),
+                pychess.Move(testPosition, pychess.Position(0, 2)),
+                pychess.Move(testPosition, pychess.Position(1, 2)),
+                pychess.Move(testPosition, pychess.Position(2, 2)),
+                pychess.Move(testPosition, pychess.Position(4, 2)),
+                pychess.Move(testPosition, pychess.Position(5, 2)),
+                pychess.Move(testPosition, pychess.Position(6, 2)),
+                pychess.Move(testPosition, pychess.Position(7, 2))
+            ]
+        self.assertTrue(comparePossibleMoves(possibleMove, answer))
+
+
+    def test_bishop(self):
+        testBoard = getTestBoard1()
+        testPosition = pychess.Position(4, 4)
+        possibleMove = getPossibleMoves(testBoard, testPosition)
+        answer = [
+                pychess.Move(testPosition, pychess.Position(0, 0)),
+                pychess.Move(testPosition, pychess.Position(1, 1)),
+                pychess.Move(testPosition, pychess.Position(2, 2)),
+                pychess.Move(testPosition, pychess.Position(3, 3)),
+                pychess.Move(testPosition, pychess.Position(5, 5)),
+                pychess.Move(testPosition, pychess.Position(6, 6)),
+                pychess.Move(testPosition, pychess.Position(7, 7)),
+                
+                pychess.Move(testPosition, pychess.Position(3, 5)),
+                pychess.Move(testPosition, pychess.Position(2, 6)),
+                pychess.Move(testPosition, pychess.Position(1, 7))
+            ]
+        # pdb.set_trace()
+        self.assertTrue(comparePossibleMoves(possibleMove, answer))
+
 
 
 if __name__ == '__main__':
