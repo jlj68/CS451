@@ -208,10 +208,10 @@ class Queen(Piece):
             Position(-1, 0),
             Position(0, 1),
             Position(0, -1),
-            Position(1, 0),
-            Position(-1, 0),
-            Position(0, 1),
-            Position(0, -1),
+            Position(1, 1),
+            Position(-1, 1),
+            Position(1, -1),
+            Position(-1, -1),
         ]
 
         destinations = super(Queen, self).getFilterPositions(board, position, directions)

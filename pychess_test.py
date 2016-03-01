@@ -109,30 +109,17 @@ class TestPychess(unittest.TestCase):
         self.assertTrue(comparePossibleMoves(possibleMove, answer))
 
 
-
-
     def test_pawn(self):
-        chessBoard = pychess.ChessBoard()
-        testPosition = pychess.Position(1, 0)
-        possibleMove =  chessBoard.getMovesFromPosition(testPosition)
-        result = [
-                pychess.Move(testPosition, pychess.Position(2, 0)),
-                pychess.Move(testPosition, pychess.Position(3, 0))
+        testBoard = getTestBoard1()
+        testPosition = pychess.Position(5, 0)
+        possibleMove = getPossibleMoves(testBoard, testPosition)
+        # pdb.set_trace()
+        answer = [
+                pychess.Move(testPosition, pychess.Position(6, 0)),
+                pychess.Move(testPosition, pychess.Position(7, 0)),
+                pychess.Move(testPosition, pychess.Position(6, 1))
             ]
-
-        if len(possibleMove) != len(result):
-            self.assertEqual(len(possibleMove), len(result))
-            return
-
-        flag = False
-        for answer in result:
-            for p in possibleMove:
-                if compareMove(answer, p):
-                    flag = True
-            if not flag:
-                self.assertEqual(1, 2)
-                return
-        self.assertEqual(1, 1)
+        self.assertTrue(comparePossibleMoves(possibleMove, answer))
 
 
 if __name__ == '__main__':
