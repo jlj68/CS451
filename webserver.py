@@ -150,6 +150,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
         gameBoard = gamesList[gameID][0].board
 
         if message['function'] == 'get_moves':
+            print(gameBoard.getPossibleMoves(self.get_secure_cookie('player_color')))
             self.write_message(tornado.escape.json_encode(gameBoard.getPossibleMoves(self.get_secure_cookie('player_color'))))
         elif message['function'] == 'make_move':
             fromPos = message['move']['fromPos']
