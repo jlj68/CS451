@@ -34,6 +34,7 @@ class GameHandler(tornado.web.RequestHandler):
         player1 = self.get_secure_cookie('username')
         player2 = self.get_body_argument('player2')
         gamesList[gameID] = [newGame, player1, player2]
+        self.set_secure_cookie('gameID', gameID)
         self.write(tornado.escape.json_encode({'gameID': gameID}))
 
 class GamePageHandler(tornado.web.RequestHandler):
@@ -43,7 +44,7 @@ class GamePageHandler(tornado.web.RequestHandler):
 # this will be a web socket class
 class GameDataHandler(tornado.web.RequestHandler):
     def get(self, id):
-        self.write(tornado.escape.json_encode({'board': gamesList[int(id)].board.getBoardJson()}))
+        self.write(tornado.escape.json_encode({'board': gamesList[int(id)][0].board.getBoardJson()}))
 
 # this, too
 class MoveHandler(tornado.web.RequestHandler):
