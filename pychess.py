@@ -33,6 +33,9 @@ class Position:
     def __str__(self):
         return "(" + str(self.row) + ", " + str(self.col) + ")"
 
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
 
 class Move:
     def __init__(self, fromPos, toPos):
@@ -41,6 +44,9 @@ class Move:
 
     def __str__(self):
         return str(self.fromPos) + "->" + str(self.toPos)
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.fromPos == other.fromPos and self.toPos == other.toPos
 
 
 class Piece:
@@ -388,7 +394,8 @@ class ChessBoard:
             return []
 
     def isValidMove(self, move, color):
-        print(self.getPossibleMoves(color))
+        for eachMove in self.getPossibleMoves(color).values():
+
         return True if move in self.getPossibleMoves(color).values() else False
 
     def applyMove(self, move):
