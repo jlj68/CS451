@@ -367,6 +367,19 @@ class ChessBoard:
 
         return moves
 
+    def getPossibleMovesJSON(self, color):
+        movesList = []
+        moves = self.getPossibleMoves(color)
+        for position, moves in moves.items():
+            item = {}
+            item['row'] = position.row
+            item['col'] = position.col
+            item['moves'] = []
+            for move in moves:
+                item['moves'].append({'row': move.toPos.row, 'col': move.toPos.col})
+            movesList.append(item)
+        return movesList
+
     def getMovesFromPosition(self, position):
         piece = self.board[position.row][position.col]
         if piece is not None:
