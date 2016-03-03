@@ -387,8 +387,8 @@ class ChessBoard:
         else:
             return []
 
-    def isValidMove(self, move):
-        return True if move in self.getPossibleMoves(self.current).values() else False
+    def isValidMove(self, move, color):
+        return True if move in self.getPossibleMoves(color).values() else False
 
     def applyMove(self, move):
         fromPiece = self.board[move.fromPos.row][move.fromPos.col]
