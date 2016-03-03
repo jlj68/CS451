@@ -7,6 +7,13 @@
   <link rel="stylesheet" href="/public/css/style.css">
   <script type="text/javascript">
     var gameID;
+
+    var ws = new WebSocket("ws://subsonic.rawhat.net:8080/game/socket");
+
+    ws.onmessage = function(event){
+        console.log($.parseJSON(event.data));
+    }
+
     function updateBoard(){
         $.ajax({
           method: "GET",

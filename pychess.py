@@ -80,7 +80,7 @@ class Piece:
     def getFilterPositions(self, board, current, directions):
         destination = []
         for d in directions:
-            destination.append(self.filterPositions(board, current, d))
+            destination.extend(self.filterPositions(board, current, d))
         return destination
 
 
