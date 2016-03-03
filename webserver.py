@@ -125,7 +125,7 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
             connectedUsers[messageDict['sender']].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
         elif messageDict['function'] == "register":
-            websocketClients[self.get_secure_cookie('username').decode('ascii')] = self
+            websocketClients[messageDict['name'].decode('ascii')] = self
 
     def close(self):
         del websocketClients[self.get_secure_cookie('username').decode('ascii')]
