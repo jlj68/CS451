@@ -394,8 +394,6 @@ class ChessBoard:
             return []
 
     def isValidMove(self, move, color):
-        for eachMove in self.getPossibleMoves(color).values():
-
         return True if move in self.getPossibleMoves(color).values() else False
 
     def applyMove(self, move):
