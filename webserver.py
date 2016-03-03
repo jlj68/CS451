@@ -35,11 +35,15 @@ class GameHandler(tornado.web.RequestHandler):
         player2 = self.get_body_argument('player2')
         gamesList[gameID] = [newGame, player1, player2]
         self.set_secure_cookie('gameID', str(gameID))
+        self.set_secure_cookie('player_color', 'WHITE')
         self.write(tornado.escape.json_encode({'gameID': gameID}))
 
 class GamePageHandler(tornado.web.RequestHandler):
-    def get(self, id):
-        self.render("./public/game.html", gameID=id)
+    def get(self, gameID):
+        if not self.get_secure_cookie('player_color'):
+            self.set_secure_cookie('player_color', 'BLACK')
+            self.set_secure_cookie('gameID', str(gameID))
+        self.render("./public/game.html", gameID=gameID)
 
 # this will be a web socket class
 class GameDataHandler(tornado.web.RequestHandler):
@@ -146,7 +150,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
         gameBoard = gamesList[gameID][0].board
 
         if message['function'] == 'get_moves':
-            self.write_message(tornado.escape.json_encode(gameBoard.getPossibleMoves()))
+            self.write_message(tornado.escape.json_encode(gameBoard.getPossibleMoves(self.get_secure_cookie('player_color'))))
         elif message['function'] == 'make_move':
             fromPos = message['move']['fromPos']
             toPos = message['move']['toPos']
