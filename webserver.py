@@ -176,6 +176,7 @@ def make_app():
         (r"/game/([0-9]+)", GamePageHandler),
         (r'/game/([0-9]+)/data', GameDataHandler),
         (r'/game/([0-9]+)/move', MoveHandler),
+        (r'/game/socket', GameSocketHandler),
         (r'/test', TestHandler),
     ], debug=True, cookie_secret='u5sJkk6UxCQB2X1CAehe7k9wxzBbrAFO9no3BoAT0Bu+zQabEnmXbwBtQCL5WbpPo/s=')
 
