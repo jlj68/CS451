@@ -30,12 +30,9 @@
             data: {
               "player2": currentInvite,
             },
-            statusCode: {
-              201: function(data){
-                window.location.replace("/game/" + $.parseJSON(data).gameID);
-              }
-            }
-          })
+          }).done(function(data){
+              window.location.replace("/game/" + $.parseJSON(data).gameID);
+          });
         });
 
         $('#decline').click(function(){

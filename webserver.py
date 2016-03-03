@@ -34,7 +34,7 @@ class GameHandler(tornado.web.RequestHandler):
         player1 = self.get_secure_cookie('username')
         player2 = self.get_body_argument('player2')
         gamesList[gameID] = [newGame, player1, player2]
-        raise tornado.web.HTTPError(201)
+        self.write(tornado.escape.json_encode({'gameID': gameID}))
 
 class GamePageHandler(tornado.web.RequestHandler):
     def get(self, id):
