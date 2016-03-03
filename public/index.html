@@ -90,6 +90,7 @@
            statusCode: {
              201: function(){
                $('#result_area').html("User successfully created.");
+               ws.send(JSON.stringify({'function': 'register'}));
              },
              409: function(){
                $('#result_area').html("User already exists.  Please try again.");

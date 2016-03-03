@@ -102,7 +102,7 @@ class TestHandler(tornado.web.RequestHandler):
 
 class InviteSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        websocketClients[self.get_secure_cookie('username').decode('ascii')] = self
+        print("socket opened")
 
     def on_message(self, message):
         messageDict = tornado.escape.json_decode(message)
@@ -124,6 +124,8 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
         elif messageDict['function'] == "decline":
             connectedUsers[messageDict['sender']].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
+        elif messageDict['function'] == "register":
+            websocketClients[self.get_secure_cookie('username').decode('ascii')] = self
 
     def close(self):
         del websocketClients[self.get_secure_cookie('username').decode('ascii')]
