@@ -53,7 +53,8 @@ class Piece:
         return str(self.color)[6] + self.ch
 
     @abstractmethod
-    def getPossibleMoves(self, position, board): pass
+    def getPossibleMoves(self, position, board):
+        pass
 
     def filterPositions(self, board, current, delta):
         destination = []
@@ -409,11 +410,10 @@ class ChessBoard:
         kingPosition = self.findKing(color)
         possibleMoves = self.getPossibleMoves(opponentColor)
 
-        for key in possibleMoves.keys():
-            for m in possibleMoves.get(key):
-                p = m.toPos;
-                if(p.row == kingPosition.row and p.col == kingPosition.col):
-                    return True
+        for m in possibleMoves.values():
+            p = m.toPos;
+            if p.row == kingPosition.row and p.col == kingPosition.col:
+                return True
         return False
 
 
@@ -426,11 +426,10 @@ class ChessBoard:
         targeted = []
         for km in kingPossibleMoves:
             kp = km.toPos
-            for key in possibleMoves.keys():
-                for m in possibleMoves.get(key):
-                    p = m.toPos
-                    if(p.row == kp.row and p.col == kp.col and kp not in targeted):
-                        targeted.append(kp)
+            for m in possibleMoves.values():
+                p = m.toPos
+                if p.row == kp.row and p.col == kp.col and kp not in targeted:
+                    targeted.append(kp)
 
         if len(targeted) == len(kingPossibleMoves):
             return True

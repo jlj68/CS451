@@ -130,13 +130,10 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
 
 class GameSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        for (key, values) in gamesList.items():
-            if self.get_secure_cookie('username') in values:
-                values[values.index(self.get_secure_cookie('username'))] = self
+        for key, values in gamesList.items():
+            if self.get_secure_cookie('username') == value:
+                gamesList[key].index(self.get_secure_cookie('username')) = self
                 break
-        print("not found!")
-
-
 
 def make_app():
     return tornado.web.Application([
