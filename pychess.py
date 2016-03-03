@@ -21,6 +21,9 @@ class Color(Enum):
     BLACK = 1
     WHITE = 2
 
+    @classmethod
+    def fromString(cls, string):
+        return getattr(cls, string.upper(), None)
 
 class Position:
     def __init__(self, row, col):
