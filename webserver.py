@@ -31,9 +31,10 @@ class GameHandler(tornado.web.RequestHandler):
         while gameID in gamesList.keys():
             gameID = random.randint(1, 1024)
         newGame = pychess.Game()
-        gamesList[gameID] = newGame
-        self.set_secure_cookie('current_game', str(gameID))
-        self.write(tornado.escape.json_encode({'gameID': gameID }))
+        player1 = self.get_secure_cookie('username')
+        player2 = self.get_body_argument('player2')
+        gamesList[gameID] = [newGame, player1, player2]
+        raise tornado.web.HTTPError(201)
 
 class GamePageHandler(tornado.web.RequestHandler):
     def get(self, id):

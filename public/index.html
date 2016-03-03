@@ -6,6 +6,7 @@
   <script type="text/javascript" src="/public/scripts/js-cookie.js"></script>
   <link rel="stylesheet" href="/public/css/bootstrap.min.css">
   <script type="text/javascript">
+    var currentInvite;
     jQuery(document).ready(function(){
       function userClickListener(){
         $('.user-item').unbind();
@@ -15,6 +16,30 @@
               'target': $(this).attr('id'),
               'sender': Cookies.get('username'),
             }));
+        });
+      }
+
+      function inviteButtonListeners(){
+        $('#accept').unbind();
+        $('#decline').unbind();
+
+        $('#accept').click(function(){
+          $.ajax({
+            method: "PUT",
+            url: "/game",
+            data: {
+              "player2": currentInvite,
+            },
+            statusCode: {
+              201: function(data){
+                window.location.replace("/game/" + $.parseJSON(data).gameID);
+              }
+            }
+          })
+        });
+
+        $('#decline').click(function(){
+
         });
       }
 
@@ -33,6 +58,8 @@
           if(response.sender !== undefined){
             $('#invite_area').show();
             $('#invitation_text_area').text(response.sender + " has invited you to play!");
+            currentInvite = response.sender;
+            inviteButtonListeners();
           }
       }
       /*
