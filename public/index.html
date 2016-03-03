@@ -18,7 +18,7 @@
         });
       }
 
-      var ws = new WebSocket("ws://localhost:8080/invite");
+      var ws = new WebSocket("ws://subsonic.rawhat.net:8080/invite");
 
       ws.onmessage = function(event){
           var response = $.parseJSON(event.data);

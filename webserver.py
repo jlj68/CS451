@@ -33,7 +33,7 @@ class GameHandler(tornado.web.RequestHandler):
         newGame = pychess.Game()
         gamesList[gameID] = newGame
         self.set_secure_cookie('current_game', str(gameID))
-        self.write(tornado.escape.json_encode({'gameID': str(gameID) }))
+        self.write(tornado.escape.json_encode({'gameID': gameID }))
 
 class GamePageHandler(tornado.web.RequestHandler):
     def get(self, id):
@@ -110,6 +110,7 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
             if connectedUsers[messageDict['target']].status is UserStatus.AVAILABLE:
                 connectedUsers[messageDict['target']].status = UserStatus.PENDING_INVITE
                 websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'sender': self.get_secure_cookie('username').decode('ascii')}))
+                self.write_message(tornado.escape.json_encode({'status': 'success'}))
             else:
                 self.write_message(tornado.escape.json_encode({'status': 'failed'}))
         elif messageDict['function'] == "receive":
@@ -124,15 +125,42 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
             connectedUsers[messageDict['sender']].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
 
-    def on_close(self):
+    def close(self):
         del websocketClients[self.get_secure_cookie('username').decode('ascii')]
         print("Socket closed")
 
 class GameSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         for key, values in gamesList.items():
+            if self.get_secure_cookie('username') in values:
+                values[values.index(self.get_secure_cookie('username'))] = self
+                break
+
+    def on_message(self, clientMessage):
+        message = tornado.escape.json_decode(clientMessage)
+        gameID = int(self.get_secure_cookie('gameID'))
+        gameBoard = gamesList[gameID][0].board
+
+        if message['function'] == 'get_moves':
+            self.write_message(tornado.escape.json_encode(gameBoard.getPossibleMoves()))
+        elif message['function'] == 'make_move':
+            fromPos = message['move']['fromPos']
+            toPos = message['move']['toPos']
+            move = Move(fromPos, toPos)
+            if gameBoard.isValidMove(move):
+                gameBoard.applyMove(move)
+                gamesList[gameID][1].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
+                gamesList[gameID][2].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
+            else:
+                self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
+        elif message['function'] == 'update_board':
+            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
+
+    def close(self):
+        for key, values in gamesList.items():
             if self.get_secure_cookie('username') == value:
-                gamesList[key].index(self.get_secure_cookie('username')) = self
+                del values[values.index(self.get_secure_cookie('username'))]
+                self.write_message(tornado.escape.json_encode({'status': 'disconnected', 'username': value}))
                 break
 
 def make_app():
