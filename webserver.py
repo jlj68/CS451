@@ -127,6 +127,8 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 gamesList[gameID][0].applyMove(move)
                 gamesList[gameID][1].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
                 gamesList[gameID][2].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
+                index = 1 if gamesList[gameID][2] == self else 2
+                gamesList[gameID][index].write_message(tornado.escape.json_encode(gamesList[gameID][0].getPossibleMovesJSON()))
             else:
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
 
