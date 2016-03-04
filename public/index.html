@@ -24,7 +24,7 @@
         $('#decline').unbind();
 
         $('#accept').click(function(){
-          ws.send(JSON.stringify({'function': 'accept', 'sender': Cookies.get('username'), 'target': currentInvite}));
+          ws.send(JSON.stringify({'function': 'accept', 'target': currentInvite}));
         });
 
         $('#decline').click(function(){
