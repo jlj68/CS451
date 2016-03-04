@@ -399,7 +399,8 @@ class ChessBoard:
     def isValidMove(self, move, color):
         print("move to test: " + str(move))
         for eachMove in self.getPossibleMoves(color).values():
-            print(str(eachMove[1])) if len(eachMove) is not 0
+            if len(eachMove) is not 0:
+                print(str(eachMove[1])) 
         return True if move in [move[1] if len(move) is not 0 else None for move in self.getPossibleMoves(color).values()] else False
 
     def applyMove(self, move):
