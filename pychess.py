@@ -400,7 +400,7 @@ class ChessBoard:
         print("move to test: " + str(move))
         for eachMove in self.getPossibleMoves(color).values():
             print(eachMove)
-        return True if move in self.getPossibleMoves(color).values() else False
+        return True if move in [move[1] for move in self.getPossibleMoves(color).values()] else False
 
     def applyMove(self, move):
         fromPiece = self.board[move.fromPos.row][move.fromPos.col]
