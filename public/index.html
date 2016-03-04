@@ -24,15 +24,7 @@
         $('#decline').unbind();
 
         $('#accept').click(function(){
-          $.ajax({
-            method: "PUT",
-            url: "/game",
-            data: {
-              "player2": currentInvite,
-            },
-          }).done(function(data){
-              window.location.replace("/game/" + $.parseJSON(data).gameID);
-          });
+          ws.send(JSON.stringify({'function': 'accept'}));
         });
 
         $('#decline').click(function(){
@@ -45,6 +37,20 @@
       ws.onmessage = function(event){
           var response = $.parseJSON(event.data);
           console.log(response);
+          if(response.function == "joining_game"){
+            window.location.replace("/game/" + $.parseJSON(response.))
+          }
+          else if(response.function == "create_game"){
+            $.ajax({
+              method: "PUT",
+              url: "/game",
+              data: {
+                "player2": currentInvite,
+              },
+            }).done(function(data){
+                window.location.replace("/game/" + $.parseJSON(data).gameID);
+            });
+          }
           if(response.status !== undefined){
             console.log(response.status);
           }

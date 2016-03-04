@@ -35,7 +35,7 @@ class GameHandler(tornado.web.RequestHandler):
         player2 = self.get_body_argument('player2')
         gamesList[gameID] = [newGame, player1, player2]
         self.set_secure_cookie('gameID', str(gameID))
-        self.set_secure_cookie('player_color', 'WHITE')
+        self.set_secure_cookie('player_color', 'BLACK')
         self.write(tornado.escape.json_encode({'gameID': gameID}))
 
 class GamePageHandler(tornado.web.RequestHandler):
@@ -163,7 +163,6 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
             else:
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
         elif message['function'] == 'update_board':
-            print('updating board')
             self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
 
     def close(self):
