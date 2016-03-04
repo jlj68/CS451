@@ -124,12 +124,12 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
             websocketClients[messageDict['sender']].status = UserStatus.PENDING_INVITE
             websocketClients[messageDict['sender'].decode('ascii')].write_message(tornado.escape.json_encode({'request': 'invited'}))
         elif messageDict['function'] == "accept":
-            connectedUsers[messageDict['sender']].status = UserStatus.IN_GAME
+            connectedUsers[messageDict['sender'].decode('ascii')].status = UserStatus.IN_GAME
             connectedUsers[messageDict['target']].status = UserStatus.IN_GAME
             websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'function': 'joining_game'}))
             self.write_message(tornado.escape.json_encode({'function': 'create_game'}))
         elif messageDict['function'] == "decline":
-            connectedUsers[messageDict['sender']].status = UserStatus.AVAILABLE
+            connectedUsers[messageDict['sender'].decode('ascii')].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
         elif messageDict['function'] == "register":
             websocketClients[messageDict['name']] = self
