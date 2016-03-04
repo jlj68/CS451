@@ -437,7 +437,7 @@ class ChessBoard:
         kingPosition = self.findKing(color)
         possibleMoves = self.getPossibleMoves(opponentColor)
 
-        for m in possibleMoves.values():
+        for m in [item for sublist in possibleMoves.values() for item in sublist]:
             p = m.toPos;
             if p.row == kingPosition.row and p.col == kingPosition.col:
                 return True
@@ -453,7 +453,7 @@ class ChessBoard:
         targeted = []
         for km in kingPossibleMoves:
             kp = km.toPos
-            for m in possibleMoves.values():
+            for m in [item for sublist in possibleMoves.values() for item in sublist]:
                 p = m.toPos
                 if p.row == kp.row and p.col == kp.col and kp not in targeted:
                     targeted.append(kp)
