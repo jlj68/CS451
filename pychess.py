@@ -51,6 +51,8 @@ class Move:
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.fromPos == other.fromPos and self.toPos == other.toPos
 
+    def __hash__(self):
+        return hash(frozenset(self.__dict__.values()))
 
 class Piece:
     __metaclass__ = ABCMeta
@@ -397,11 +399,7 @@ class ChessBoard:
             return []
 
     def isValidMove(self, move, color):
-        print("move to test: " + str(move))
-        for eachMove in self.getPossibleMoves(color).values():
-            if len(eachMove) is not 0:
-                print(str(eachMove[1])) 
-        return True if move in [move[1] if len(move) is not 0 else None for move in self.getPossibleMoves(color).values()] else False
+        return True if move in [item for sublist in self.getPossibleMoves(color).values() for item in sublist] else False
 
     def applyMove(self, move):
         fromPiece = self.board[move.fromPos.row][move.fromPos.col]
