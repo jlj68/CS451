@@ -163,12 +163,13 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
             else:
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
         elif message['function'] == 'update_board':
+            print('updating board')
             self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
 
     def close(self):
         for key, values in gamesList.items():
             if self.get_secure_cookie('username') == value:
-                del values[values.index(self.get_secure_cookie('username'))]
+                del values[values.index(self)]
                 self.write_message(tornado.escape.json_encode({'status': 'disconnected', 'username': value}))
                 break
 
