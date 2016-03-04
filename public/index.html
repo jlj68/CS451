@@ -39,7 +39,7 @@
           console.log(response);
           if(response.function == "joining_game"){
             //window.location.replace("/game/" + response.gameID);
-            alert('joining');
+            alert('joining: ' + response.gameID);
           }
           else if(response.function == "create_game"){
             $.ajax({
