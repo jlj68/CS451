@@ -36,7 +36,7 @@ class GameHandler(tornado.web.RequestHandler):
         gamesList[gameID] = [newGame, player1, player2]
         self.set_secure_cookie('gameID', str(gameID))
         self.set_secure_cookie('player_color', 'BLACK')
-        websocketClients[player2].write_message(tornado.escape.json_encode({'function': 'joining_game', 'gameID': gameID}))
+        websocketClients[player2].write_message(tornado.escape.json_encode({'function': 'joining_game', 'gameID': str(gameID)}))
         self.write(tornado.escape.json_encode({'gameID': gameID}))
 
 class GamePageHandler(tornado.web.RequestHandler):
