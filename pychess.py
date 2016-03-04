@@ -303,6 +303,9 @@ class Game:
     def getPossibleMoves(self):
         return self.board.getPossibleMoves(self.current)
 
+    def getPossibleMovesJSON(self):
+        return self.board.getPossibleMovesJSON(self.current)
+
     def applyMove(self, move):
         self.board.applyMove(move)
         self.current = Color.BLACK if self.current is Color.WHITE else Color.WHITE

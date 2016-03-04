@@ -46,33 +46,6 @@ class GamePageHandler(tornado.web.RequestHandler):
             self.set_secure_cookie('gameID', str(gameID))
         self.render("./public/game.html", gameID=gameID)
 
-# this will be a web socket class
-class GameDataHandler(tornado.web.RequestHandler):
-    def get(self, id):
-        self.write(tornado.escape.json_encode({'board': gamesList[int(id)][0].board.getBoardJson()}))
-
-# this, too
-class MoveHandler(tornado.web.RequestHandler):
-    def get(self, id):
-        if id == self.get_secure_cookie('current_game'):
-            # get moves from a position
-            row = int(self.get_argument('row'))
-            col = int(self.get_argument('col'))
-            moves = gamesList[int(id)].board.getMovesFromPosition(row, col)
-            movesList = [{'fromPos': move.fromPos.__dict__, 'toPos': move.toPos.__dict__} for move in moves]
-            self.write(tornado.escape.json_encode({ 'moves': movesList }))
-
-    def put(self, id):
-        originPosition = pychess.Position(int(self.get_body_argument('fromPosRow')), int(self.get_body_argument('fromPosCol')))
-        destPosition = pychess.Position(int(self.get_body_argument('toPosRow')), int(self.get_body_argument('toPosCol')))
-        newMove = pychess.Move(originPosition, destPosition)
-
-        if gamesList[int(id)].board.isValidMove(newMove):
-            gamesList[int(id)].board.applyMove(pychess.Move(originPosition, destPosition))
-            raise tornado.web.HTTPError(200)
-        else:
-            raise tornado.web.HTTPError(403)
-
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
         userList = []
@@ -100,13 +73,6 @@ class UserDataHandler(tornado.web.RequestHandler):
     def get(self, username):
         self.write(tornado.escape.json_encode({'user_data': connectedUsers[username].__dict__}))
 
-class TestHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render('./public/test.html')
-
-    def post(self):
-        self.write(tornado.escape.json_encode({ 'clients': [name.decode('ascii') for name in list(websocketClients.keys())] }))
-
 class InviteSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         print("socket opened")
@@ -130,6 +96,7 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
         elif messageDict['function'] == "decline":
             connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
+            self.write_message(tornado.escape.json_encode({'status': 'declined'}))
         elif messageDict['function'] == "register":
             websocketClients[messageDict['name']] = self
 
@@ -150,26 +117,43 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
         gameBoard = gamesList[gameID][0].board
 
         if message['function'] == 'get_moves':
-            print(gameBoard.getPossibleMovesJSON(pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii'))))
-            self.write_message(tornado.escape.json_encode(gameBoard.getPossibleMovesJSON(pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')))))
+            self.write_message(tornado.escape.json_encode(gamesList[gameID][0].getPossibleMovesJSON()))
+
         elif message['function'] == 'make_move':
             fromPos = pychess.Position(message['move']['fromPos']['row'], message['move']['fromPos']['col'])
             toPos = pychess.Position(message['move']['toPos']['row'], message['move']['toPos']['col'])
             move = pychess.Move(fromPos, toPos)
-            if gameBoard.isValidMove(move, pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii'))):
-                gameBoard.applyMove(move)
+            if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) is gamesList[gameID][0].current and gameBoard.isValidMove(move, gamesList[gameID][0].current):
+                gamesList[gameID][0].applyMove(move)
                 gamesList[gameID][1].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
                 gamesList[gameID][2].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
             else:
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
+
         elif message['function'] == 'update_board':
             self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
+
+        elif message['function'] == 'forfeit':
+            playerToForfeit = self.get_secure_cookie('username').decode('ascii')
+            gameID = int(self.get_secure_cookie('gameID').decode('ascii'))
+            index = 1 if gamesList[gameID][2] == self else 2
+            gamesList[gameID][index].write_message(tornado.escape.json_encode({'function': 'request_forfeit', 'username': playerToForfeit}))
+
+        elif message['function'] == 'game_over':
+            # index 1 is black, index 2 is white
+            if message['reason'] == "DRAW":
+                print("game draw")
+            elif message['reason'] == 'FORFEIT':
+                print("some player forfeit")
+            elif message['reason'] == 'CHECKMATE':
+                print("some player won")
 
     def close(self):
         for key, values in gamesList.items():
             if self.get_secure_cookie('username') == value:
                 del values[values.index(self)]
-                self.write_message(tornado.escape.json_encode({'status': 'disconnected', 'username': value}))
+                otherPlayer = 1 if values.index(self) == 2 else 2
+                values[otherPlayer].write_message(tornado.escape.json_encode({'status': 'disconnected', 'username': value.get_secure_cookie('username').decode('ascii')}))
                 break
 
 def make_app():
@@ -181,10 +165,7 @@ def make_app():
         (r"/user/([*]+)/data", UserDataHandler),
         (r'/game', GameHandler),
         (r"/game/([0-9]+)", GamePageHandler),
-        (r'/game/([0-9]+)/data', GameDataHandler),
-        (r'/game/([0-9]+)/move', MoveHandler),
         (r'/game/socket', GameSocketHandler),
-        (r'/test', TestHandler),
     ], debug=True, cookie_secret='u5sJkk6UxCQB2X1CAehe7k9wxzBbrAFO9no3BoAT0Bu+zQabEnmXbwBtQCL5WbpPo/s=')
 
 if __name__ == "__main__":
