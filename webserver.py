@@ -161,7 +161,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
 
 def make_app():
     return tornado.web.Application([
-        (r'/public/(.*)', tornado.web.StaticFileHandler, {'path': './public/'}),
+        (r'/public/(.*)', tornado.web.StaticFileHandler, {'path': './jsGame/'}),
         (r"/", MainHandler),
         (r"/invite", InviteSocketHandler),
         (r"/users", UserHandler),
