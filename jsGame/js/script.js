@@ -1,14 +1,14 @@
 var $submitUserNameBtn = $('#submitUserName');
 var $usernameCheckText = $('#usernameCheck');
 var $toLobbyBtn = $('#toLobby');
-//var ws = new WebSocket("ws://subsonic.rawhat.net:8080/invite");
+var ws = new WebSocket("ws://subsonic.rawhat.net:8080/invite");
 
 $submitUserNameBtn.on('click', function (event) {
     var $btn = $(this).button('loading');
     var uname = $('#userName').val();
     
 
-	/*$.ajax({
+	$.ajax({
 		method: "PUT",
 		url: "/users",	
 		data: {username: uname},
@@ -25,13 +25,8 @@ $submitUserNameBtn.on('click', function (event) {
 				$btn.button('reset');
 			}
 		}
-	});*/
+	});
 
-$usernameCheckText.html("User successfully created");
-//ws.send(JSON.stringify({'function': 'register', 'name': uname}));
-$toLobbyBtn.removeClass('hide');
-$toLobbyBtn.addClass('btn-margin-left');
-$submitUserNameBtn.addClass('hide');
 	
 });
 
