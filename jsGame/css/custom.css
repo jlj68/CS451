@@ -9,6 +9,14 @@ h6 {
 	font-size: 15px;
 	color: #727272;
 }
-.form-custom{
-	display: block;
+
+.small-form{
+	width: 600px;
+	margin: 50px auto;
+}
+.btn-margin-left{
+	margin-left: 200px
+}
+.hidden{
+	display:none;
 }
