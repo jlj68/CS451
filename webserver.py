@@ -26,6 +26,10 @@ class MainHandler(BaseHandler):
         #else:
             #self.write("User not logged in.")
 
+class LobbyHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render("./jsGame/html/lobby.html", currentUser=self.get_secure_cookie('username').decode('ascii'))
+
 class GameHandler(tornado.web.RequestHandler):
     def put(self):
         gameID = random.randint(1, 1024)
@@ -162,6 +166,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
 def make_app():
     return tornado.web.Application([
         (r'/public/(.*)', tornado.web.StaticFileHandler, {'path': './jsGame/'}),
+        (r'/lobby', LobbyHandler),
         (r"/", MainHandler),
         (r"/invite", InviteSocketHandler),
         (r"/users", UserHandler),
