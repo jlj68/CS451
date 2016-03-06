@@ -21,7 +21,8 @@ class BaseHandler(tornado.web.RequestHandler):
 class MainHandler(BaseHandler):
     def get(self):
         #if self.current_user is not None:
-            self.render("./public/index.html")
+            # self.render("./public/index.html")
+            self.render("./jsGame/html/index.html")
         #else:
             #self.write("User not logged in.")
 
