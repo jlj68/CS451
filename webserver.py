@@ -28,7 +28,7 @@ class MainHandler(BaseHandler):
 
 class LobbyHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("./jsGame/html/lobby.html", currentUser=self.get_secure_cookie('username').decode('ascii'))
+        self.render("./jsGame/html/lobby.html", currentUser=self.get_secure_cookie('username'))
 
 class GameHandler(tornado.web.RequestHandler):
     def put(self):
