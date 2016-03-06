@@ -14,19 +14,28 @@ $submitUserNameBtn.on('click', function (event) {
 		data: {username: uname},
 		statusCode: {
 			201: function(){
-				$('#usernameCheck').html("User successfully created");
+				$usernameCheckText.html("User successfully created");
 				ws.send(JSON.stringify({'function': 'register', 'name': uname}));
-				$btn.button('reset');
+				$toLobbyBtn.removeClass('hide');
+				$toLobbyBtn.addClass('btn-margin-left');
+				$submitUserNameBtn.addClass('hide');
 			},
 			409: function(){
-				$('#usernameCheck').html("User already exists.  Please try again.");
+				$usernameCheckText.html("User already exists.  Please try again.");
 				$btn.button('reset');
 			}
 		}
 	});*/
 
-	$toLobbyBtn.show();
-
+$usernameCheckText.html("User successfully created");
+//ws.send(JSON.stringify({'function': 'register', 'name': uname}));
+$toLobbyBtn.removeClass('hide');
+$toLobbyBtn.addClass('btn-margin-left');
+$submitUserNameBtn.addClass('hide');
 	
+});
+
+$toLobbyBtn.on('click', function(){
+	window.location.href = "../html/lobby.html";
 });
 
