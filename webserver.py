@@ -56,8 +56,9 @@ class UserHandler(tornado.web.RequestHandler):
         userList = []
         for user in connectedUsers.keys():
             elem = connectedUsers[user].__dict__.copy()
-            elem['status'] = elem['status'].name
-            userList.append(elem)
+            if elem['status'] is not UserStatus.IN_GAME:
+                elem['status'] = elem['status'].name
+                userList.append(elem)
         userList = sorted(userList, key = lambda user: user['username'])
         self.write(tornado.escape.json_encode({'users': userList}))
 
