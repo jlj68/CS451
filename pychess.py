@@ -75,7 +75,7 @@ class Piece:
         self.hasMoved = False
 
     def __str__(self):
-        return str(self.color)[6] + self.ch
+        return str(self.color)[6].lower() + self.ch
 
     @abstractmethod
     def getPossibleMoves(self, position, board):
