@@ -71,6 +71,42 @@ def getTestBoard2():
     return chessBoard
  
 
+def getTestBoard3():
+    chessBoard = pychess.ChessBoard()
+    board = []
+    for i in range(0, 8):
+        row = []
+        for j in range(0, 8):
+            row.append(None)
+        board.append(row)
+
+    board[4][4] = pychess.Pawn(pychess.Color.BLACK)
+    board[4][4].hasMoved = True
+    board[4][3] = pychess.Pawn(pychess.Color.WHITE)
+    board[4][5] = pychess.Pawn(pychess.Color.WHITE)
+
+    chessBoard.setBoard(board)
+    return chessBoard
+
+
+def getTestBoard4():
+    chessBoard = pychess.ChessBoard()
+    board = []
+    for i in range(0, 8):
+        row = []
+        for j in range(0, 8):
+            row.append(None)
+        board.append(row)
+
+    board[3][4] = pychess.Pawn(pychess.Color.WHITE)
+    board[3][4].hasMoved = True
+    board[3][3] = pychess.Pawn(pychess.Color.BLACK)
+    board[3][5] = pychess.Pawn(pychess.Color.BLACK)
+
+    chessBoard.setBoard(board)
+    return chessBoard
+
+
 def getPossibleMoves(testBoard, testPosition):
     possibleMove = testBoard.getMovesFromPosition(testPosition)
     return possibleMove
@@ -206,6 +242,33 @@ class TestPychess(unittest.TestCase):
             ]
         # pdb.set_trace()
         self.assertTrue(comparePossibleMoves(possibleMove, answer))
+
+
+    def test_En_passant_black(self):
+        testBoard = getTestBoard3()
+        testPosition = pychess.Position(4, 4)
+        possibleMove = getPossibleMoves(testBoard, testPosition)
+        answer = [
+                pychess.Move(testPosition, pychess.Position(5, 4)),
+                pychess.Move(testPosition, pychess.Position(4, 3)),
+                pychess.Move(testPosition, pychess.Position(4, 5))
+            ]
+        # pdb.set_trace()
+        self.assertTrue(comparePossibleMoves(possibleMove, answer))
+        
+
+    def test_En_passant_white(self):
+        testBoard = getTestBoard4()
+        testPosition = pychess.Position(3, 4)
+        possibleMove = getPossibleMoves(testBoard, testPosition)
+        answer = [
+                pychess.Move(testPosition, pychess.Position(2, 4)),
+                pychess.Move(testPosition, pychess.Position(3, 3)),
+                pychess.Move(testPosition, pychess.Position(3, 5))
+            ]
+        # pdb.set_trace()
+        self.assertTrue(comparePossibleMoves(possibleMove, answer))
+
 
 
 if __name__ == '__main__':
