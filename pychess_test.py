@@ -107,6 +107,60 @@ def getTestBoard4():
     return chessBoard
 
 
+def getTestBoard5():
+    chessBoard = pychess.ChessBoard()
+    board = []
+    for i in range(0, 8):
+        row = []
+        for j in range(0, 8):
+            row.append(None)
+        board.append(row)
+
+    board[0][0] = pychess.King(pychess.Color.BLACK)
+    board[7][0] = pychess.Rook(pychess.Color.WHITE)
+    board[7][7] = pychess.King(pychess.Color.WHITE)
+
+    chessBoard.setBoard(board)
+    return chessBoard
+
+
+def getTestBoard6():
+    chessBoard = pychess.ChessBoard()
+    board = []
+    for i in range(0, 8):
+        row = []
+        for j in range(0, 8):
+            row.append(None)
+        board.append(row)
+
+    board[0][0] = pychess.King(pychess.Color.BLACK)
+    board[1][0] = pychess.Rook(pychess.Color.BLACK)
+    board[7][0] = pychess.Rook(pychess.Color.WHITE)
+    board[7][7] = pychess.King(pychess.Color.WHITE)
+
+    chessBoard.setBoard(board)
+    return chessBoard
+
+
+def getTestBoard7():
+    chessBoard = pychess.ChessBoard()
+    board = []
+    for i in range(0, 8):
+        row = []
+        for j in range(0, 8):
+            row.append(None)
+        board.append(row)
+
+    board[0][0] = pychess.King(pychess.Color.BLACK)
+    board[0][1] = pychess.Knight(pychess.Color.BLACK)
+    board[1][1] = pychess.Knight(pychess.Color.BLACK)
+    board[7][0] = pychess.Rook(pychess.Color.WHITE)
+    board[7][7] = pychess.King(pychess.Color.WHITE)
+
+    chessBoard.setBoard(board)
+    return chessBoard
+
+
 def getPossibleMoves(testBoard, testPosition):
     possibleMove = testBoard.getMovesFromPosition(testPosition)
     return possibleMove
@@ -142,18 +196,18 @@ class TestPychess(unittest.TestCase):
                 pychess.Move(testPosition, pychess.Position(4, 3)),
                 pychess.Move(testPosition, pychess.Position(6, 3)),
                 pychess.Move(testPosition, pychess.Position(7, 3)),
-                
+
                 pychess.Move(testPosition, pychess.Position(5, 1)),
                 pychess.Move(testPosition, pychess.Position(5, 2)),
                 pychess.Move(testPosition, pychess.Position(5, 4)),
                 pychess.Move(testPosition, pychess.Position(5, 5)),
-                
+
                 pychess.Move(testPosition, pychess.Position(2, 0)),
                 pychess.Move(testPosition, pychess.Position(3, 1)),
                 pychess.Move(testPosition, pychess.Position(4, 2)),
                 pychess.Move(testPosition, pychess.Position(6, 4)),
                 pychess.Move(testPosition, pychess.Position(7, 5)),
-                
+
                 pychess.Move(testPosition, pychess.Position(6, 2)),
                 pychess.Move(testPosition, pychess.Position(7, 1))
             ]
@@ -219,7 +273,7 @@ class TestPychess(unittest.TestCase):
                 pychess.Move(testPosition, pychess.Position(5, 5)),
                 pychess.Move(testPosition, pychess.Position(6, 6)),
                 pychess.Move(testPosition, pychess.Position(7, 7)),
-                
+
                 pychess.Move(testPosition, pychess.Position(3, 5)),
                 pychess.Move(testPosition, pychess.Position(2, 6)),
                 pychess.Move(testPosition, pychess.Position(1, 7))
@@ -255,7 +309,7 @@ class TestPychess(unittest.TestCase):
             ]
         # pdb.set_trace()
         self.assertTrue(comparePossibleMoves(possibleMove, answer))
-        
+
 
     def test_En_passant_white(self):
         testBoard = getTestBoard4()
@@ -269,7 +323,56 @@ class TestPychess(unittest.TestCase):
         # pdb.set_trace()
         self.assertTrue(comparePossibleMoves(possibleMove, answer))
 
+# Test Board
+    def test_chessboard_getPiece1(self):
+        testBoard = getTestBoard4()
+        position1 = pychess.Position(3, 4)
+        position2 = pychess.Position(10, 10)
+        piece1 = testBoard.getPiece(position1)
+        piece2 = testBoard.getPiece(position2)
+        self.assertTrue(piece1.name == "Pawn" and piece1.color == pychess.Color.WHITE and piece2 is None)
 
+
+    def test_chessboard_getPossibleMoves(self):
+        testBoard = getTestBoard4()
+        testPosition = pychess.Position(3, 4)
+        possibleMove = testBoard.getPossibleMoves(pychess.Color.WHITE)
+        answer = [
+                pychess.Move(testPosition, pychess.Position(2, 4)),
+                pychess.Move(testPosition, pychess.Position(3, 3)),
+                pychess.Move(testPosition, pychess.Position(3, 5))
+            ]
+        # pdb.set_trace()
+        for key in possibleMove.keys():
+            possible = possibleMove[key]
+        self.assertTrue(comparePossibleMoves(possible, answer))
+
+
+    def test_chessboard_findKing(self):
+        testBoard = getTestBoard4()
+        king1 = testBoard.findKing(pychess.Color.WHITE)
+
+        testBoard = getTestBoard1()
+        king2 = testBoard.findKing(pychess.Color.BLACK)
+
+        self.assertTrue(king1 is None and king2 is not None)
+
+
+    def test_chessboard_isValidMove(self):
+        testBoard = getTestBoard4()
+        move = pychess.Move(pychess.Position(0, 0), pychess.Position(0, 1))
+        self.assertTrue(testBoard.isValidMove(move, pychess.Color.BLACK) == False)
+
+
+    def test_chessboard_isCheck(self):
+        testBoard1 = getTestBoard5()
+        testBoard2 = getTestBoard6()
+        self.assertTrue(testBoard1.isCheck(pychess.Color.BLACK) and not testBoard2.isCheck(pychess.Color.BLACK))
+
+    def test_chessboard_isCheckmate(self):
+        testBoard1 = getTestBoard5()
+        testBoard2 = getTestBoard7()
+        self.assertTrue(not testBoard1.isCheckmate(pychess.Color.BLACK) and testBoard2.isCheckmate(pychess.Color.BLACK))
 
 if __name__ == '__main__':
     unittest.main()

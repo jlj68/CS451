@@ -309,7 +309,7 @@ class Queen(Piece):
         positions = []
 
         for pos in destinations:
-            if pos.row in range(1, 7) or pos.col in range(1, 7):
+            if pos.row in range(0, 8) or pos.col in range(0, 8):
                 positions.append(Move(position, pos))
 
         return positions
@@ -331,7 +331,7 @@ class Rook(Piece):
         positions = []
 
         for pos in destination:
-            if pos.row in range(1, 7) or pos.col in range(1, 7):
+            if pos.row in range(0, 8) or pos.col in range(0, 8):
                 positions.append(Move(position, pos))
 
         return positions
@@ -438,8 +438,8 @@ class ChessBoard:
         self.board = board;
 
     def getPiece(self, position):
-        if p.row in range(0, 8) and p.col in range(0, 8):
-            return self.board[p.row][p.col]
+        if position.row in range(0, 8) and position.col in range(0, 8):
+            return self.board[position.row][position.col]
         return None
 
     def getPossibleMoves(self, color):
@@ -530,7 +530,6 @@ class ChessBoard:
         opponentColor = Color.BLACK if color is Color.WHITE else Color.WHITE
         kingPosition = self.findKing(color)
         possibleMoves = self.getPossibleMoves(opponentColor)
-
         for m in [item for sublist in possibleMoves.values() for item in sublist]:
             p = m.toPos;
             if p.row == kingPosition.row and p.col == kingPosition.col:
@@ -552,6 +551,7 @@ class ChessBoard:
                 if p.row == kp.row and p.col == kp.col and kp not in targeted:
                     targeted.append(kp)
 
+        # pdb.set_trace()
         if len(targeted) == len(kingPossibleMoves):
             return True
         return False
