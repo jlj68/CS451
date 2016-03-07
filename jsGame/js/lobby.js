@@ -1,6 +1,6 @@
 
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://subsonic.rawhat.net:8080/invite");
+	var ws = new WebSocket("ws://192.168.1.238:8080/invite");
 
 	ws.onopen = function(evt){
 		console.log("socket connected");
@@ -61,15 +61,32 @@ $(document).ready(function(event){
 		if(status.status === "cancelled" &&
 			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
 
-			cancelModal();
+			cancelModal("Invitation is cancelled!");
 
+		}
+
+		if(status.status === "declined" &&
+			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
+
+			cancelModal("Invitation is declined!");
+
+		}
+
+		// if receive invitation
+		if(status.sender && !($('#myModal').data('bs.modal') || {isShown: false}).isShown){
+			
+			$('#inviteModal').modal('show');
+			$('.modal-body').empty();
+			$('.modal-body').append("<p> You have received an invitation from" + status.sender + "</p>");
+			$('#acceptInviteBtn').val(status.sender);
+			$('#declineInviteBtn').val(status.sender);
 		}
 	};
 
 	ws.onclose = function(evt){
 		console.log("connection closed");
 		if(($('#myModal').data('bs.modal') || {isShown: false}).isShown){
-			cancelModal();
+			cancelModal("Invitation is cancelled!");
 		}
 	};
 
@@ -86,9 +103,13 @@ $(document).ready(function(event){
 			addRow(i, user.username, user.wins, user.losses, user.rating);
 		}
 
+		// reset modal
 		$('#myModal').on('hidden.bs.modal', function () {
 		        $('.modal-body').empty();
 		        $('#sendInviteBtn').removeClass('hide');
+		});
+		$('#inviteModal').on('hidden.bs.modal', function () {
+		        $('.modal-body').empty();
 		});
 
 
@@ -126,6 +147,20 @@ $(document).ready(function(event){
 
 		});
 
+		$('#declineInviteBtn').click(function(evt){
+			console.log("decline invitation");
+			ws.send(JSON.stringify({
+	                'function': 'decline',
+	                'target' : this.value
+	            }));
+		});
+
+		$('acceptInviteBtn').click(function(evt){
+			console.log("accept invitation");
+			// todo create new game
+
+		});
+
 
 
 	}).fail(function(){
@@ -139,9 +174,9 @@ $(document).ready(function(event){
 
 });
 
-function cancelModal(){
+function cancelModal(text){
 	$('.modal-body').empty();
-	$('.modal-body').append("<p> Invitation is canceled!</p>");
+	$('.modal-body').append("<p>" + text +"</p>");
 	$('#sendInviteBtn').addClass('hide');
 	$('#cancelInviteBtn').addClass('hide');
 	$('#myModal').data('hideInterval', setTimeout(function(){
