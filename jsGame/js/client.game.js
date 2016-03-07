@@ -6,6 +6,7 @@ $(document).ready(function(event){
 
 	ws.onopen = function(evt){
 		console.log("socket connected");
+		ws.send(JSON.stringify({"function": "get_moves"}));
 	};
 	ws.onclose = function(evt){
 		console.log("socket closed");
