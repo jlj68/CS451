@@ -4,6 +4,7 @@ h3 {
 	color: #514f4f;
 	margin: 10px;
 }
+
 h6 {
 	font-style: italic;;
 	font-size: 15px;
@@ -14,14 +15,14 @@ h6 {
 	width: 600px;
 	margin: 20px auto;
 }
-.add-text{
+.user-check{
 	padding-top: 40px;
 	font-style: italic;;
 	font-size: 15px;
 	color: #83b869;
 }
 .btn-margin-left{
-	margin-left: 200px
+	margin-left: 250px
 }
 .hide{
 	display:none;
