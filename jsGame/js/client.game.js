@@ -8,7 +8,7 @@ $(document).ready(function(event){
 		console.log("socket connected");
 
 		// from alex -- remove if you want
-		ws.send(JSON.stringify({'function": "get_moves'}));
+		ws.send(JSON.stringify({'function': 'get_moves'}));
 	};
 	ws.onclose = function(evt){
 		console.log("socket closed");
