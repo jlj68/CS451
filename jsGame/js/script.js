@@ -38,6 +38,6 @@ $submitUserNameBtn.on('click', function (event) {
 
 
 $toLobbyBtn.on('click', function(){
-	window.location.href = "http://subsonic.rawhat.net:8080/lobby";
+	window.location.href = "/lobby";
 });
 
