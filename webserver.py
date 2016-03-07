@@ -127,9 +127,12 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
         message = tornado.escape.json_decode(clientMessage)
         gameID = int(self.get_secure_cookie('gameID').decode('ascii'))
         gameBoard = gamesList[gameID][0].board
-
         if message['function'] == 'get_moves':
-            self.write_message(tornado.escape.json_encode(gamesList[gameID][0].getPossibleMovesJSON()))
+            print('getting moves')
+            if self.get_secure_cookie('player_color').decode('ascii') == gamesList[gameID][0].current.name.lower():
+                self.write_message(tornado.escape.json_encode({"function": "list_moves", gamesList[gameID][0].getPossibleMovesJSON()))
+            else:
+                self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": []}))
 
         elif message['function'] == 'make_move':
             fromPos = pychess.Position(message['move']['fromPos']['row'], message['move']['fromPos']['col'])
@@ -140,7 +143,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 gamesList[gameID][1].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
                 gamesList[gameID][2].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
                 index = 1 if gamesList[gameID][2] == self else 2
-                gamesList[gameID][index].write_message(tornado.escape.json_encode(gamesList[gameID][0].getPossibleMovesJSON()))
+                gamesList[gameID][index].write_message(tornado.escape.json_encode({"function": "list_moves", gamesList[gameID][0].getPossibleMovesJSON()))
             else:
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
 
