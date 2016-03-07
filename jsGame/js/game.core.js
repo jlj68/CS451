@@ -33,7 +33,7 @@ var Piece = (function(piece, position){
 })();
 
 
-var Game = (function(){
+var Game = (function(turn){
 	var turn;
 	var win;
 	
@@ -41,8 +41,8 @@ var Game = (function(){
 	var possibleMoves;
 
 
-	function Game(){
-		this.turn = 'white';
+	function Game(turn){
+		this.turn = turn;
 		this.win = false;
 		this.possibleMoves = [];		
 	}
@@ -94,13 +94,13 @@ var Game = (function(){
 
 
 
-var GameLogic = (function(socket){	
+var GameLogic = (function(socket, turn){	
 	var board = {};	
 	var game;
 
-	function GameLogic (socket){
+	function GameLogic (socket, turn){
 		var that = this;
-			game = new Game();
+			game = new Game(turn);
 
 		var config_board = {
 			orientation: 'white',
@@ -139,11 +139,18 @@ var GameLogic = (function(socket){
 				return false;
 			}
 		},
-		onDrop : function(source, target, piece, newPos, oldPos, orientation){
+		onDrop : function(source, target, piece){
 			this.removeHighlight();
-			// need logic from server
+			
+			var possibleMoves = game.getPossibleMove(piece, source);
 
-
+			for(var i = 0; i<possibleMoves.length; i++){
+				if(possibleMoves[i].move === target){
+					//reste the possible move list of game
+					game.resetPossibleMove();
+					return;
+				}					
+			}
 
 			//if illegal move, snapback to original place
 			return 'snapback';
@@ -162,8 +169,7 @@ var GameLogic = (function(socket){
 		  	$('#board .square-55d63').css('background', '');
 		},
 		onMouseOver: function(square, piece){
-			console.log(square + " " + piece);
-
+			
 			// get a list of possible move for this piece
 			var moves = game.getPossibleMove(piece, square);
 			// no valid moves
