@@ -1,6 +1,6 @@
 
 $(document).ready(function(event){
-	
+
 
 	$.ajax({
 		method: "GET",
@@ -8,11 +8,11 @@ $(document).ready(function(event){
 	}).done(function(data){
 
 		var json = JSON.parse(data);
-		var ws = new WebSocket("ws://192.168.1.238:8080/invite");
+		var ws = new WebSocket("ws://subsonic.rawhat.net:8080/invite");
 
 		for(var i = 0; i < json.users.length; i++){
-			var user = json.users[i];			
-			addRow(i, user.username, user.wins, user.losses, user.rating);			
+			var user = json.users[i];
+			addRow(i, user.username, user.wins, user.losses, user.rating);
 		}
 
 		ws.onopen = function(evt){
@@ -32,7 +32,7 @@ $(document).ready(function(event){
 				//todo: cancel invitation check
 
 				$('#sendInviteBtn').addClass('hide');
-				
+
 			}
 
 			// if sending is success
@@ -43,7 +43,7 @@ $(document).ready(function(event){
 				$('.modal-body').append("<p> Waiting for response... </p>");
 				// Todo: set a timer for waiting
 				$('#sendInviteBtn').addClass('hide');
-				
+
 			}
 
 			// if invitation is cancelled
@@ -51,7 +51,7 @@ $(document).ready(function(event){
 				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
 
 				cancelModal();
-				
+
 			}
 		};
 
@@ -70,7 +70,7 @@ $(document).ready(function(event){
 		});
 
 
-		$('.invite-btn').click(function(evt){			
+		$('.invite-btn').click(function(evt){
 			evt.preventDefault();
 			var target = this.value;
 
@@ -86,7 +86,7 @@ $(document).ready(function(event){
 				console.log("send invite!");
 				ws.send(JSON.stringify({
 	                'function': 'send',
-	                'target': target              
+	                'target': target
 	            }));
 
 			});
@@ -97,11 +97,11 @@ $(document).ready(function(event){
 				console.log("cancel invite!");
 				ws.send(JSON.stringify({
 	                'function': 'cancel',
-	                'target': target              
+	                'target': target
 	            }));
 			});
-			
-	
+
+
 		});
 
 
@@ -112,7 +112,7 @@ $(document).ready(function(event){
 		console.log("get no data");
 	});
 
-	
+
 
 
 });
@@ -156,7 +156,7 @@ function createInviteButton(username){
 	var element = document.createElement("td");
     var button = document.createElement("button");
     var textNode = document.createTextNode("Invite");
-    button.type = "button";    
+    button.type = "button";
     button.value = username;
     button.appendChild(textNode);
     $(button).addClass("invite-btn");
