@@ -1,6 +1,52 @@
 
 $(document).ready(function(event){
+	var ws = new WebSocket("ws://subsonic.rawhat.net:8080/invite");
 
+	ws.onopen = function(evt){
+		console.log("socket connected");
+	};
+
+	ws.onmessage = function(evt){
+		var status = JSON.parse(evt.data);
+		console.log("server: " + status.status);
+
+		// if failed to invite
+		if(status.status === "failed" &&
+			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
+			$('.modal-body').empty();
+			$('.modal-body').append("<p> Error sending invitation...</p>");
+
+			//todo: cancel invitation check
+
+			$('#sendInviteBtn').addClass('hide');
+
+		}
+		// if sending is success
+		if(status.status === "success" &&
+			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
+			$('.modal-body').empty();
+			$('.modal-body').append("<p> Invitation sent!</p>");
+			$('.modal-body').append("<p> Waiting for response... </p>");
+			// Todo: set a timer for waiting
+			$('#sendInviteBtn').addClass('hide');
+
+		}
+
+		// if invitation is cancelled
+		if(status.status === "cancelled" &&
+			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
+
+			cancelModal();
+
+		}
+	};
+
+	ws.onclose = function(evt){
+		console.log("connection closed");
+		if(($('#myModal').data('bs.modal') || {isShown: false}).isShown){
+			cancelModal();
+		}
+	};
 
 	$.ajax({
 		method: "GET",
@@ -8,61 +54,12 @@ $(document).ready(function(event){
 	}).done(function(data){
 
 		var json = JSON.parse(data);
-		var ws = new WebSocket("ws://subsonic.rawhat.net:8080/invite");
+
 
 		for(var i = 0; i < json.users.length; i++){
 			var user = json.users[i];
 			addRow(i, user.username, user.wins, user.losses, user.rating);
 		}
-
-		ws.onopen = function(evt){
-			console.log("socket connected");
-		};
-
-		ws.onmessage = function(evt){
-			var status = JSON.parse(evt.data);
-			console.log("server: " + status.status);
-
-			// if failed to invite
-			if(status.status === "failed" &&
-				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
-				$('.modal-body').empty();
-				$('.modal-body').append("<p> Error sending invitation...</p>");
-
-				//todo: cancel invitation check
-
-				$('#sendInviteBtn').addClass('hide');
-
-			}
-
-			// if sending is success
-			if(status.status === "success" &&
-				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
-				$('.modal-body').empty();
-				$('.modal-body').append("<p> Invitation sent!</p>");
-				$('.modal-body').append("<p> Waiting for response... </p>");
-				// Todo: set a timer for waiting
-				$('#sendInviteBtn').addClass('hide');
-
-			}
-
-			// if invitation is cancelled
-			if(status.status === "cancelled" &&
-				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
-
-				cancelModal();
-
-			}
-		};
-
-
-
-		ws.onclose = function(evt){
-			console.log("connection closed");
-			if(($('#myModal').data('bs.modal') || {isShown: false}).isShown){
-				cancelModal();
-			}
-		};
 
 		$('#myModal').on('hidden.bs.modal', function () {
 		        $('.modal-body').empty();
@@ -78,7 +75,7 @@ $(document).ready(function(event){
 			$('<p>Send invitation to ' + target + '? </p>').appendTo('.modal-body');
 			$('#myModal').modal('show');
 
-			$('#sendInviteBtn').click(function(evt){
+			$('#sendInviteBtn').click(function(){
 
 				// todo
 				// waiting for server response
