@@ -8,12 +8,32 @@ $(document).ready(function(event){
 
 	ws.onmessage = function(evt){
 		var status = JSON.parse(evt.data);
-		if(status.request){
-			console.log("request: " + status.request);
+
+		// added by alex ///////////////////////////////////////////////////
+		if(status.sender){
+			console.log("invited by: " + status.sender);
 		}
-		else if(status.sender){
-			console.log("server: " + status.sender);
+
+		if(status.function === "joining_game"){
+			window.location.replace("/game/" + response.gameID);
 		}
+
+		if(status.function === "create_game"){
+			$.ajax({
+				method: "PUT",
+				url: "/game",
+				data: {
+					"player2": currentInvite,
+				},
+			}).done(function(data){
+					window.location.replace("/game/" + $.parseJSON(data).gameID);
+			});
+		}
+
+		if(status.function === "cancel"){
+			console.log("invite cancelled");
+		}
+		///////////////////////////////////////////////////////////////////
 
 		// if failed to invite
 		if(status.status === "failed" &&

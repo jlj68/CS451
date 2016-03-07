@@ -55,7 +55,6 @@ class UserHandler(tornado.web.RequestHandler):
         userList = []
         for user in connectedUsers.keys():
             elem = connectedUsers[user].__dict__.copy()
-            print(self.get_secure_cookie('username'))
             if elem['status'] is not UserStatus.IN_GAME and not elem['username'] == self.get_secure_cookie('username').decode('ascii'):
                 elem['status'] = elem['status'].name
                 userList.append(elem)
@@ -103,8 +102,6 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
             connectedUsers[self.get_secure_cookie('username')].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
             self.write_message(tornado.escape.json_encode({'status': 'declined'}))
-        elif messageDict['function'] == "register":
-            websocketClients[messageDict['name']] = self
         elif messageDict['function'] == "cancel":
             connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
