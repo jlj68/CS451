@@ -135,8 +135,10 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": []}))
 
         elif message['function'] == 'make_move':
-            fromPos = pychess.Position(message['move']['fromPos']['row'], message['move']['fromPos']['col'])
-            toPos = pychess.Position(message['move']['toPos']['row'], message['move']['toPos']['col'])
+            fromPosLetter = message['move']['fromPos']
+            toPosLetter = message['move']['fromPos']
+            fromPos = pychess.Position(pychess.RowLetter(fromPosLetter[0]).value, int(fromPosLetter[1]))
+            toPos = pychess.Position(pychess.RowLetter(toPosLetter[0]).value, int(toPosLetter[1]))
             move = pychess.Move(fromPos, toPos)
             if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) is gamesList[gameID][0].current and gameBoard.isValidMove(move, gamesList[gameID][0].current):
                 gamesList[gameID][0].applyMove(move)

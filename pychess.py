@@ -589,7 +589,7 @@ class ChessBoard:
                     elem['color'] = elem['color'].name
                 else:
                     elem = None
-                board.append({'row': i, 'col': j, 'piece': elem})
+                board.append({'position': RowLetter(i).name[0]+str(j), 'piece': elem})
         return board
 
 
