@@ -2,6 +2,7 @@
 $(document).ready(function(event){
 
 	var ws = new WebSocket("ws://http://192.168.1.238:8080/invite");
+	var inviteBtn = $$('.invite-btn');
 
 	$.ajax({
 		method: "GET",
@@ -20,28 +21,32 @@ $(document).ready(function(event){
 		console.log("get no data");
 	});
 
+	$inviteBtn.on('click', function(){
+		console.log($(this).value);
+
+		/*socket.onopen = function(){
+
+				// send invitation to server
+				socket.send(JSON.stringify({
+					"function": "send",
+					"target": button.value
+				}));
+
+				// retrieve message
+				socket.onmessage = function(msg){
+					console.log(msg);
+				};
+			};*/
+	
+	});
+
+
 });
 
-function inviteHandler(button, socket){
-	socket.onopen = function(){
 
-		// send invitation to server
-		socket.send(JSON.stringify({
-			"function": "send",
-			"target": button.value
-		}));
-
-		// retrieve message
-		socket.onmessage = function(msg){
-			console.log(msg);
-		};
-	};
-	
-}
-
-function addRow(counter, username, win, loss, rate, fnc, socket){
+function addRow(counter, username, win, loss, rate,){
 	var that = this;
-	var btn = createInviteButton(username, that.inviteHandler, socket);
+	var btn = createInviteButton(username);
 
 
 	var index = createText("td", counter+1);
@@ -62,14 +67,14 @@ function createText(element, text){
 	return element;
 }
 
-function createInviteButton(username, func, socket){
+function createInviteButton(username){
 	var element = document.createElement("td");
     var button = document.createElement("button");
     var textNode = document.createTextNode("Invite");
     button.type = "button";
+    button.class = "invite-btn";
     button.value = username;
     button.appendChild(textNode);
-    button.onclick = func(button, socket);
 
     element.appendChild(button);
     return element;
