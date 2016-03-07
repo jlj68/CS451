@@ -5,15 +5,15 @@ var Piece = (function(piece, xCor, yCor){
 	var possibleMove;
 
 	function Piece(piece, xCor, yCor){
-		name = piece;
-		x = xCor;
-		y = yCor;
-		possibleMove = [];
+		this.name = piece;
+		this.x = xCor;
+		this.y = yCor;
+		this.possibleMove = [];
 	}
 
 	Piece.prototype = {
 		getCordinate: function(){
-			return {'x': this.x, 'y', thix.y};
+			return {'x': this.x, 'y': thix.y};
 		},
 		getName: function(){
 			return this.name;
@@ -35,7 +35,6 @@ var Piece = (function(piece, xCor, yCor){
 			this.possibleMove = data;
 		}
 
-
 	};
 	return Piece;
 
@@ -45,38 +44,39 @@ var Piece = (function(piece, xCor, yCor){
 var Game = (function(){
 	var turn;
 	var win;
-	var pieceList = {
+	/*var pieceList = {
 		King: 'k',
 		Queen: 'q',
 		Bishop: 'b',
 		Rock: 'r',
 		Knight: 'n',
 		Pawn: 'p'
-	};
+	};*/
 
-	var possibleMoves = {};
+	var possibleMoves;
 
 
 	function Game(){
-		turn = 'white';
-		win = false;		
+		this.turn = 'white';
+		this.win = false;
+		this.possibleMoves = [];		
 	}
 
 	Game.prototype = {
 		flipTurn: function(){
-			if(turn === 'white')
-				turn = 'black';
+			if(this.turn === 'white')
+				this.turn = 'black';
 			else
-				turn = 'white';
+				this.turn = 'white';
 		},
 		getTurn: function(){
-			return turn;
+			return this.turn;
 		},
 		isGameOver: function(){
-			return win;
+			return this.win;
 		},
 		setWin: function(isWin){
-			win = isWin;
+			this.win = isWin;
 		},
 		setPossibleMoves: function(data){
 
@@ -85,15 +85,18 @@ var Game = (function(){
 				var piece = new Piece(list[i].name, list[i].row, list[i].col);
 				piece.setPossibleMoves(list[i].moves);
 				this.possibleMoves.push(piece);
+				console.log(i);
 			}
 		}, 
 		getPossibleMove: function(piece){
 
-			var piece = $.grep(this.possibleMoves, function(e){
-				return e.getName() === piece;
-			});
+			for(var i = 0; i < this.possibleMoves.length; i++){
+				var p = this.possibleMoves[i];
+				if(p.getName() === piece)
+					return p.getPossibleMoves();
+			}
 
-			return piece.getPossibleMoves();
+			return [];
 		}
 
 	};
@@ -178,7 +181,7 @@ var GameLogic = (function(socket){
 					to: 'h7'
 				}
 			*/
-			var moves; // Todo: get possible move
+			/*var moves; // Todo: get possible move
 
 			// no valid moves
 			if(moves.length === 0) return;
@@ -186,7 +189,7 @@ var GameLogic = (function(socket){
 			// highlight the possible squares
 			for(var i = 0; i < moves.length; i++){
 				this.highlightMove(moves[i].to);
-			}
+			}*/
 		},
 		onMouseOut: function(){
 			this.removeHighlight();
