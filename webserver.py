@@ -56,7 +56,7 @@ class UserHandler(tornado.web.RequestHandler):
         for user in connectedUsers.keys():
             elem = connectedUsers[user].__dict__.copy()
             print(self.get_secure_cookie('username'))
-            if elem['status'] is not UserStatus.IN_GAME and elem['username'] is not self.get_secure_cookie('username').decode('ascii'):
+            if elem['status'] is not UserStatus.IN_GAME and not elem['username'] == self.get_secure_cookie('username').decode('ascii'):
                 elem['status'] = elem['status'].name
                 userList.append(elem)
         userList = sorted(userList, key = lambda user: user['username'])
