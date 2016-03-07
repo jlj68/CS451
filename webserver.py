@@ -96,16 +96,20 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
                 connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.PENDING_INVITE
                 websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'sender': self.get_secure_cookie('username').decode('ascii')}))
                 self.write_message(tornado.escape.json_encode({'status': 'success'}))
+                
             else:
                 self.write_message(tornado.escape.json_encode({'status': 'failed'}))
+
         elif messageDict['function'] == "accept":
             connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.IN_GAME
             connectedUsers[messageDict['target']].status = UserStatus.IN_GAME
             self.write_message(tornado.escape.json_encode({'function': 'create_game', 'target': messageDict['target']}))
+
         elif messageDict['function'] == "decline":
             connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
             websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'status': 'declined'}))
+
         elif messageDict['function'] == "cancel":
             connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
@@ -127,30 +131,38 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
         message = tornado.escape.json_decode(clientMessage)
         gameID = int(self.get_secure_cookie('gameID').decode('ascii'))
         gameBoard = gamesList[gameID][0].board
+
         if message['function'] == 'get_moves':
-            print('getting moves')
             if self.get_secure_cookie('player_color').decode('ascii') == gamesList[gameID][0].current.name.lower():
                 self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": gamesList[gameID][0].getPossibleMovesJSON()}))
+
             else:
                 self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": []}))
 
         elif message['function'] == 'make_move':
             fromPosLetter = message['move']['fromPos']
             toPosLetter = message['move']['fromPos']
+
             fromPos = pychess.Position(pychess.RowLetter.fromString(fromPosLetter[0]).value, int(fromPosLetter[1]))
             toPos = pychess.Position(pychess.RowLetter.fromString(toPosLetter[0]).value, int(toPosLetter[1]))
+
             move = pychess.Move(fromPos, toPos)
+
             if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) is gamesList[gameID][0].current and gameBoard.isValidMove(move, gamesList[gameID][0].current):
                 gamesList[gameID][0].applyMove(move)
-                gamesList[gameID][1].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
-                gamesList[gameID][2].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
+
                 index = 1 if gamesList[gameID][2] == self else 2
+                index2 = 2 if index = 1 else 1
+
+                gamesList[gameID][index].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'move_made': message['move']}))
+                gamesList[gameID][index2].write_message(tornado.escape.json_encode({'state': gameBoard.state.name}))
                 gamesList[gameID][index].write_message(tornado.escape.json_encode({"function": "list_moves", "moves": gamesList[gameID][0].getPossibleMovesJSON()}))
+
             else:
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
 
-        elif message['function'] == 'update_board':
-            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'board': gameBoard.getBoardJson()}))
+        elif message['function'] == 'board_state':
+            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name}))
 
         elif message['function'] == 'forfeit':
             playerToForfeit = self.get_secure_cookie('username').decode('ascii')
