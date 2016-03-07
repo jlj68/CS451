@@ -7,6 +7,11 @@ h3 {
 h5{
 	margin: 20px 10px;
 	font-size: 18px;
+	color: #514f4f;
+}
+h5{
+	margin: 20px 10px;
+	font-size: 18px;
 	color: #d9135f;
 }
 h6 {
@@ -34,4 +39,9 @@ h6 {
 }
 .hide{
 	display:none;
+}
+
+#board{
+	width: 400px;
+	margin: 50px auto;
 }
