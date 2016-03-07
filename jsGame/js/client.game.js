@@ -6,13 +6,20 @@ $(document).ready(function(event){
 
 	ws.onopen = function(evt){
 		console.log("socket connected");
+
+		// from alex -- remove if you want
+		ws.send(JSON.stringify({'function': 'get_moves'}));
 	};
 	ws.onclose = function(evt){
 		console.log("socket closed");
 	};
 
+	$(document).click(function(){
+			ws.send(JSON.stringify({'function': 'update_board'}));
+	});
+
 	ws.onmessage = function(msg){
-		var response = JSON.parse(evt.data);
+		var response = JSON.parse(msg.data);
 
 		// other user forfeit
 		if(response.function === "request_forfeit"){
@@ -21,11 +28,20 @@ $(document).ready(function(event){
 			$('.modal-body').append("<h4> Congratulation, you won!</h4>");
 			$('.modal-body').append("<p> Your opponent has forfeited.</p>");
 			$('#statusModal').data('hideInterval', setTimeout(function(){
-			            $(modalid).modal('hide');
+			            $('#statusModal').modal('hide');
 			    }, 3000));
 		}
 
+		// from alex -- remove if you want
+		if(response.function === "list_moves"){
+			console.log(response.moves);
+		}
 
+		// from alex -- remove if you want
+		if(response.state !== undefined){
+			console.log("game state: " + response.state);
+			console.log(response.board);
+		}
 	};
 
 	forfeitBtn.click(function(){
