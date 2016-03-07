@@ -39,14 +39,14 @@ class GameHandler(tornado.web.RequestHandler):
         player2 = self.get_body_argument('player2')
         gamesList[gameID] = [newGame, player1, player2]
         self.set_secure_cookie('gameID', str(gameID))
-        self.set_secure_cookie('player_color', 'BLACK')
+        self.set_secure_cookie('player_color', 'black')
         websocketClients[player2].write_message(tornado.escape.json_encode({'function': 'joining_game', 'gameID': str(gameID)}))
         self.write(tornado.escape.json_encode({'gameID': gameID}))
 
 class GamePageHandler(tornado.web.RequestHandler):
     def get(self, gameID):
-        if not self.get_secure_cookie('player_color'):
-            self.set_secure_cookie('player_color', 'WHITE')
+        if self.get_secure_cookie('player_color') is None:
+            self.set_secure_cookie('player_color', 'white')
             self.set_secure_cookie('gameID', str(gameID))
         self.render("./jsGame/html/game.html", gameID=gameID, color=self.get_secure_cookie('player_color').decode('ascii'), currentUser=self.get_secure_cookie('username').decode('ascii'))
 
