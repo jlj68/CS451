@@ -77,7 +77,7 @@ class UserHandler(tornado.web.RequestHandler):
 
 class UserDataHandler(tornado.web.RequestHandler):
     def get(self, username):
-        self.write(tornado.escape.json_encode({'user_data': connectedUsers[username].__dict__}))
+        self.write(tornado.escape.json_encode({'user_data': connectedUsers[username.decode('ascii')].__dict__}))
 
 class InviteSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
