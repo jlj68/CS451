@@ -15,7 +15,7 @@ $(document).ready(function(event){
 	};
 
 	$(document).click(function(){
-			ws.send(JSON.stringify({'function': 'update_board'}));
+			ws.send(JSON.stringify({'function': 'board_state'}));
 	});
 
 	ws.onmessage = function(msg){
@@ -40,7 +40,6 @@ $(document).ready(function(event){
 		// from alex -- remove if you want
 		if(response.state !== undefined){
 			console.log("game state: " + response.state);
-			console.log(response.board);
 		}
 	};
 
