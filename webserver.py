@@ -95,11 +95,11 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
             else:
                 self.write_message(tornado.escape.json_encode({'status': 'failed'}))
         elif messageDict['function'] == "accept":
-            connectedUsers[self.get_secure_cookie('username')].status = UserStatus.IN_GAME
+            connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.IN_GAME
             connectedUsers[messageDict['target']].status = UserStatus.IN_GAME
             self.write_message(tornado.escape.json_encode({'function': 'create_game'}))
         elif messageDict['function'] == "decline":
-            connectedUsers[self.get_secure_cookie('username')].status = UserStatus.AVAILABLE
+            connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
             connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
             websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'status': 'declined'}))
         elif messageDict['function'] == "cancel":
