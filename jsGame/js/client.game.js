@@ -26,7 +26,9 @@ $(document).ready(function(event){
 			    }, 3000));
 		}
 
-
+		if(response.function === "list_moves"){
+			console.log(response.moves);
+		}
 	};
 
 	forfeitBtn.click(function(){
