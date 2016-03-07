@@ -130,7 +130,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
         if message['function'] == 'get_moves':
             print('getting moves')
             if self.get_secure_cookie('player_color').decode('ascii') == gamesList[gameID][0].current.name.lower():
-                self.write_message(tornado.escape.json_encode({"function": "list_moves", gamesList[gameID][0].getPossibleMovesJSON()))
+                self.write_message(tornado.escape.json_encode({"function": "list_moves", gamesList[gameID][0].getPossibleMovesJSON()}))
             else:
                 self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": []}))
 
