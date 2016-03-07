@@ -34,12 +34,10 @@ $submitUserNameBtn.on('click', function (event) {
 			}
 		}
 	});
-
-	
 });
 
 
 $toLobbyBtn.on('click', function(){
-	window.location.replace = "/lobby.html";
+	window.location.href = "http://subsonic.rawhat.net:8080/lobby";
 });
 
