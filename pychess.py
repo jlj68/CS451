@@ -170,7 +170,7 @@ class King(Piece):
         return possiblePositions
 
     def checkCastling(self, position, board):
-        if(self.hasMoved):
+        if self.hasMoved:
             return []
 
         # pdb.set_trace()
@@ -182,11 +182,11 @@ class King(Piece):
             ]
 
         piece = board[position.row][0]
-        if(piece is not None and piece.name == "Rook" and self.checkPieces(rooks[0], position, board)):
+        if piece is not None and piece.name == "Rook" and self.checkPieces(rooks[0], position, board):
             castling.append(Move(position, rooks[0]))
 
         piece = board[position.row][7]
-        if(piece is not None and piece.name == "Rook" and self.checkPieces(position, rooks[1], board)):
+        if piece is not None and piece.name == "Rook" and self.checkPieces(position, rooks[1], board):
             castling.append(Move(position, rooks[1]))
 
         return castling
@@ -273,31 +273,31 @@ class Pawn(Piece):
         return possiblePositions
 
     def checkEnpassant(self, position, board):
-        if( position.row == 4 ):
+        if position.row == 4:
             attack = board[position.row][position.col]
             enpassant = []
-            if(attack.color == Color.WHITE):
+            if attack.color == Color.WHITE:
                 return []
             else:
                 depense = None if position.col-1 < 0 else board[position.row][position.col-1]
-                if(depense is not None and depense.name == "Pawn" and depense.color != attack.color):
+                if depense is not None and depense.name == "Pawn" and depense.color != attack.color:
                     enpassant.append(Move(position, Position(position.row, position.col-1)))
                 depense = None if position.col+1 > 7 else board[position.row][position.col+1]
-                if(depense is not None and depense.name == "Pawn" and depense.color != attack.color):
+                if depense is not None and depense.name == "Pawn" and depense.color != attack.color:
                     enpassant.append(Move(position, Position(position.row, position.col+1)))
                 return enpassant
 
-        elif( position.row == 3 ):
+        elif position.row == 3:
             attack = board[position.row][position.col]
             enpassant = []
-            if(attack.color == Color.BLACK):
+            if attack.color == Color.BLACK:
                 return []
             else:
                 depense = None if position.col-1 < 0 else board[position.row][position.col-1]
-                if(depense is not None and depense.name == "Pawn" and depense.color != attack.color):
+                if depense is not None and depense.name == "Pawn" and depense.color != attack.color:
                     enpassant.append(Move(position, Position(position.row, position.col-1)))
                 depense = None if position.col+1 > 7 else board[position.row][position.col+1]
-                if(depense is not None and depense.name == "Pawn" and depense.color != attack.color):
+                if depense is not None and depense.name == "Pawn" and depense.color != attack.color:
                     enpassant.append(Move(position, Position(position.row, position.col+1)))
                 return enpassant
 
@@ -595,18 +595,3 @@ class ChessBoard:
                     elem = None
                 board.append({'position': RowLetter(i).name[0]+str(j), 'piece': elem})
         return board
-
-
-if __name__ == "__main__":
-    game = Game()
-
-    player1 = Player(Color.WHITE)
-    player2 = Player(Color.BLACK)
-
-    while not game.isGameOver():
-        game.displayGame()
-        print("")
-        move = player2.getMove(game) if game.current is Color.BLACK else player1.getMove(game)
-        game.applyMove(move)
-
-    print(game.getState())
