@@ -35,7 +35,7 @@ class GameHandler(tornado.web.RequestHandler):
         while gameID in gamesList.keys():
             gameID = random.randint(1, 1024)
         newGame = pychess.Game()
-        player1 = self.get_secure_cookie('username')
+        player1 = self.get_secure_cookie('username').decode('ascii')
         player2 = self.get_body_argument('player2')
         gamesList[gameID] = [newGame, player1, player2]
         self.set_secure_cookie('gameID', str(gameID))
@@ -46,7 +46,7 @@ class GameHandler(tornado.web.RequestHandler):
 class GamePageHandler(tornado.web.RequestHandler):
     def get(self, gameID):
         if not self.get_secure_cookie('player_color'):
-            self.set_secure_cookie('player_color', 'BLACK')
+            self.set_secure_cookie('player_color', 'WHITE')
             self.set_secure_cookie('gameID', str(gameID))
         self.render("./jsGame/html/game.html", gameID=gameID)
 
