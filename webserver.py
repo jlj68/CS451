@@ -105,6 +105,11 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
             self.write_message(tornado.escape.json_encode({'status': 'declined'}))
         elif messageDict['function'] == "register":
             websocketClients[messageDict['name']] = self
+        elif messageDict['function'] == "cancel":
+            connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
+            connectedUsers[messageDict['target']].status = UserStatus.AVAILABLE
+            websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'status': 'cancelled'}))
+            self.write_message(tornado.escape.json_encode({'status': 'cancelled'}))
 
     def close(self):
         del websocketClients[self.get_secure_cookie('username').decode('ascii')]
