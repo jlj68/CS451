@@ -7,36 +7,27 @@ $(document).ready(function(event){
 	};
 
 	ws.onmessage = function(evt){
-		var status = JSON.parse(evt.data);
+		var response = JSON.parse(evt.data);		
 
-		// added by alex ///////////////////////////////////////////////////
-		if(status.sender){
-			console.log("invited by: " + status.sender);
-		}
-
-		if(status.function === "joining_game"){
+		if(response.function === "joining_game"){			
 			window.location.replace("/game/" + response.gameID);
 		}
 
-		if(status.function === "create_game"){
+		if(response.function === "create_game"){
 			$.ajax({
 				method: "PUT",
 				url: "/game",
 				data: {
-					"player2": currentInvite,
+					"player2": response.target,
 				},
 			}).done(function(data){
 					window.location.replace("/game/" + $.parseJSON(data).gameID);
 			});
 		}
 
-		if(status.function === "cancel"){
-			console.log("invite cancelled");
-		}
-		///////////////////////////////////////////////////////////////////
-
+		
 		// if failed to invite
-		if(status.status === "failed" &&
+		if(response.status === "failed" &&
 			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
 			$('.modal-body').empty();
 			$('.modal-body').append("<p> Error sending invitation...</p>");
@@ -47,7 +38,7 @@ $(document).ready(function(event){
 
 		}
 		// if sending is success
-		if(status.status === "success" &&
+		if(response.status === "success" &&
 			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
 			$('.modal-body').empty();
 			$('.modal-body').append("<p> Invitation sent!</p>");
@@ -58,7 +49,7 @@ $(document).ready(function(event){
 		}
 
 		// if invitation is cancelled
-		if(status.status === "cancelled"){
+		if(response.status === "cancelled"){
 			if(($("#myModal").data('bs.modal') || {isShown: false}).isShown){
 				cancelModal("#myModal", "Invitation is cancelled!");
 			}
@@ -69,7 +60,7 @@ $(document).ready(function(event){
 		} 
 
 
-		if(status.status === "declined" &&
+		if(response.status === "declined" &&
 			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
 
 			cancelModal("#myModal","Invitation is declined!");
@@ -77,14 +68,17 @@ $(document).ready(function(event){
 		}
 
 		// if receive invitation
-		if(status.sender && !($('#myModal').data('bs.modal') || {isShown: false}).isShown){
+		if(response.sender && !($('#myModal').data('bs.modal') || {isShown: false}).isShown){
 			
 			$('#inviteModal').modal('show');
 			$('.modal-body').empty();
 			$('.modal-body').append("<p> You have received an invitation from" + status.sender + "</p>");
-			$('#acceptInviteBtn').val(status.sender);
-			$('#declineInviteBtn').val(status.sender);
+			$('#acceptInviteBtn').val(response.sender);
+			$('#declineInviteBtn').val(response.sender);
 		}
+
+		
+
 	};
 
 	ws.onclose = function(evt){
@@ -131,9 +125,6 @@ $(document).ready(function(event){
 
 			$('#sendInviteBtn').click(function(){
 
-				// todo
-				// waiting for server response
-
 				console.log("send invite!");
 				ws.send(JSON.stringify({
 	                'function': 'send',
@@ -161,10 +152,13 @@ $(document).ready(function(event){
 	            }));
 		});
 
-		$('acceptInviteBtn').click(function(evt){
+		$('#acceptInviteBtn').click(function(evt){
 			console.log("accept invitation");
 			// todo create new game
-
+			ws.send(JSON.stringify({
+				'function': 'accept', 
+				'target': this.value 
+			}));
 		});
 
 
