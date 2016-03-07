@@ -161,6 +161,8 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
     def close(self):
         for key, values in gamesList.items():
             if self.get_secure_cookie('username').decode('ascii') == value:
+                self.clear_cookie('player_color')
+                self.clear_cookie('gameID')
                 del values[values.index(self)]
                 otherPlayer = 1 if values.index(self) == 2 else 2
                 values[otherPlayer].write_message(tornado.escape.json_encode({'status': 'disconnected', 'username': value.get_secure_cookie('username').decode('ascii')}))
