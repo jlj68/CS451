@@ -369,10 +369,20 @@ class TestPychess(unittest.TestCase):
         testBoard2 = getTestBoard6()
         self.assertTrue(testBoard1.isCheck(pychess.Color.BLACK) and not testBoard2.isCheck(pychess.Color.BLACK))
 
+
     def test_chessboard_isCheckmate(self):
         testBoard1 = getTestBoard5()
         testBoard2 = getTestBoard7()
         self.assertTrue(not testBoard1.isCheckmate(pychess.Color.BLACK) and testBoard2.isCheckmate(pychess.Color.BLACK))
+
+
+    def test_chessboard_checkstate(self):
+        testBoard = getTestBoard7()
+        testBoard.checkState(pychess.Color.BLACK)
+        state = testBoard.state
+        # pdb.set_trace()
+        self.assertTrue(state == pychess.State.BLACK_CHECKMATE) 
+
 
 if __name__ == '__main__':
     unittest.main()
