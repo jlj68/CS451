@@ -1,7 +1,7 @@
 var chess = {};
 var forfeitBtn = $('#forfeit-btn');
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://subsonic.rawhat.net:8080/game/socket");
+	var ws = new WebSocket("ws://rpi.rawhat.net:8080/game/socket");
 	chess = new GameLogic(ws);
 
 	ws.onopen = function(evt){
@@ -17,7 +17,7 @@ $(document).ready(function(event){
 		// other user forfeit
 		if(response.function === "request_forfeit"){
 			$('#statusModal').modal('show');
-			$('.modal-body').empty();			
+			$('.modal-body').empty();
 			$('.modal-body').append("<h4> Congratulation, you won!</h4>");
 			$('.modal-body').append("<p> Your opponent has forfeited.</p>");
 			$('#statusModal').data('hideInterval', setTimeout(function(){
@@ -25,7 +25,7 @@ $(document).ready(function(event){
 			    }, 3000));
 		}
 
-		
+
 	};
 
 	forfeitBtn.click(function(){
@@ -37,6 +37,6 @@ $(document).ready(function(event){
 	                'function': 'forfeit'
 	        }));
 		});
-		
+
 	});
 });
