@@ -1,3 +1,47 @@
+
+var Piece = (function(piece, xCor, yCor){
+	var name;
+	var x, y;
+	var possibleMove;
+
+	function Piece(piece, xCor, yCor){
+		name = piece;
+		x = xCor;
+		y = yCor;
+		possibleMove = [];
+	}
+
+	Piece.prototype = {
+		getCordinate: function(){
+			return {'x': this.x, 'y', thix.y};
+		},
+		getName: function(){
+			return this.name;
+		},
+		setX: function(x){
+			this.x = x;
+		},
+		setY: function(y){
+			this.y = y;
+		},
+		setCordinate: function(x, y){
+			this.x = x;
+			this.y = y;
+		},
+		getPossibleMoves: function(){
+			return this.possibleMove;
+		},
+		setPossibleMoves: function(data){
+			this.possibleMove = data;
+		}
+
+
+	};
+	return Piece;
+
+})();
+
+
 var Game = (function(){
 	var turn;
 	var win;
@@ -9,6 +53,9 @@ var Game = (function(){
 		Knight: 'n',
 		Pawn: 'p'
 	};
+
+	var possibleMoves = {};
+
 
 	function Game(){
 		turn = 'white';
@@ -30,18 +77,37 @@ var Game = (function(){
 		},
 		setWin: function(isWin){
 			win = isWin;
+		},
+		setPossibleMoves: function(data){
+
+			var list = JSON.parse(data);
+			for(var i =0; i < list.length; i++){
+				var piece = new Piece(list[i].name, list[i].row, list[i].col);
+				piece.setPossibleMoves(list[i].moves);
+				this.possibleMoves.push(piece);
+			}
+		}, 
+		getPossibleMove: function(piece){
+
+			var piece = $.grep(this.possibleMoves, function(e){
+				return e.getName() === piece;
+			});
+
+			return piece.getPossibleMoves();
 		}
+
 	};
+
 	return Game;
 })();
 
 
 
-var GameLogic = (function(){	
+var GameLogic = (function(socket){	
 	var board = {};	
 	var game = new Game();
 
-	function GameLogic (){
+	function GameLogic (socket){
 		var that = this;
 
 		var config_board = {
@@ -82,6 +148,8 @@ var GameLogic = (function(){
 		onDrop : function(source, target, piece, newPos, oldPos, orientation){
 			this.removeHighlight();
 			// need logic from server
+
+
 
 			//if illegal move, snapback to original place
 			return 'snapback';
