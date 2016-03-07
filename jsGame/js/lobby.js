@@ -20,24 +20,68 @@ $(document).ready(function(event){
 		};
 
 		ws.onmessage = function(evt){
-			console.log("server: " + evt.data);
+			var status = JSON.parse(evt.data);
+			console.log("server: " + status.status);
+
+			if(status.status === "failed" &&
+				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
+
+				$(".modal-body p").replaceWith("<p> Error sending invitation...</p>");
+
+				//todo: cancel invitation check
+
+				$('#sendInviteBtn').addClass('hide');
+				
+			}
 		};
 
+
+
 		ws.onclose = function(evt){
+			//To do
+			// cancel the invitation
 			alert("connection closed");
+			if(($('#myModal').data('bs.modal') || {isShown: false}).isShown){
+				console.log("plz close modal");
+			}
 		};
+
+		$('#myModal').on('hidden.bs.modal', function () {
+		        $('.modal-body').empty();
+		        $('#sendInviteBtn').removeClass('hide');
+		});
+
 
 		$('.invite-btn').click(function(evt){			
 			evt.preventDefault();
 			var target = this.value;
 
-			ws.send(JSON.stringify({
-                'function': 'send',
-                'target': target              
-            }));
+			// show modal
+			$('<p>Send invitation to ' + target + '? </p>').appendTo('.modal-body');
+			$('#myModal').modal('show');
 
+			$('#sendInviteBtn').click(function(evt){
+
+				// todo
+				// waiting for server response
+
+				console.log("send invite!");
+				ws.send(JSON.stringify({
+	                'function': 'send',
+	                'target': target              
+	            }));
+
+			});
+
+			$('#cancelInviteBtn').click(function(evt){
+				//Todo
+				// send cancel to the invitation
+			});
+			
 	
 		});
+
+
 
 	}).fail(function(){
 		//To do
@@ -50,6 +94,9 @@ $(document).ready(function(event){
 
 });
 
+$.clearInput = function () {
+        $('form').find('input[type=text], input[type=password], input[type=number], input[type=email], textarea').val('');
+};
 
 
 
