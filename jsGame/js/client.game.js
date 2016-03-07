@@ -21,7 +21,7 @@ $(document).ready(function(event){
 			$('.modal-body').append("<h4> Congratulation, you won!</h4>");
 			$('.modal-body').append("<p> Your opponent has forfeited.</p>");
 			$('#statusModal').data('hideInterval', setTimeout(function(){
-			            $(modalid).modal('hide');
+			            $('#statusModal').modal('hide');
 			    }, 3000));
 		}
 
