@@ -58,17 +58,21 @@ $(document).ready(function(event){
 		}
 
 		// if invitation is cancelled
-		if(status.status === "cancelled" &&
-			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
+		if(status.status === "cancelled"){
+			if(($("#myModal").data('bs.modal') || {isShown: false}).isShown){
+				cancelModal("#myModal", "Invitation is cancelled!");
+			}
 
-			cancelModal("Invitation is cancelled!");
+			if(($('#inviteModal').data('bs.modal') || {isShown: false}).isShown){
+				cancelModal("#inviteModal", "Invitation is cancelled!");
+			}
+		} 
 
-		}
 
 		if(status.status === "declined" &&
 			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
 
-			cancelModal("Invitation is declined!");
+			cancelModal("#myModal","Invitation is declined!");
 
 		}
 
@@ -85,8 +89,12 @@ $(document).ready(function(event){
 
 	ws.onclose = function(evt){
 		console.log("connection closed");
-		if(($('#myModal').data('bs.modal') || {isShown: false}).isShown){
-			cancelModal("Invitation is cancelled!");
+		if(($("#myModal").data('bs.modal') || {isShown: false}).isShown){
+			cancelModal("#myModal", "Invitation is cancelled!");
+		}
+
+		if(($('#inviteModal').data('bs.modal') || {isShown: false}).isShown){
+			cancelModal("#inviteModal", "Invitation is cancelled!");
 		}
 	};
 
@@ -135,8 +143,6 @@ $(document).ready(function(event){
 			});
 
 			$('#cancelInviteBtn').click(function(evt){
-				//Todo
-				// send cancel to the invitation
 				console.log("cancel invite!");
 				ws.send(JSON.stringify({
 	                'function': 'cancel',
@@ -174,13 +180,14 @@ $(document).ready(function(event){
 
 });
 
-function cancelModal(text){
+function cancelModal(modalid, text){
+
 	$('.modal-body').empty();
 	$('.modal-body').append("<p>" + text +"</p>");
 	$('#sendInviteBtn').addClass('hide');
 	$('#cancelInviteBtn').addClass('hide');
-	$('#myModal').data('hideInterval', setTimeout(function(){
-	            $('#myModal').modal('hide');
+	$(modalid).data('hideInterval', setTimeout(function(){
+	            $(modalid).modal('hide');
 	    }, 2000));
 }
 
@@ -222,34 +229,3 @@ function createInviteButton(username){
     return element;
 }
 
-/*ws.onmessage = function(event){
-          var response = $.parseJSON(event.data);
-          console.log(response);
-          if(response.function == "joining_game"){
-            window.location.replace("/game/" + response.gameID);
-          }
-          else if(response.function == "create_game"){
-            $.ajax({
-              method: "PUT",
-              url: "/game",
-              data: {
-                "player2": currentInvite,
-              },
-            }).done(function(data){
-                window.location.replace("/game/" + $.parseJSON(data).gameID);
-            });
-          }
-          if(response.status !== undefined){
-            console.log(response.status);
-          }
-          if(response.request !== undefined){
-            console.log(response.request);
-          }
-
-          if(response.sender !== undefined){
-            $('#invite_area').show();
-            $('#invitation_text_area').text(response.sender + " has invited you to play!");
-            currentInvite = response.sender;
-            inviteButtonListeners();
-          }
-      }*/
