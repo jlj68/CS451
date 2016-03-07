@@ -119,7 +119,7 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
 class GameSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         for key, values in gamesList.items():
-            if self.get_secure_cookie('username') in values:
+            if self.get_secure_cookie('username').decode('ascii') in values:
                 values[values.index(self.get_secure_cookie('username').decode('ascii'))] = self
                 break
 
