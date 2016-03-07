@@ -151,7 +151,7 @@ class King(Piece):
         castling = self.checkCastling(position, board)
         for pos in castling:
             possiblePositions.append(pos)
-        
+
 
         return possiblePositions
 
@@ -184,7 +184,7 @@ class King(Piece):
             if(piece is not None):
                 return False
         return True
-        
+
 
 
 class Knight(Piece):
@@ -423,6 +423,7 @@ class ChessBoard:
         moves = self.getPossibleMoves(color)
         for position, moves in moves.items():
             item = {}
+            item['name'] = self.board[position.row][position.col].name
             item['row'] = position.row
             item['col'] = position.col
             item['moves'] = []
