@@ -47,7 +47,7 @@ class GamePageHandler(tornado.web.RequestHandler):
     def get(self, gameID):
         if self.get_secure_cookie('player_color') is None:
             self.set_secure_cookie('player_color', 'white')
-            self.set_secure_cookie('gameID', str(gameID))
+        self.set_secure_cookie('gameID', str(gameID))
         self.render("./jsGame/html/game.html", gameID=gameID, color=self.get_secure_cookie('player_color').decode('ascii'), currentUser=self.get_secure_cookie('username').decode('ascii'))
 
 class UserHandler(tornado.web.RequestHandler):
