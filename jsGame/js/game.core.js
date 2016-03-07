@@ -1,32 +1,24 @@
 
-var Piece = (function(piece, xCor, yCor){
+var Piece = (function(piece, position){
 	var name;
-	var x, y;
+	var position;
 	var possibleMove;
 
-	function Piece(piece, xCor, yCor){
+	function Piece(piece, position){
 		this.name = piece;
-		this.x = xCor;
-		this.y = yCor;
+		this.position = position
 		this.possibleMove = [];
 	}
 
 	Piece.prototype = {
-		getCordinate: function(){
-			return {'x': this.x, 'y': thix.y};
+		getPosition: function(){
+			return this.position;
 		},
 		getName: function(){
 			return this.name;
 		},
-		setX: function(x){
-			this.x = x;
-		},
-		setY: function(y){
-			this.y = y;
-		},
-		setCordinate: function(x, y){
-			this.x = x;
-			this.y = y;
+		setPosition: function(position){
+			this.position = position;
 		},
 		getPossibleMoves: function(){
 			return this.possibleMove;
@@ -44,14 +36,7 @@ var Piece = (function(piece, xCor, yCor){
 var Game = (function(){
 	var turn;
 	var win;
-	/*var pieceList = {
-		King: 'k',
-		Queen: 'q',
-		Bishop: 'b',
-		Rock: 'r',
-		Knight: 'n',
-		Pawn: 'p'
-	};*/
+	
 
 	var possibleMoves;
 
@@ -82,21 +67,24 @@ var Game = (function(){
 
 			var list = JSON.parse(data);
 			for(var i =0; i < list.length; i++){
-				var piece = new Piece(list[i].name, list[i].row, list[i].col);
+				var piece = new Piece(list[i].name, list[i].position);
 				piece.setPossibleMoves(list[i].moves);
 				this.possibleMoves.push(piece);
-				console.log(i);
+				
 			}
 		}, 
-		getPossibleMove: function(piece){
+		getPossibleMove: function(piece, position){
 
 			for(var i = 0; i < this.possibleMoves.length; i++){
 				var p = this.possibleMoves[i];
-				if(p.getName() === piece)
+				if(p.getName() === piece && p.getPosition() === position)
 					return p.getPossibleMoves();
 			}
 
 			return [];
+		},
+		resetPossibleMove: function(){
+			this.possibleMoves = [];
 		}
 
 	};
@@ -108,10 +96,11 @@ var Game = (function(){
 
 var GameLogic = (function(socket){	
 	var board = {};	
-	var game = new Game();
+	var game;
 
 	function GameLogic (socket){
 		var that = this;
+			game = new Game();
 
 		var config_board = {
 			orientation: 'white',
@@ -124,7 +113,9 @@ var GameLogic = (function(socket){
 			highlightMove: that.highlightMove,
 			removeHighlight: that.removeHighlight,
 			onMouseoverSquare: that.onMouseOver,
-			onMouseoutSquare: that.onMouseOut
+			onMouseoutSquare: that.onMouseOut,
+			setMoves: that.setMoves,
+			resetMoves: that.resetMoves
 
 		};
 
@@ -171,28 +162,26 @@ var GameLogic = (function(socket){
 		  	$('#board .square-55d63').css('background', '');
 		},
 		onMouseOver: function(square, piece){
-			// get a list of possible move for this piece
-			/*
-				move object
-				move : {
-					color: 'b',
-					piece: 'b',
-					from: 'h6',
-					to: 'h7'
-				}
-			*/
-			/*var moves; // Todo: get possible move
+			console.log(square + " " + piece);
 
+			// get a list of possible move for this piece
+			var moves = game.getPossibleMove(piece, square);
 			// no valid moves
 			if(moves.length === 0) return;
 
 			// highlight the possible squares
 			for(var i = 0; i < moves.length; i++){
-				this.highlightMove(moves[i].to);
-			}*/
+				this.highlightMove(moves[i].move);
+			}
 		},
 		onMouseOut: function(){
 			this.removeHighlight();
+		},
+		setMoves: function(data){
+			game.setPossibleMoves(data);
+		},
+		resetMoves: function(){
+			game.resetPossibleMove();
 		}
 
 	};
