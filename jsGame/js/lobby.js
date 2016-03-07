@@ -8,36 +8,37 @@ $(document).ready(function(event){
 	}).done(function(data){
 
 		var json = JSON.parse(data);
-		console.log(json);
+		var ws = new WebSocket("ws://192.168.1.238:8080/invite");
+
 		for(var i = 0; i < json.users.length; i++){
 			var user = json.users[i];			
 			addRow(i, user.username, user.wins, user.losses, user.rating);			
 		}
 
-		$('.invite-btn').click(function(){
+		ws.onopen = function(evt){
+			console.log("socket connected");
+		};
 
-			var ws = new WebSocket("ws://192.168.1.238:8080/invite");
+		ws.onmessage = function(evt){
+			console.log("server: " + evt.data);
+		};
 
+		ws.onclose = function(evt){
+			alert("connection closed");
+		};
+
+		$('.invite-btn').click(function(evt){			
+			evt.preventDefault();
 			var target = this.value;
 
-			ws.onopen = function(){
+			ws.send(JSON.stringify({
+                'function': 'send',
+                'target': target              
+            }));
 
-
-				console.log("socket open");
-				// send invitation to server
-				ws.send(JSON.stringify({
-					"function": "send",
-					"target": target
-				}));
-
-				// retrieve message
-				ws.onmessage = function(msg){
-					console.log(msg);
-				};
-
-			};
 	
 		});
+
 	}).fail(function(){
 		//To do
 		// display error on screen
