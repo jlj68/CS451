@@ -23,6 +23,7 @@ $(document).ready(function(event){
 			var status = JSON.parse(evt.data);
 			console.log("server: " + status.status);
 
+			// if failed to invite
 			if(status.status === "failed" &&
 				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
 
@@ -30,6 +31,17 @@ $(document).ready(function(event){
 
 				//todo: cancel invitation check
 
+				$('#sendInviteBtn').addClass('hide');
+				
+			}
+
+			// if sending is success
+			if(status.status === "success" &&
+				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
+
+				$(".modal-body p").replaceWith("<p> Invitation sent!</p>");
+				$(".modal-body").append("<p> Waiting for response... </p>");
+				// Todo: set a timer for waiting
 				$('#sendInviteBtn').addClass('hide');
 				
 			}
