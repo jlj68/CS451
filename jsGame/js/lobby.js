@@ -1,8 +1,6 @@
 
 $(document).ready(function(event){
-
-	var ws = new WebSocket("ws://http://192.168.1.238:8080/invite");
-	var inviteBtn = $$('.invite-btn');
+	
 
 	$.ajax({
 		method: "GET",
@@ -13,38 +11,48 @@ $(document).ready(function(event){
 		console.log(json);
 		for(var i = 0; i < json.users.length; i++){
 			var user = json.users[i];			
-			addRow(i, user.username, user.wins, user.losses, user.rating, ws);			
+			addRow(i, user.username, user.wins, user.losses, user.rating);			
 		}
+
+		$('.invite-btn').click(function(){
+
+			var ws = new WebSocket("ws://192.168.1.238:8080/invite");
+
+			var target = this.value;
+
+			ws.onopen = function(){
+
+
+				console.log("socket open");
+				// send invitation to server
+				ws.send(JSON.stringify({
+					"function": "send",
+					"target": target
+				}));
+
+				// retrieve message
+				ws.onmessage = function(msg){
+					console.log(msg);
+				};
+
+			};
+	
+		});
 	}).fail(function(){
 		//To do
 		// display error on screen
 		console.log("get no data");
 	});
 
-	$inviteBtn.on('click', function(){
-		console.log($(this).value);
-
-		/*socket.onopen = function(){
-
-				// send invitation to server
-				socket.send(JSON.stringify({
-					"function": "send",
-					"target": button.value
-				}));
-
-				// retrieve message
-				socket.onmessage = function(msg){
-					console.log(msg);
-				};
-			};*/
 	
-	});
 
 
 });
 
 
-function addRow(counter, username, win, loss, rate,){
+
+
+function addRow(counter, username, win, loss, rate){
 	var that = this;
 	var btn = createInviteButton(username);
 
@@ -71,10 +79,10 @@ function createInviteButton(username){
 	var element = document.createElement("td");
     var button = document.createElement("button");
     var textNode = document.createTextNode("Invite");
-    button.type = "button";
-    button.class = "invite-btn";
+    button.type = "button";    
     button.value = username;
     button.appendChild(textNode);
+    $(button).addClass("invite-btn");
 
     element.appendChild(button);
     return element;
