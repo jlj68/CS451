@@ -96,7 +96,7 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
                 connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.PENDING_INVITE
                 websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'sender': self.get_secure_cookie('username').decode('ascii')}))
                 self.write_message(tornado.escape.json_encode({'status': 'success'}))
-                
+
             else:
                 self.write_message(tornado.escape.json_encode({'status': 'failed'}))
 
@@ -152,7 +152,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 gamesList[gameID][0].applyMove(move)
 
                 index = 1 if gamesList[gameID][2] == self else 2
-                index2 = 2 if index = 1 else 1
+                index2 = 2 if index == 1 else 1
 
                 gamesList[gameID][index].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'move_made': message['move']}))
                 gamesList[gameID][index2].write_message(tornado.escape.json_encode({'state': gameBoard.state.name}))
