@@ -12,7 +12,7 @@ $(document).ready(function(event){
 	};
 
 	ws.onmessage = function(msg){
-		var response = JSON.parse(evt.data);
+		var response = JSON.parse(msg.data);
 
 		// other user forfeit
 		if(response.function === "request_forfeit"){
