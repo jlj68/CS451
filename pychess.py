@@ -147,7 +147,44 @@ class King(Piece):
             if pos.row in range(0, 8) and pos.col in range(0, 8):
                 possiblePositions.append(Move(position, pos))
 
+        # castling
+        castling = self.checkCastling(position, board)
+        for pos in castling:
+            possiblePositions.append(pos)
+
+
         return possiblePositions
+
+    def checkCastling(self, position, board):
+        if(self.hasMoved):
+            return []
+
+        # pdb.set_trace()
+        castling = []
+
+        rooks = [
+                Position(position.row, 0),
+                Position(position.row, 7)
+            ]
+
+        piece = board[position.row][0]
+        if(piece is not None and piece.name == "Rook" and self.checkPieces(rooks[0], position, board)):
+            castling.append(Move(position, rooks[0]))
+
+        piece = board[position.row][7]
+        if(piece is not None and piece.name == "Rook" and self.checkPieces(position, rooks[1], board)):
+            castling.append(Move(position, rooks[1]))
+
+        return castling
+
+
+    def checkPieces(self, position1, position2, board):
+        for index in range(position1.col+1, position2.col):
+            piece = board[position1.row][index]
+            if(piece is not None):
+                return False
+        return True
+
 
 
 class Knight(Piece):
@@ -386,6 +423,7 @@ class ChessBoard:
         moves = self.getPossibleMoves(color)
         for position, moves in moves.items():
             item = {}
+            item['name'] = self.board[position.row][position.col].name
             item['row'] = position.row
             item['col'] = position.col
             item['moves'] = []
@@ -407,6 +445,15 @@ class ChessBoard:
     def applyMove(self, move):
         fromPiece = self.board[move.fromPos.row][move.fromPos.col]
         toPiece = self.board[move.toPos.row][move.toPos.col]
+
+        # castling
+        if fromPiece is not None and toPiece is not None and fromPiece.color == toPiece.color :
+            direction = -1 if move.fromPos.col > move.toPos.col else 1
+            self.board[move.fromPos.row][move.fromPos.col] = None
+            self.board[move.fromPos.row][move.fromPos.col+2*direction] = fromPiece
+            self.board[move.toPos.row][move.toPos.col] = None
+            self.board[move.toPos.row][move.fromPos.col+direction] = toPiece
+            return
 
         self.board[move.fromPos.row][move.fromPos.col] = None
         self.board[move.toPos.row][move.toPos.col] = fromPiece

@@ -55,6 +55,22 @@ def getTestBoard1():
     return chessBoard
  
 
+def getTestBoard2():
+    chessBoard = pychess.ChessBoard()
+    board = []
+    for i in range(0, 8):
+        row = []
+        for j in range(0, 8):
+            row.append(None)
+        board.append(row)
+
+    board[0][0] = pychess.Rook(pychess.Color.BLACK)
+    board[0][4] = pychess.King(pychess.Color.BLACK)
+
+    chessBoard.setBoard(board)
+    return chessBoard
+ 
+
 def getPossibleMoves(testBoard, testPosition):
     possibleMove = testBoard.getMovesFromPosition(testPosition)
     return possibleMove
@@ -175,6 +191,21 @@ class TestPychess(unittest.TestCase):
         # pdb.set_trace()
         self.assertTrue(comparePossibleMoves(possibleMove, answer))
 
+
+    def test_castling(self):
+        testBoard = getTestBoard2()
+        testPosition = pychess.Position(0, 4)
+        possibleMove = getPossibleMoves(testBoard, testPosition)
+        answer = [
+                pychess.Move(testPosition, pychess.Position(0, 3)),
+                pychess.Move(testPosition, pychess.Position(0, 5)),
+                pychess.Move(testPosition, pychess.Position(1, 3)),
+                pychess.Move(testPosition, pychess.Position(1, 4)),
+                pychess.Move(testPosition, pychess.Position(1, 5)),
+                pychess.Move(testPosition, pychess.Position(0, 0)),
+            ]
+        # pdb.set_trace()
+        self.assertTrue(comparePossibleMoves(possibleMove, answer))
 
 
 if __name__ == '__main__':
