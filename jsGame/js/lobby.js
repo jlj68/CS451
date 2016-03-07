@@ -26,8 +26,8 @@ $(document).ready(function(event){
 			// if failed to invite
 			if(status.status === "failed" &&
 				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
-
-				$(".modal-body p").replaceWith("<p> Error sending invitation...</p>");
+				$('.modal-body').empty();
+				$('.modal-body').append("<p> Error sending invitation...</p>");
 
 				//todo: cancel invitation check
 
@@ -38,11 +38,19 @@ $(document).ready(function(event){
 			// if sending is success
 			if(status.status === "success" &&
 				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
-
-				$(".modal-body p").replaceWith("<p> Invitation sent!</p>");
-				$(".modal-body").append("<p> Waiting for response... </p>");
+				$('.modal-body').empty();
+				$('.modal-body').append("<p> Invitation sent!</p>");
+				$('.modal-body').append("<p> Waiting for response... </p>");
 				// Todo: set a timer for waiting
 				$('#sendInviteBtn').addClass('hide');
+				
+			}
+
+			// if invitation is cancelled
+			if(status.status === "cancelled" &&
+				($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
+
+				cancelModal();
 				
 			}
 		};
@@ -50,11 +58,9 @@ $(document).ready(function(event){
 
 
 		ws.onclose = function(evt){
-			//To do
-			// cancel the invitation
-			alert("connection closed");
+			console.log("connection closed");
 			if(($('#myModal').data('bs.modal') || {isShown: false}).isShown){
-				console.log("plz close modal");
+				cancelModal();
 			}
 		};
 
@@ -88,6 +94,11 @@ $(document).ready(function(event){
 			$('#cancelInviteBtn').click(function(evt){
 				//Todo
 				// send cancel to the invitation
+				console.log("cancel invite!");
+				ws.send(JSON.stringify({
+	                'function': 'cancel',
+	                'target': target              
+	            }));
 			});
 			
 	
@@ -106,9 +117,15 @@ $(document).ready(function(event){
 
 });
 
-$.clearInput = function () {
-        $('form').find('input[type=text], input[type=password], input[type=number], input[type=email], textarea').val('');
-};
+function cancelModal(){
+	$('.modal-body').empty();
+	$('.modal-body').append("<p> Invitation is canceled!</p>");
+	$('#sendInviteBtn').addClass('hide');
+	$('#cancelInviteBtn').addClass('hide');
+	$('#myModal').data('hideInterval', setTimeout(function(){
+	            $('#myModal').modal('hide');
+	    }, 2000));
+}
 
 
 
