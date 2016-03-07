@@ -25,6 +25,17 @@ class Color(Enum):
     def fromString(cls, string):
         return getattr(cls, string.upper(), None)
 
+@unique
+class RowLetter(Enum):
+    a = 0
+    b = 1
+    c = 2
+    d = 3
+    e = 4
+    f = 5
+    g = 6
+    h = 7
+
 class Position:
     def __init__(self, row, col):
         self.row = row
@@ -64,7 +75,7 @@ class Piece:
         self.hasMoved = False
 
     def __str__(self):
-        return str(self.color)[6] + self.ch
+        return str(self.color)[6].lower() + self.ch
 
     @abstractmethod
     def getPossibleMoves(self, position, board):
@@ -149,9 +160,8 @@ class King(Piece):
 
         # castling
         castling = self.checkCastling(position, board)
-        for pos in castling:
-            possiblePositions.append(pos)
-
+        for move in castling:
+            possiblePositions.append(move)
 
         return possiblePositions
 
@@ -250,7 +260,44 @@ class Pawn(Piece):
                 if piece is None:
                     possiblePositions.append(Move(position, p))
 
+        # En passant
+        enpassant = self.checkEnpassant(position, board)
+        for move in enpassant:
+            possiblePositions.append(move)
+
+
         return possiblePositions
+
+    def checkEnpassant(self, position, board):
+        if( position.row == 4 ):
+            attack = board[position.row][position.col]
+            enpassant = []
+            if(attack.color == Color.WHITE):
+                return []
+            else:
+                depense = None if position.col-1 < 0 else board[position.row][position.col-1]
+                if(depense is not None and depense.name == "Pawn" and depense.color != attack.color):
+                    enpassant.append(Move(position, Position(position.row, position.col-1)))
+                depense = None if position.col+1 > 7 else board[position.row][position.col+1]
+                if(depense is not None and depense.name == "Pawn" and depense.color != attack.color):
+                    enpassant.append(Move(position, Position(position.row, position.col+1)))
+                return enpassant
+
+        elif( position.row == 3 ):
+            attack = board[position.row][position.col]
+            enpassant = []
+            if(attack.color == Color.BLACK):
+                return []
+            else:
+                depense = None if position.col-1 < 0 else board[position.row][position.col-1]
+                if(depense is not None and depense.name == "Pawn" and depense.color != attack.color):
+                    enpassant.append(Move(position, Position(position.row, position.col-1)))
+                depense = None if position.col+1 > 7 else board[position.row][position.col+1]
+                if(depense is not None and depense.name == "Pawn" and depense.color != attack.color):
+                    enpassant.append(Move(position, Position(position.row, position.col+1)))
+                return enpassant
+
+        return []
 
 
 class Queen(Piece):
@@ -423,12 +470,11 @@ class ChessBoard:
         moves = self.getPossibleMoves(color)
         for position, moves in moves.items():
             item = {}
-            item['name'] = self.board[position.row][position.col].name
-            item['row'] = position.row
-            item['col'] = position.col
+            item['name'] = str(self.board[position.row][position.col])
+            item['position'] = RowLetter(position.row).name + str(position.col)
             item['moves'] = []
             for move in moves:
-                item['moves'].append({'row': move.toPos.row, 'col': move.toPos.col})
+                item['moves'].append({'move': RowLetter(move.toPos.row).name + str(move.toPos.col)})
             movesList.append(item)
         return movesList
 
@@ -453,6 +499,14 @@ class ChessBoard:
             self.board[move.fromPos.row][move.fromPos.col+2*direction] = fromPiece
             self.board[move.toPos.row][move.toPos.col] = None
             self.board[move.toPos.row][move.fromPos.col+direction] = toPiece
+            return
+
+        # En passant
+        if fromPiece is not None and toPiece is not None and move.fromPos.row == move.toPos.row and fromPiece.name == "Pawn" and toPiece.name == "Pawn":
+            direction = 1 if fromPiece.color == Color.BLACK else -1
+            self.board[move.fromPos.row][move.fromPos.col] = None
+            self.board[move.toPos.row+direction][move.toPos.col] = fromPiece
+            self.board[move.toPos.row][move.toPos.col] = None
             return
 
         self.board[move.fromPos.row][move.fromPos.col] = None
