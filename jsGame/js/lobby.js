@@ -8,7 +8,7 @@ $(document).ready(function(event){
 
 	ws.onmessage = function(evt){
 		var status = JSON.parse(evt.data);
-		console.log("server: " + status.status);
+		console.log("server: " + status.sender);
 
 		// if failed to invite
 		if(status.status === "failed" &&
