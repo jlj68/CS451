@@ -36,6 +36,10 @@ class RowLetter(Enum):
     g = 6
     h = 7
 
+    @classmethod
+    def fromString(cls, string):
+        return getattr(cls, string.upper(), None)
+
 class Position:
     def __init__(self, row, col):
         self.row = row

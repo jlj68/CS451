@@ -6,11 +6,17 @@ $(document).ready(function(event){
 
 	ws.onopen = function(evt){
 		console.log("socket connected");
-		ws.send(JSON.stringify({"function": "get_moves"}));
+
+		// from alex -- remove if you want
+		ws.send(JSON.stringify({'function": "get_moves'}));
 	};
 	ws.onclose = function(evt){
 		console.log("socket closed");
 	};
+
+	$(document).click(function(){
+			ws.send(JSON.stringify({'function': 'update_board'}));
+	});
 
 	ws.onmessage = function(msg){
 		var response = JSON.parse(msg.data);
@@ -26,8 +32,15 @@ $(document).ready(function(event){
 			    }, 3000));
 		}
 
+		// from alex -- remove if you want
 		if(response.function === "list_moves"){
 			console.log(response.moves);
+		}
+
+		// from alex -- remove if you want
+		if(response.state !== undefined){
+			console.log("game state: " + response.state);
+			console.log("board: " + response.board);
 		}
 	};
 
