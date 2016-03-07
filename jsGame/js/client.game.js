@@ -40,7 +40,7 @@ $(document).ready(function(event){
 		// from alex -- remove if you want
 		if(response.state !== undefined){
 			console.log("game state: " + response.state);
-			console.log("board: " + response.board);
+			console.log(response.board);
 		}
 	};
 
