@@ -72,7 +72,6 @@ var Game = (function(turn){
 			this.status = status;
 		},
 		setPossibleMoves: function(list){
-			console.log(list);
 			for(var i =0; i < list.length; i++){
 				var piece = new Piece(list[i].name, list[i].position);
 				piece.setPossibleMoves(list[i].moves);
@@ -208,6 +207,7 @@ var GameLogic = (function(socket, turn, color){
 			this.removeHighlight();
 		},
 		setMoves: function(data){
+			console.log(data);
 			game.setPossibleMoves(data);
 		},
 		resetMoves: function(){
