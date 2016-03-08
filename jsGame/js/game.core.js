@@ -110,7 +110,7 @@ var GameLogic = (function(socket, turn, color){
 			ws = socket;
 
 		var config_board = {
-			orientation: 'white',
+			orientation: color,
 			position: 'start',
 			draggable: true,
 			dropOffBoard: 'snapback',
@@ -139,7 +139,7 @@ var GameLogic = (function(socket, turn, color){
 	GameLogic.prototype = {
 		init: function(config, color){
 			var board_init =  ChessBoard('board', config);
-			board_init.orientation(color);
+			//board_init.orientation(color);
 			return board_init;
 		},
 		flipTurn : function(myTurn){

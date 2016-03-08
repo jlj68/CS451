@@ -2,7 +2,7 @@ var chess = {};
 var forfeitBtn = $('#forfeit-btn');
 
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://rpi.rawhat.net:8080/game/socket");
+	var ws = new WebSocket("ws://192.168.1.238:8080/game/socket");
 	var color = $('#color').text();
 
 	var turn = (color == 'white' ? true: false);
@@ -12,10 +12,10 @@ $(document).ready(function(event){
 	ws.onopen = function(evt){
 		console.log("socket connected");
 
-		// from alex -- remove if you want
 		if(chess.isTurn()){
 			ws.send(JSON.stringify({'function': 'get_moves'}));
 		}
+
 
 	};
 
