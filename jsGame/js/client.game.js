@@ -113,9 +113,11 @@ function parseTable(table){
 	console.log(table);
 	var result = {};
 	for(var i =0; i < table.length; i++){
-		var position = table[i].position;
-		var piece = table[i].piece.name;
-		result[position] = piece;
+		if(table[i].piece != null){
+			var position = table[i].position;
+			var piece = table[i].piece.name;
+			result[position] = piece;
+		}
 	}
 	return result;
 }
