@@ -466,6 +466,7 @@ class ChessBoard:
                 p = Position(i, j)
                 piece = self.board[i][j]
                 if piece is not None and piece.color == color and (piece.name == "King" or not (self.state.name[:5] == color and self.state.name[6:] == "CHECK")):
+                    print('game state is: ' + self.state + ' | piece is: ' + piece.name)
                     moves[p] = piece.getPossibleMoves(p, self.board)
 
         return moves
