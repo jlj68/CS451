@@ -140,11 +140,12 @@ var GameLogic = (function(socket, turn, color){
 		},*/
 		//fired when piece is picked up. Returns false to prevent the pick up
 		onDragStart : function(source, piece, position, orientation){
-			/*if(game.isGameOver() === true ||
-				(game.getTurn() === 'white' && piece.search(/^b/) !== -1) ||
-      			(game.getTurn() === 'black' && piece.search(/^w/) !== -1)){
+			
+			if(game.isGameOver() === true || !game.isTurn() ||
+				(game.getColor() === 'white' && piece.search(/^b/) !== -1) ||
+      			(game.getColor() === 'black' && piece.search(/^w/) !== -1)){
 				return false;
-			}*/
+			}
 		},
 		onDrop : function(source, target, piece){
 			this.removeHighlight();
@@ -178,16 +179,20 @@ var GameLogic = (function(socket, turn, color){
 		  	$('#board .square-55d63').css('background', '');
 		},
 		onMouseOver: function(square, piece){
-			
-			// get a list of possible move for this piece
-			var moves = game.getPossibleMove(piece, square);
-			// no valid moves
-			if(moves.length === 0) return;
 
-			// highlight the possible squares
-			for(var i = 0; i < moves.length; i++){
-				this.highlightMove(moves[i].move);
+			if(game.isTurn()){
+				// get a list of possible move for this piece
+				var moves = game.getPossibleMove(piece, square);
+				// no valid moves
+				if(moves.length === 0) return;
+
+				// highlight the possible squares
+				for(var i = 0; i < moves.length; i++){
+					this.highlightMove(moves[i].move);
+				}
 			}
+			
+			
 		},
 		onMouseOut: function(){
 			this.removeHighlight();
