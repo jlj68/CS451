@@ -102,6 +102,7 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
             if connectedUsers[messageDict['target']].status is UserStatus.AVAILABLE:
                 connectedUsers[messageDict['target']].status = UserStatus.PENDING_INVITE
                 connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.PENDING_INVITE
+                print(self.get_secure_cookie('username').decode('ascii'))
                 websocketClients[messageDict['target']].write_message(tornado.escape.json_encode({'sender': self.get_secure_cookie('username').decode('ascii')}))
                 self.write_message(tornado.escape.json_encode({'status': 'success'}))
 
