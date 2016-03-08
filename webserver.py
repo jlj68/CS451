@@ -20,9 +20,10 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class MainHandler(BaseHandler):
     def get(self):
-        #if self.current_user is not None:
-            #self.render("./jsGame/html/lobby.html", currentUser=self.current_user)
-        #else:
+        if self.current_user is not None:
+            connectedUsers[self.current_user.decode('ascii')] = User(self.current_user.decode('ascii'))
+            self.render("./jsGame/html/lobby.html", currentUser=self.current_user)
+        else:
             self.render("./jsGame/html/index.html")
 
 class LobbyHandler(tornado.web.RequestHandler):
