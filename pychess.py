@@ -509,7 +509,7 @@ class ChessBoard:
             return
 
         # En passant
-        if fromPiece is not None and toPiece is not None and move.fromPos.row == move.toPos.row and fromPiece.name == "Pawn" and toPiece.name == "Pawn":
+        if fromPiece is not None and toPiece is not None and move.fromPos.col == move.toPos.col and fromPiece.name == "Pawn" and toPiece.name == "Pawn":
             direction = 1 if fromPiece.color == Color.BLACK else -1
             self.board[move.fromPos.row][move.fromPos.col] = None
             self.board[move.toPos.row+direction][move.toPos.col] = fromPiece
@@ -534,9 +534,9 @@ class ChessBoard:
             if piece is not None and piece.name == "Pawn" and piece.color == Color.WHITE:
                 self.board[0][self.board[0].index(piece)] = Queen(Color.WHITE)
 
-        for i in range(0, 8):
-            if self.board[i][7] is not None and self.board[i][7].name == "Pawn" and self.board[i][7].color == Color.BLACK:
-                self.board[i][7] = Queen(Color.BLACK)
+        for piece in self.board[7]:
+            if piece is not None and piece.name == "Pawn" and piece.color == Color.BLACK:
+                self.board[7][self.board[7].index(piece)] = Queen(Color.BLACK)
 
     def findKing(self, color):
         for i in range(len(self.board)):
