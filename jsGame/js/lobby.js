@@ -1,15 +1,19 @@
 
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://127.0.0.1:8080/invite");
+
+	Cookies.remove('player_color');
+	Cookies.remove('gameID');
+
+	var ws = new WebSocket("ws://192.168.1.118:8080/invite");
 
 	ws.onopen = function(evt){
 		console.log("socket connected");
 	};
 
 	ws.onmessage = function(evt){
-		var response = JSON.parse(evt.data);		
+		var response = JSON.parse(evt.data);
 
-		if(response.function === "joining_game"){			
+		if(response.function === "joining_game"){
 			window.location.replace("/game/" + response.gameID);
 		}
 
@@ -25,7 +29,7 @@ $(document).ready(function(event){
 			});
 		}
 
-		
+
 		// if failed to invite
 		if(response.status === "failed" &&
 			($('#myModal').data('bs.modal') || {isShown: false}).isShown ){
@@ -57,7 +61,7 @@ $(document).ready(function(event){
 			if(($('#inviteModal').data('bs.modal') || {isShown: false}).isShown){
 				cancelModal("#inviteModal", "Invitation is cancelled!");
 			}
-		} 
+		}
 
 
 		if(response.status === "declined" &&
@@ -69,7 +73,7 @@ $(document).ready(function(event){
 
 		// if receive invitation
 		if(response.sender && !($('#myModal').data('bs.modal') || {isShown: false}).isShown){
-			
+
 			$('#inviteModal').modal('show');
 			$('.modal-body').empty();
 			$('.modal-body').append("<p> You have received an invitation from" + status.sender + "</p>");
@@ -77,7 +81,7 @@ $(document).ready(function(event){
 			$('#declineInviteBtn').val(response.sender);
 		}
 
-		
+
 
 	};
 
@@ -156,8 +160,8 @@ $(document).ready(function(event){
 			console.log("accept invitation");
 			// todo create new game
 			ws.send(JSON.stringify({
-				'function': 'accept', 
-				'target': this.value 
+				'function': 'accept',
+				'target': this.value
 			}));
 		});
 
@@ -222,4 +226,3 @@ function createInviteButton(username){
     element.appendChild(button);
     return element;
 }
-

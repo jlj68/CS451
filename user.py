@@ -33,5 +33,5 @@ class User:
             s1 = 0.5
             s2 = 0.5
 
-        self.rating = r1 + K_FACTOR * (s1 - e1)
-        opponent.rating = r2 + K_FACTOR * (s2 - e2)
+        self.rating = self.rating + K_FACTOR * (s1 - e1)
+        opponent.rating = opponent.rating + K_FACTOR * (s2 - e2)
