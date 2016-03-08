@@ -83,6 +83,8 @@ def getTestBoard3():
     board[4][4] = pychess.Pawn(pychess.Color.BLACK)
     board[4][4].hasMoved = True
     board[4][3] = pychess.Pawn(pychess.Color.WHITE)
+    board[4][3].hasMoved = True
+    board[4][3].hasSecondMoved = True
     board[4][5] = pychess.Pawn(pychess.Color.WHITE)
 
     chessBoard.setBoard(board)
@@ -101,7 +103,9 @@ def getTestBoard4():
     board[3][4] = pychess.Pawn(pychess.Color.WHITE)
     board[3][4].hasMoved = True
     board[3][3] = pychess.Pawn(pychess.Color.BLACK)
+    board[3][3].hasSecondMoved = True
     board[3][5] = pychess.Pawn(pychess.Color.BLACK)
+    board[3][3].hasMoved = True
 
     chessBoard.setBoard(board)
     return chessBoard
@@ -316,7 +320,7 @@ class TestPychess(unittest.TestCase):
         possibleMove = getPossibleMoves(testBoard, testPosition)
         answer = [
                 pychess.Move(testPosition, pychess.Position(5, 4)),
-                pychess.Move(testPosition, pychess.Position(4, 3)),
+                # pychess.Move(testPosition, pychess.Position(4, 3)),
                 pychess.Move(testPosition, pychess.Position(4, 5))
             ]
         # pdb.set_trace()

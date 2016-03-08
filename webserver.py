@@ -143,8 +143,8 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
             fromPosLetter = message['move']['fromPos']
             toPosLetter = message['move']['fromPos']
 
-            fromPos = pychess.Position(pychess.RowLetter.fromString(fromPosLetter[0]).value, int(fromPosLetter[1]))
-            toPos = pychess.Position(pychess.RowLetter.fromString(toPosLetter[0]).value, int(toPosLetter[1]))
+            fromPos = pychess.Position(pychess.ColLetter.fromString(fromPosLetter[0]).value, 8 - int(fromPosLetter[1]))
+            toPos = pychess.Position(pychess.ColLetter.fromString(toPosLetter[0]).value, 8 - int(toPosLetter[1]))
 
             move = pychess.Move(fromPos, toPos)
 
@@ -162,7 +162,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
 
         elif message['function'] == 'board_state':
-            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name}))
+            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].getBoardJson()}))
 
         elif message['function'] == 'forfeit':
             playerToForfeit = self.get_secure_cookie('username').decode('ascii')

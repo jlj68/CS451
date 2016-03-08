@@ -26,7 +26,7 @@ class Color(Enum):
         return getattr(cls, string.upper(), None)
 
 @unique
-class RowLetter(Enum):
+class ColLetter(Enum):
     a = 0
     b = 1
     c = 2
@@ -77,6 +77,7 @@ class Piece:
         self.ch = ch
         self.color = color
         self.hasMoved = False
+        self.hasSecondMoved = False
 
     def __str__(self):
         return str(self.color)[6].lower() + self.ch
@@ -280,10 +281,10 @@ class Pawn(Piece):
                 return []
             else:
                 depense = None if position.col-1 < 0 else board[position.row][position.col-1]
-                if depense is not None and depense.name == "Pawn" and depense.color != attack.color:
+                if depense is not None and depense.name == "Pawn" and depense.color != attack.color and not depense.hasSecondMoved:
                     enpassant.append(Move(position, Position(position.row, position.col-1)))
                 depense = None if position.col+1 > 7 else board[position.row][position.col+1]
-                if depense is not None and depense.name == "Pawn" and depense.color != attack.color:
+                if depense is not None and depense.name == "Pawn" and depense.color != attack.color and not depense.hasSecondMoved:
                     enpassant.append(Move(position, Position(position.row, position.col+1)))
                 return enpassant
 
@@ -415,8 +416,8 @@ class ChessBoard:
         self.board[0][0] = Rook(Color.BLACK)
         self.board[0][1] = Knight(Color.BLACK)
         self.board[0][2] = Bishop(Color.BLACK)
-        self.board[0][3] = Queen(Color.BLACK)
-        self.board[0][4] = King(Color.BLACK)
+        self.board[0][3] = King(Color.BLACK)
+        self.board[0][4] = Queen(Color.BLACK)
         self.board[0][5] = Bishop(Color.BLACK)
         self.board[0][6] = Knight(Color.BLACK)
         self.board[0][7] = Rook(Color.BLACK)
@@ -475,10 +476,10 @@ class ChessBoard:
         for position, moves in moves.items():
             item = {}
             item['name'] = str(self.board[position.row][position.col])
-            item['position'] = RowLetter(position.row).name + str(position.col)
+            item['position'] = ColLetter(position.col).name + str(8-position.row)
             item['moves'] = []
             for move in moves:
-                item['moves'].append({'move': RowLetter(move.toPos.row).name + str(move.toPos.col)})
+                item['moves'].append({'move': ColLetter(move.toPos.col).name + str(8-move.toPos.row)})
             movesList.append(item)
         return movesList
 
@@ -503,6 +504,8 @@ class ChessBoard:
             self.board[move.fromPos.row][move.fromPos.col+2*direction] = fromPiece
             self.board[move.toPos.row][move.toPos.col] = None
             self.board[move.toPos.row][move.fromPos.col+direction] = toPiece
+            fromPiece.hasSecondMoved = True if fromPiece.hasMoved else False
+            fromPiece.hasMoved = True
             return
 
         # En passant
@@ -511,11 +514,14 @@ class ChessBoard:
             self.board[move.fromPos.row][move.fromPos.col] = None
             self.board[move.toPos.row+direction][move.toPos.col] = fromPiece
             self.board[move.toPos.row][move.toPos.col] = None
+            fromPiece.hasSecondMoved = True if fromPiece.hasMoved else False
+            fromPiece.hasMoved = True
             return
 
         self.board[move.fromPos.row][move.fromPos.col] = None
         self.board[move.toPos.row][move.toPos.col] = fromPiece
 
+        fromPiece.hasSecondMoved = True if fromPiece.hasMoved else False
         fromPiece.hasMoved = True
 
         if toPiece is not None and toPiece.name == "King":
@@ -593,5 +599,5 @@ class ChessBoard:
                     elem['color'] = elem['color'].name
                 else:
                     elem = None
-                board.append({'position': RowLetter(i).name[0]+str(j), 'piece': elem})
+                board.append({'position': ColLetter(j).name[0] + str(8-i), 'piece': elem})
         return board
