@@ -1,3 +1,5 @@
+var ws = new WebSocket("ws://rpi.rawhat.net:8080/invite");
+
 function updateUserRows(){
 	$.ajax({
 		method: "GET",
@@ -79,8 +81,6 @@ $(document).ready(function(event){
 	var updateUsers = setInterval(updateUserRows, 3000);
 	Cookies.remove('player_color', {path: '/'});
 	Cookies.remove('gameID', {path: '/'});
-
-	var ws = new WebSocket("ws://rpi.rawhat.net:8080/invite");
 
 	ws.onopen = function(evt){
 		console.log("socket connected");
