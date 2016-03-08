@@ -461,6 +461,9 @@ class ChessBoard:
     def getPossibleMoves(self, color):
         moves = {}
 
+        if self.state.name[6:] == "CHECKMATE":
+            return moves
+
         for i in range(0, 8):
             for j in range(0, 8):
                 p = Position(i, j)
