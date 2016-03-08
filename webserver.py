@@ -140,7 +140,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
         gameBoard = gamesList[gameID][0].board
 
         if message['function'] == 'get_moves':
-            if self.get_secure_cookie('player_color').decode('ascii') == gamesList[gameID][0].current.name.lower():
+            if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) == gamesList[gameID][0].current:
                 self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": gamesList[gameID][0].getPossibleMovesJSON()}))
 
             else:
@@ -154,7 +154,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
 
             move = pychess.Move(fromPos, toPos)
 
-            if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) is gamesList[gameID][0].current and gameBoard.isValidMove(move, gamesList[gameID][0].current):
+            if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) == gamesList[gameID][0].current and gameBoard.isValidMove(move, gamesList[gameID][0].current):
                 gamesList[gameID][0].applyMove(move)
 
                 index = 1 if gamesList[gameID][2] == self else 2

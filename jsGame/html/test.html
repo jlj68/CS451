@@ -1,102 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<title>Game Canvas</title>
+    <meta charset="utf-8" />
+    <title>Game Canvas</title>
 
-	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="../css/bootstrap-theme.min.css">
-	<link rel="stylesheet" type="text/css" href="../css/chessboard-0.3.0.min.css">
-	<link rel="stylesheet" type="text/css" href="../css/custom.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/chessboard-0.3.0.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/custom.css">
 
-	<!-- Load socket.io client side contents. -->
-		<!--script src="/socket.io/socket.io.js"></script-->
-		<script src="https://code.jquery.com/jquery-1.10.1.js"></script>
-		<script src="../js/bootstrap.min.js" type="text/javascript"></script>
-		<script src="../js/chessboard-0.3.0.test.min.js" type="text/javascript"></script>
+    <!-- Load socket.io client side contents. -->
+        <!--script src="/socket.io/socket.io.js"></script-->
+    <script src="https://code.jquery.com/jquery-1.10.1.js"></script>
+    <script src="../js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../js/chessboard-0.3.0.test.min.js" type="text/javascript"></script>
 
 
 </head>
 <body>
-	<nav class="navbar navbar-default">
-	  <div class="container-fluid">
-	    <!-- Brand and toggle get grouped for better mobile display -->
-	    <div class="navbar-header">
-	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-	        <span class="sr-only">Toggle navigation</span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	      </button>
-	      <a class="navbar-brand" href="#">Brand</a>
-	    </div>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="#">Brand</a>
+            </div>
 
-	    <!-- Collect the nav links, forms, and other content for toggling -->
-	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		      <ul class="nav navbar-nav">
-		        <li><a href="#">About us</a></li>
-		        <li><a href="#">How to play</a></li>
-		        <li class="active"><a href="#">New Game <span class="sr-only">(current)</span></a></li>
-		      </ul>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">How to play</a></li>
+                    <li class="active"><a href="#">New Game <span class="sr-only">(current)</span></a></li>
+                </ul>
 
-	      	<ul class="nav navbar-nav navbar-right">
-		    	<li><a class="user-navbar" href="#">{{ currentUser }}</a></li>    	
-	      	</ul>
-	    </div><!-- /.navbar-collapse -->
-	  </div><!-- /.container-fluid -->
-	</nav>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a class="user-navbar" href="#">{{ currentUser }}</a></li>        
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
 
-	<div class="container">
-    	<div id="board" class= "col-lg-1 center-block" ></div>
+    <div class="container">
+        <!-- <div id="board" class= "col-lg-1 center-block" ></div> -->
 
-		<!-- Button -->
-		<div class="form-group">
-		   <label class="col-md-4 control-label" for="singlebutton"></label>
-		   <div class="col-md-4 center-block">
-			    <button id="forfeit-btn" name="forfeitbutton" class="btn btn-primary center-block">Forfeit!</button>
-		   </div>  
-		</div>
-    	
-	</div>
+        <div id="game_state" style="text-align:center;">GameState : Display Game State</div>
 
-	<!-- Modal to forfeit-->
+        <div class="row" sytle="margin:auto;">
+            <div class="col-sm-2" style="background-color:lavender;height:500px;">
+                <span id="white_info" style="position:absolute;text-align:center;bottom:0;">White Information</span>
+            </div>
+            <!-- <div id="board" class="col-sm-8 control-label" ></div> -->
+            <div class="col-sm-8" style="background-color:lavenderblush;height:500px;">
+                <div id="board" class="col-lg-1 center-block" ></div>
+            </div>
+
+            <div class="col-sm-2" style="background-color:lavender;height:500px;">
+                <span id="black_info" style="position:absolute;text-align:center;top:0;">Black Information</span>
+            </div>
+        </div>
+
+        <!-- Button -->
+        <div class="form-group">
+           <!-- <label class="col-md-4 control-label" for="singlebutton"></label> -->
+           <!-- <div class="col-4-md center-block"> -->
+           <div class="col-lg-1 center-block">
+                <button id="forfeit-btn" name="forfeitbutton" class="btn btn-primary center-block">Forfeit!</button>
+           </div>
+        </div>
+    </div>
+
+    <!-- Modal to forfeit-->
     <div class="modal fade" id="forfeitModal" role="dialog">
         <div class="modal-dialog">
       
-	        <!-- Modal content-->
-	        <div class="modal-content">
-	          <div class="modal-header text-center">
-	            <h3 class="modal-title">Forfeit</h3>
-	          </div>
-	          <div class="modal-body text-center">
-	          	<h4>Do you want to forfeit this game?</h4>	            
-	          </div>
-	          <div class="modal-footer">
-	          	<button class="btn" data-dismiss="modal" aria-hidden="true" id="cancelInviteBtn">Cancel</button>
-	            <button type="button" class="btn btn-default" id="forfeitConfirmBtn" >Forfeit!</button>
-	          </div>
-	        </div>
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header text-center">
+                <h3 class="modal-title">Forfeit</h3>
+              </div>
+              <div class="modal-body text-center">
+                  <h4>Do you want to forfeit this game?</h4>                
+              </div>
+              <div class="modal-footer">
+                  <button class="btn" data-dismiss="modal" aria-hidden="true" id="cancelInviteBtn">Cancel</button>
+                <button type="button" class="btn btn-default" id="forfeitConfirmBtn" >Forfeit!</button>
+              </div>
+            </div>
         
-      	</div>
+          </div>
     </div>
     <!-- Status Modal-->
     <div class="modal fade" id="statusModal" role="dialog">
         <div class="modal-dialog">
       
-	        <!-- Modal content-->
-	        <div class="modal-content">
-	          <div class="modal-header text-center">
-	            <h3 class="modal-title">Game Status</h3>
-	          </div>
-	          <div class="modal-body text-center">	            
-	          </div>
-	        </div>
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header text-center">
+                <h3 class="modal-title">Game Status</h3>
+              </div>
+              <div class="modal-body text-center">                
+              </div>
+            </div>
         
-      	</div>
+          </div>
     </div>
 
 
-	<script src="../js/game.core.js" type="text/javascript"></script>
-	<script src="../js/client.game.js" type="text/javascript"></script>
+    <script src="../js/game.core.js" type="text/javascript"></script>
+    <script src="../js/client.game.js" type="text/javascript"></script>
 </body>
 </html>
