@@ -62,11 +62,16 @@ $(document).ready(function(event){
 
 
 		if(response.function === "list_moves"){
+			var update_board = parseTable(response.updated_board);
+
+			// update board
+			chess.updateBoard(update_board);
 			console.log("set possible moves");
+
 			chess.flipTurn(response.moves.length !== 0);
 			if(response.moves.length !== 0){
 				$('#game_state').html('Your turn.');
-				if(response.state !== undefined && response.state.match("check"))
+				if(response.state !== undefined && response.state.match("CHECK"))
 					$('#game_state').append(' : ' + response.state);
 			}
 			chess.setMoves(response.moves);
