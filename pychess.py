@@ -195,7 +195,7 @@ class King(Piece):
     def checkPieces(self, position1, position2, board):
         for index in range(position1.col+1, position2.col):
             piece = board[position1.row][index]
-            if(piece is not None):
+            if piece is not None:
                 return False
         return True
 
