@@ -161,7 +161,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 index2 = 2 if index == 1 else 1
 
                 gamesList[gameID][index].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].board.getBoardJson()}))
-                gamesList[gameID][index2].write_message(tornado.escape.json_encode({'function': 'success', 'state': gameBoard.state.name}))
+                gamesList[gameID][index2].write_message(tornado.escape.json_encode({'function': 'success', 'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].board.getBoardJson()}))
 
                 if gameBoard.state == pychess.State.BLACK_WIN or gameBoard.state == pychess.State.WHITE_WIN:
                     print("player win")
