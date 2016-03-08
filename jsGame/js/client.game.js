@@ -66,7 +66,7 @@ $(document).ready(function(event){
 			chess.flipTurn(response.moves.length !== 0);
 			if(response.moves.length !== 0){
 				$('#game_state').html('Your turn.');
-				if(response.state.match("check"))
+				if(response.state !== undefined && response.state.match("check"))
 					$('#game_state').append(' : ' + response.state);
 			}
 			chess.setMoves(response.moves);
