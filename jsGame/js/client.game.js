@@ -39,6 +39,7 @@ $(document).ready(function(event){
 			$('.modal-body').append("<p> Your opponent has forfeited.</p>");
 			$('#statusModal').data('hideInterval', setTimeout(function(){
 			            $('#statusModal').modal('hide');
+									window.location.href = "/lobby";
 			    }, 3000));
 		}
 
@@ -92,7 +93,7 @@ $(document).ready(function(event){
 
 
 			// pull up modal to notify that game is over
-
+			window.location.href = "/lobby";
 		}
 
 		// from alex -- remove if you want
@@ -116,6 +117,7 @@ $(document).ready(function(event){
 			ws.send(JSON.stringify({
 	                'function': 'forfeit'
 	        }));
+					window.location.href = "/lobby";
 		});
 
 	});

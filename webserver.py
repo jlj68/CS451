@@ -199,6 +199,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
             gameID = int(self.get_secure_cookie('gameID').decode('ascii'))
             index = 1 if gamesList[gameID][2] == self else 2
             gamesList[gameID][index].write_message(tornado.escape.json_encode({'function': 'request_forfeit', 'username': playerToForfeit}))
+            print(playerToForfeit + ' forfeits against ' + gamesList[gameID][1 if index == 2 else 2].get_secure_cookie('username').decode('ascii'))
             connectedUsers[playerToForfeit].updateRating(connectedUsers[gamesList[gameID][1 if index == 2 else 2].get_secure_cookie('username').decode('ascii')], "L")
             del gamesList[gameID]
 
