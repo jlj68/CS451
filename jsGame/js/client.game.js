@@ -23,6 +23,7 @@ $(document).ready(function(event){
 		Cookies.remove('player_color', {path: '/'});
 		Cookies.remove('gameID', {path: '/'});
 		console.log("socket closed");
+		window.location.replace = '/lobby';
 	};
 
 
