@@ -24,6 +24,7 @@ var Piece = (function(piece, position){
 			return this.possibleMove;
 		},
 		setPossibleMoves: function(data){
+			console.log(data);
 			this.possibleMove = data;
 		}
 
@@ -237,7 +238,7 @@ var GameLogic = (function(socket, turn, color){
 		},
 		setGameOver: function(bool){
 			game.setGameOver(bool);
-			
+
 		},
 		isGameOver: function(){
 			return game.isGameOver();
