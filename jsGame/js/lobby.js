@@ -1,5 +1,82 @@
+function updateUserRows(){
+	$.ajax({
+		method: "GET",
+		url: "/users"
+	}).done(function(data){
+
+		var json = JSON.parse(data);
+
+		resetRows();
+
+		for(var i = 0; i < json.users.length; i++){
+			var user = json.users[i];
+			addRow(i, user.username, user.wins, user.losses, user.rating);
+		}
+
+		// reset modal
+		$('#myModal').on('hidden.bs.modal', function () {
+						$('.modal-body').empty();
+						$('#sendInviteBtn').removeClass('hide');
+		});
+		$('#inviteModal').on('hidden.bs.modal', function () {
+						$('.modal-body').empty();
+		});
+
+
+		$('.invite-btn').unbind().click(function(evt){
+			evt.preventDefault();
+			var target = this.value;
+
+			// show modal
+			$('<p>Send invitation to ' + target + '? </p>').appendTo('.modal-body');
+			$('#myModal').modal('show');
+
+			$('#sendInviteBtn').unbnid().click(function(){
+
+				console.log("send invite!");
+				ws.send(JSON.stringify({
+									'function': 'send',
+									'target': target
+							}));
+
+			});
+
+			$('#cancelInviteBtn').unbind().click(function(evt){
+				console.log("cancel invite!");
+				ws.send(JSON.stringify({
+									'function': 'cancel',
+									'target': target
+							}));
+			});
+
+
+		});
+
+		$('#declineInviteBtn').unbind().click(function(evt){
+			console.log("decline invitation");
+			ws.send(JSON.stringify({
+									'function': 'decline',
+									'target' : this.value
+							}));
+		});
+
+		$('#acceptInviteBtn').unbind().click(function(evt){
+			console.log("accept invitation");
+			// todo create new game
+			ws.send(JSON.stringify({
+				'function': 'accept',
+				'target': this.value
+			}));
+		});
+	}).fail(function(){
+		//To do
+		// display error on screen
+		console.log("get no data");
+	});
+}
 
 $(document).ready(function(event){
+	var updateUsers = setInterval(updateUserRows, 3000);
 	Cookies.remove('player_color', {path: '/'});
 	Cookies.remove('gameID', {path: '/'});
 
@@ -75,7 +152,7 @@ $(document).ready(function(event){
 
 			$('#inviteModal').modal('show');
 			$('.modal-body').empty();
-			$('.modal-body').append("<p> You have received an invitation from" + response.sender + "</p>");
+			$('.modal-body').append("<p> You have received an invitation from " + response.sender + "</p>");
 			$('#acceptInviteBtn').val(response.sender);
 			$('#declineInviteBtn').val(response.sender);
 		}
@@ -86,6 +163,7 @@ $(document).ready(function(event){
 
 	ws.onclose = function(evt){
 		console.log("connection closed");
+		clearInterval(updateUsers);
 		if(($("#myModal").data('bs.modal') || {isShown: false}).isShown){
 			cancelModal("#myModal", "Invitation is cancelled!");
 		}
@@ -188,7 +266,16 @@ function cancelModal(modalid, text){
 	    }, 2000));
 }
 
-
+function resetRows(){
+	$('tr[id*="addr"]').each(function(index, item)){
+		if(index == 0){
+			$(this).html('');
+		}
+		else{
+			$(this).remove();
+		}
+	}
+}
 
 function addRow(counter, username, win, loss, rate){
 	var that = this;
