@@ -44,17 +44,21 @@ $(document).ready(function(event){
 		}
 
 		if(response.function ===  "success" && response.updated_board !== undefined){
-			var board = JSON.parse(response.updated_board);
-			console.log(board);
+			// todo: notify user it's opponent turn
+			
+		}
+		if(response.state === "MATCH"){
+			console.log("match");
 			// Todo: parse the board
-			var update_board;
+			var update_board = parseTable(response.updated_board);
 
 			// update board
-			chess.updateBoard(update_board);
+			chess.updateBoard(updated_board);
 
 			// call the server to send possible moves
 			ws.send(JSON.stringify({'function': 'get_moves'}));
 		}
+
 
 		if(response.function === "list_moves"){
 			console.log("set possible moves");
@@ -103,3 +107,13 @@ $(document).ready(function(event){
 
 	});
 });
+
+function parseTable(table){
+	var result = {};
+	for(var i =0; i < table.length; i++){
+		var position = table[i].position;
+		var piece = table[i].piece.name;
+		result[position] = piece;
+	}
+	return result;
+}
