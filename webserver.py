@@ -127,7 +127,7 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
 class GameSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
-        
+
     def open(self):
         for key, values in gamesList.items():
             if self.get_secure_cookie('username').decode('ascii') in values:
@@ -149,7 +149,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
         elif message['function'] == 'make_move':
             fromPosLetter = message['move']['fromPos']
             toPosLetter = message['move']['fromPos']
-
+            print(fromPosLetter + "->" + toPosLetter)
             fromPos = pychess.Position(pychess.ColLetter.fromString(fromPosLetter[0]).value, 8 - int(fromPosLetter[1]))
             toPos = pychess.Position(pychess.ColLetter.fromString(toPosLetter[0]).value, 8 - int(toPosLetter[1]))
 
