@@ -46,7 +46,7 @@ class GameHandler(tornado.web.RequestHandler):
 
 class GamePageHandler(tornado.web.RequestHandler):
     def get(self, gameID):
-        if gameID not in gamesList.keys():
+        if int(gameID) not in gamesList.keys():
             self.render("./jsGame/html/lobby.html", currentUser=self.current_user)
         else:
             color = ''
