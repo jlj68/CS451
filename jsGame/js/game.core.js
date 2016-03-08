@@ -97,17 +97,19 @@ var Game = (function(turn){
 var GameLogic = (function(socket, turn){	
 	var board = {};	
 	var game;
+	var ws;
 
 	function GameLogic (socket, turn){
 		var that = this;
 			game = new Game(turn);
+			ws = socket;
 
 		var config_board = {
 			orientation: 'white',
 			position: 'start',
 			draggable: true,
 			dropOffBoard: 'snapback',
-			onChange: that.onChangeMove,
+			//onChange: that.onChangeMove,
 			onDragStart: that.onDragStart,
 			onDrop: that.onDrop,
 			highlightMove: that.highlightMove,
@@ -115,7 +117,8 @@ var GameLogic = (function(socket, turn){
 			onMouseoverSquare: that.onMouseOver,
 			onMouseoutSquare: that.onMouseOut,
 			setMoves: that.setMoves,
-			resetMoves: that.resetMoves
+			resetMoves: that.resetMoves,
+			//position: that.updateBoard
 
 		};
 
@@ -126,18 +129,17 @@ var GameLogic = (function(socket, turn){
 		init: function(config){
 			return ChessBoard('board', config);		
 		},
-		// fired when there is a change in move
+		/*// fired when there is a change in move
 		onChangeMove : function(oldMove, newMove){
 			game.flipTurn();
-			console.log("Flip side. Now turn is: " + game.getTurn());
-		},
+		},*/
 		//fired when piece is picked up. Returns false to prevent the pick up
 		onDragStart : function(source, piece, position, orientation){
-			if(game.isGameOver() === true ||
+			/*if(game.isGameOver() === true ||
 				(game.getTurn() === 'white' && piece.search(/^b/) !== -1) ||
       			(game.getTurn() === 'black' && piece.search(/^w/) !== -1)){
 				return false;
-			}
+			}*/
 		},
 		onDrop : function(source, target, piece){
 			this.removeHighlight();
@@ -148,6 +150,8 @@ var GameLogic = (function(socket, turn){
 				if(possibleMoves[i].move === target){
 					//reste the possible move list of game
 					game.resetPossibleMove();
+					game.flipTurn();
+					this.sendMove(source, target)
 					return;
 				}					
 			}
@@ -188,7 +192,27 @@ var GameLogic = (function(socket, turn){
 		},
 		resetMoves: function(){
 			game.resetPossibleMove();
+		},
+		updateBoard: function(data){
+			board.position(data);
+			game.flipTurn();
+
+		},
+		sendMove: function(oldPos, newPos){
+			console.log("send move");
+			ws.send(JSON.stringify(
+				{'function': 'make_moves',
+				'move': {
+					'fromPos':{
+						'rowcol': oldPos
+					}, 
+					'toPos': {
+						'rowcol': newPos
+					}
+				}
+			}));
 		}
+
 
 	};
 

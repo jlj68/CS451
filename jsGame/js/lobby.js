@@ -1,6 +1,6 @@
 
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://rpi.rawhat.net:8080/invite");
+	var ws = new WebSocket("ws://127.0.0.1:8080/invite");
 
 	ws.onopen = function(evt){
 		console.log("socket connected");

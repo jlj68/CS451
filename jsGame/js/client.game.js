@@ -1,7 +1,7 @@
 var chess = {};
 var forfeitBtn = $('#forfeit-btn');
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://rpi.rawhat.net:8080/game/socket");
+	var ws = new WebSocket("ws://127.0.0.1:8080/game/socket");
 	chess = new GameLogic(ws);
 
 	ws.onopen = function(evt){
@@ -14,12 +14,13 @@ $(document).ready(function(event){
 		console.log("socket closed");
 	};
 
-	$(document).click(function(){
+	/*$(document).click(function(){
 			ws.send(JSON.stringify({'function': 'board_state'}));
-	});
+	});*/
 
 	ws.onmessage = function(msg){
 		var response = JSON.parse(msg.data);
+		console.log(response);
 
 		// other user forfeit
 		if(response.function === "request_forfeit"){
@@ -32,15 +33,22 @@ $(document).ready(function(event){
 			    }, 3000));
 		}
 
+		if(response.state !==  undefined && response.updated_board !== undefined){
+			var board = JSON.parse(response.updated_board);
+			console.log(board);
+		}
+
 		// from alex -- remove if you want
-		if(response.function === "list_moves"){
+		/*if(response.function === "list_moves"){
 			console.log(response.moves);
+			//chess.testing();
 		}
 
 		// from alex -- remove if you want
 		if(response.state !== undefined){
 			console.log("game state: " + response.state);
-		}
+			//chess.testing();
+		}*/
 	};
 
 	forfeitBtn.click(function(){
