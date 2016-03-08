@@ -36,7 +36,7 @@ var Piece = (function(piece, position){
 var Game = (function(turn){
 	var color, turn;
 	var win;
-	
+
 
 	var possibleMoves;
 
@@ -45,7 +45,7 @@ var Game = (function(turn){
 		this.turn = turn;
 		this.color = color;
 		this.win = false;
-		this.possibleMoves = [];		
+		this.possibleMoves = [];
 	}
 
 	Game.prototype = {
@@ -73,9 +73,9 @@ var Game = (function(turn){
 				var piece = new Piece(list[i].name, list[i].position);
 				piece.setPossibleMoves(list[i].moves);
 				this.possibleMoves.push(piece);
-				
+
 			}
-		}, 
+		},
 		getPossibleMove: function(piece, position){
 
 			for(var i = 0; i < this.possibleMoves.length; i++){
@@ -97,8 +97,8 @@ var Game = (function(turn){
 
 
 
-var GameLogic = (function(socket, turn, color){	
-	var board = {};	
+var GameLogic = (function(socket, turn, color){
+	var board = {};
 	var game;
 	var ws;
 
@@ -128,12 +128,12 @@ var GameLogic = (function(socket, turn, color){
 		};
 
 		board = that.init(config_board, color);
-	}	
+	}
 
-	GameLogic.prototype = {	
+	GameLogic.prototype = {
 		init: function(config, color){
-			var board_init =  ChessBoard('board', config);	
-			board_init.orientation(color);	
+			var board_init =  ChessBoard('board', config);
+			board_init.orientation(color);
 			return board_init;
 		},
 		/*// fired when there is a change in move
@@ -142,7 +142,7 @@ var GameLogic = (function(socket, turn, color){
 		},*/
 		//fired when piece is picked up. Returns false to prevent the pick up
 		onDragStart : function(source, piece, position, orientation){
-			
+
 			if(game.isGameOver() === true || !game.isTurn() ||
 				(game.getColor() === 'white' && piece.search(/^b/) !== -1) ||
       			(game.getColor() === 'black' && piece.search(/^w/) !== -1)){
@@ -151,7 +151,7 @@ var GameLogic = (function(socket, turn, color){
 		},
 		onDrop : function(source, target, piece){
 			this.removeHighlight();
-			
+
 			var possibleMoves = game.getPossibleMove(piece, source);
 
 			for(var i = 0; i<possibleMoves.length; i++){
@@ -161,7 +161,7 @@ var GameLogic = (function(socket, turn, color){
 					game.flipTurn();
 					this.sendMove(source, target)
 					return;
-				}					
+				}
 			}
 
 			//if illegal move, snapback to original place
@@ -175,7 +175,7 @@ var GameLogic = (function(socket, turn, color){
 				background = '#77C699';
 			}
 
-			squareE.css('background', background);	
+			squareE.css('background', background);
 		},
 		removeHighlight: function() {
 		  	$('#board .square-55d63').css('background', '');
@@ -193,8 +193,8 @@ var GameLogic = (function(socket, turn, color){
 					this.highlightMove(moves[i].move);
 				}
 			}
-			
-			
+
+
 		},
 		onMouseOut: function(){
 			this.removeHighlight();
@@ -213,11 +213,11 @@ var GameLogic = (function(socket, turn, color){
 		sendMove: function(oldPos, newPos){
 			console.log("send move");
 			ws.send(JSON.stringify(
-				{'function': 'make_moves',
+				{'function': 'make_move',
 				'move': {
 					'fromPos':{
 						'rowcol': oldPos
-					}, 
+					},
 					'toPos': {
 						'rowcol': newPos
 					}
@@ -231,8 +231,3 @@ var GameLogic = (function(socket, turn, color){
 	return GameLogic;
 
 })();
-
-
-
-
-	
