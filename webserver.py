@@ -85,6 +85,9 @@ class UserDataHandler(tornado.web.RequestHandler):
         self.write(tornado.escape.json_encode({ 'user_data': userDict }))
 
 class InviteSocketHandler(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        return True
+
     def open(self):
         websocketClients[self.get_secure_cookie('username').decode('ascii')] = self
         connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
@@ -122,6 +125,9 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
         print("Socket closed")
 
 class GameSocketHandler(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        return True
+        
     def open(self):
         for key, values in gamesList.items():
             if self.get_secure_cookie('username').decode('ascii') in values:
