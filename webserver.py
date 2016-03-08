@@ -28,6 +28,8 @@ class MainHandler(BaseHandler):
 
 class LobbyHandler(tornado.web.RequestHandler):
     def get(self):
+        if self.get_secure_cookie('username').decode('ascii') not in connectedUsers.keys():
+            connectedUsers[self.get_secure_cookie('username').decode('ascii')] = User(self.get_secure_cookie('username').decode('ascii'))
         self.render("./jsGame/html/lobby.html", currentUser=self.get_secure_cookie('username').decode('ascii'))
 
 class GameHandler(tornado.web.RequestHandler):
