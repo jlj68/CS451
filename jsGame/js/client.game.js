@@ -1,5 +1,6 @@
 var chess = {};
 var forfeitBtn = $('#forfeit-btn');
+
 $(document).ready(function(event){
 	var ws = new WebSocket("ws://127.0.0.1:8080/game/socket");
 	chess = new GameLogic(ws);
@@ -33,7 +34,7 @@ $(document).ready(function(event){
 			    }, 3000));
 		}
 
-		if(response.state !==  undefined && response.updated_board !== undefined){
+		if(response.state !==  undefined && response.function === "success"){
 			var board = JSON.parse(response.updated_board);
 			console.log(board);
 		}
