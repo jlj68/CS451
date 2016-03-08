@@ -53,7 +53,7 @@ def getTestBoard1():
 
     chessBoard.setBoard(board)
     return chessBoard
- 
+
 
 def getTestBoard2():
     chessBoard = pychess.ChessBoard()
@@ -69,7 +69,7 @@ def getTestBoard2():
 
     chessBoard.setBoard(board)
     return chessBoard
- 
+
 
 def getTestBoard3():
     chessBoard = pychess.ChessBoard()
@@ -170,16 +170,13 @@ def compareBoards(board1, board2):
         for j in range(len(board1[i])):
             p1 = board1[i][j]
             p2 = board2[i][j]
-            if(not ((p1 is None) == (p2 is None))):
+            if p1 is None != p2 is None:
                 return False
 
-            if(p1 is not None and p2 is not None):
-                if(p1.color != p2.color):
-                    return False
-                if(p1.name != p2.name):
-                    return False
+            if p1 is not None and p2 is not None and (p1.color != p2.color or p1.name != p2.name):
+                return False
     return True
-    
+
 
 class TestPychess(unittest.TestCase):
     def test_king(self):
@@ -396,7 +393,7 @@ class TestPychess(unittest.TestCase):
         testBoard.checkState(pychess.Color.BLACK)
         state = testBoard.state
         # pdb.set_trace()
-        self.assertTrue(state == pychess.State.BLACK_CHECKMATE) 
+        self.assertTrue(state == pychess.State.BLACK_CHECKMATE)
 
 
     def test_chessboard_applymove1(self):
@@ -458,4 +455,3 @@ class TestPychess(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
