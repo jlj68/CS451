@@ -61,6 +61,12 @@ $(document).ready(function(event){
 
 		if(response.function === "list_moves"){
 			console.log("set possible moves");
+			if(response.moves.length !== 0) {
+				chess.flipTurn(true);
+			}
+			else {
+				chess.flipTurn(false);
+			}
 			chess.setMoves(response.moves);
 		}
 

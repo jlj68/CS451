@@ -142,6 +142,12 @@ var GameLogic = (function(socket, turn, color){
 			board_init.orientation(color);
 			return board_init;
 		},
+		flipTurn : function(myTurn){
+			if(!game.isTurn() && myTurn)
+				game.flipTurn();
+			else if(game.isTurn() && !myTurn)
+				game.flipTurn();
+		},
 		/*// fired when there is a change in move
 		onChangeMove : function(oldMove, newMove){
 			game.flipTurn();
@@ -164,8 +170,7 @@ var GameLogic = (function(socket, turn, color){
 				if(possibleMoves[i].move === target){
 					//reste the possible move list of game
 					game.resetPossibleMove();
-					game.flipTurn();
-					this.sendMove(source, target)
+					this.sendMove(source, target);
 					return;
 				}
 			}
