@@ -43,7 +43,8 @@ $(document).ready(function(event){
 
 		if(response.function ===  "success" && response.updated_board !== undefined){
 			// todo: notify user it's opponent turn
-
+			var updated_board = parseTable(response.updated_board);
+			chess.updateBoard(update_board);
 		}
 		if(response.state === "MATCH"){
 			console.log("match");
