@@ -147,9 +147,8 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": []}))
 
         elif message['function'] == 'make_move':
-            fromPosLetter = message['move']['fromPos']
-            toPosLetter = message['move']['fromPos']
-            print(fromPosLetter + "->" + toPosLetter)
+            fromPosLetter = message['move']['fromPos']['rowcol']
+            toPosLetter = message['move']['fromPos']['rowcol']
             fromPos = pychess.Position(pychess.ColLetter.fromString(fromPosLetter[0]).value, 8 - int(fromPosLetter[1]))
             toPos = pychess.Position(pychess.ColLetter.fromString(toPosLetter[0]).value, 8 - int(toPosLetter[1]))
 
