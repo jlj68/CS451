@@ -2,7 +2,7 @@ var chess = {};
 var forfeitBtn = $('#forfeit-btn');
 
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://127.0.0.1:8080/game/socket");
+	var ws = new WebSocket("ws://rpi.rawhat.net:8080/game/socket");
 	var color = $('#color').text();
 
 	var turn = (color == 'white' ? true: false);
