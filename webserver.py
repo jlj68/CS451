@@ -143,8 +143,8 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
             fromPosLetter = message['move']['fromPos']
             toPosLetter = message['move']['fromPos']
 
-            fromPos = pychess.Position(pychess.RowLetter.fromString(fromPosLetter[0]).value, int(fromPosLetter[1]))
-            toPos = pychess.Position(pychess.RowLetter.fromString(toPosLetter[0]).value, int(toPosLetter[1]))
+            fromPos = pychess.Position(pychess.ColLetter.fromString(fromPosLetter[0]).value, 8 - int(fromPosLetter[1]))
+            toPos = pychess.Position(pychess.ColLetter.fromString(toPosLetter[0]).value, 8 - int(toPosLetter[1]))
 
             move = pychess.Move(fromPos, toPos)
 

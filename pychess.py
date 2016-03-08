@@ -26,7 +26,7 @@ class Color(Enum):
         return getattr(cls, string.upper(), None)
 
 @unique
-class RowLetter(Enum):
+class ColLetter(Enum):
     a = 0
     b = 1
     c = 2
@@ -475,10 +475,10 @@ class ChessBoard:
         for position, moves in moves.items():
             item = {}
             item['name'] = str(self.board[position.row][position.col])
-            item['position'] = RowLetter(position.row).name + str(position.col)
+            item['position'] = ColLetter(position.col).name + str(8-position.row)
             item['moves'] = []
             for move in moves:
-                item['moves'].append({'move': RowLetter(move.toPos.row).name + str(move.toPos.col+1)})
+                item['moves'].append({'move': ColLetter(move.toPos.col).name + str(8-move.toPos.row)})
             movesList.append(item)
         return movesList
 
@@ -593,5 +593,5 @@ class ChessBoard:
                     elem['color'] = elem['color'].name
                 else:
                     elem = None
-                board.append({'position': RowLetter(i).name[0]+str(j+1), 'piece': elem})
+                board.append({'position': ColLetter(j).name[0] + str(8-i), 'piece': elem})
         return board
