@@ -5,7 +5,7 @@ var gameState = $('#game_state');
 $(document).ready(function(event){
 	var ws = new WebSocket("ws://192.168.1.238:8080/game/socket");
 	var color = $('#color').text();
-
+	setColor(color);
 	var turn = (color == 'white' ? true: false);
 
 	chess = new GameLogic(ws, turn, color);
@@ -39,7 +39,7 @@ $(document).ready(function(event){
 
 		// other user forfeit
 		if(response.function === "request_forfeit"){			
-			var message = "<h4> Congratulation, you won!</h4><p> Your opponent has forfeited.</p>";
+			var message = "<h5> Congratulation, you won!</h5><h6> Your opponent has forfeited.</h6>";
 			showStatusModal(message);
 		}
 
@@ -72,18 +72,18 @@ $(document).ready(function(event){
 
 			if(response.reason === "DRAW"){
 				chess.setGameStatus("draw");
-				var message = "<h4> This game is a draw. Good luck next time!<h4>";
+				var message = "<h5> This game is a draw. Good luck next time!<h5>";
 				showStatusModal(message);
 
 			} else if (response.reason === "BLACK_WIN" && color === "black"
 				|| response.reason === "WHITE_WIN" && color === "white"){
 				chess.setGameStatus("win");
-				var message = "<h4> Congratulation! You won :)<h4>";
+				var message = "<h5> Congratulation! You won :)<h5>";
 				showStatusModal(message);
 
 			} else {
 				chess.setGameStatus("lose");
-				var message = "<h4> Too bad you lost! Good luck next time.<h4>";
+				var message = "<h5> Too bad you lost! Good luck next time.<h5>";
 				showStatusModal(message);
 			}
 
@@ -131,4 +131,13 @@ function showStatusModal(message){
 	            $('#statusModal').modal('hide');
 							window.location.href = "/lobby";
 	    }, 3000));
+}
+
+function setColor(color){
+	var opColor = $('#colorOp');
+	if(color === "white"){
+		opColor.text("black");		
+	} else {
+		opColor.text("white");	
+	}
 }

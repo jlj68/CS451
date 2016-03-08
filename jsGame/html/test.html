@@ -47,30 +47,36 @@
     </nav>
 
     <div class="container">
-        <!-- <div id="board" class= "col-lg-1 center-block" ></div> -->
+        
 
-        <div id="game_state" style="text-align:center;">GameState : Display Game State</div>
+        <div class="text-center"><h6 id="game_state"></h6></div>
 
         <div class="row" sytle="margin:auto;">
-            <div class="col-sm-2" style="background-color:lavender;height:500px;">
-                <span id="white_info" style="position:absolute;text-align:center;bottom:0;">White Information</span>
+            <div class="col-md-3 col">
+                <span id="white_info" class="align-bottom">
+                  <h3>YOU</h3>
+                  <h5 id="color">{{color}}</h5>
+                </span>
             </div>
-            <!-- <div id="board" class="col-sm-8 control-label" ></div> -->
-            <div class="col-sm-8" style="background-color:lavenderblush;height:500px;">
-                <div id="board" class="col-lg-1 center-block" ></div>
+            <div class="col-md-6 col">
+              
+                <div id="board" class="center-block" ></div>
+              
+                
             </div>
 
-            <div class="col-sm-2" style="background-color:lavender;height:500px;">
-                <span id="black_info" style="position:absolute;text-align:center;top:0;">Black Information</span>
+            <div class="col-md-3 col">
+                <span id="black_info" class="align-top">
+                  <h3>OPPPONENT</h3>
+                  <h5 id="color">{{color}}</h5>
+                </span>
             </div>
         </div>
 
         <!-- Button -->
         <div class="form-group">
-           <!-- <label class="col-md-4 control-label" for="singlebutton"></label> -->
-           <!-- <div class="col-4-md center-block"> -->
-           <div class="col-lg-1 center-block">
-                <button id="forfeit-btn" name="forfeitbutton" class="btn btn-primary center-block">Forfeit!</button>
+           <div class="center-block">
+                <button id="forfeit-btn" name="forfeitbutton" class="btn flat-butt flat-primary-butt btn-lg center-block">Forfeit!</button>
            </div>
         </div>
     </div>
@@ -82,14 +88,14 @@
             <!-- Modal content-->
             <div class="modal-content">
               <div class="modal-header text-center">
-                <h3 class="modal-title">Forfeit</h3>
+                <h2 class="modal-title">Forfeit</h2>
               </div>
               <div class="modal-body text-center">
-                  <h4>Do you want to forfeit this game?</h4>                
+                  <h5>Do you want to forfeit this game?</h5>                
               </div>
               <div class="modal-footer">
-                  <button class="btn" data-dismiss="modal" aria-hidden="true" id="cancelInviteBtn">Cancel</button>
-                <button type="button" class="btn btn-default" id="forfeitConfirmBtn" >Forfeit!</button>
+                  <button class="btn btn-lg" data-dismiss="modal" aria-hidden="true" id="cancelInviteBtn">Cancel</button>
+                <button type="button" class="btn flat-butt flat-primary-butt" id="forfeitConfirmBtn" >Forfeit!</button>
               </div>
             </div>
         
@@ -102,7 +108,7 @@
             <!-- Modal content-->
             <div class="modal-content">
               <div class="modal-header text-center">
-                <h3 class="modal-title">Game Status</h3>
+                <h2 class="modal-title">Game Status</h2>
               </div>
               <div class="modal-body text-center">                
               </div>

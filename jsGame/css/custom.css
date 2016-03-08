@@ -1,3 +1,9 @@
+h2{
+	font-weight: bold;
+	font-size: 20px;
+	color: #b58863;
+	margin: 10px;
+}
 h3 {
 	font-weight: bold;
 	font-size: 18px;
@@ -9,15 +15,21 @@ h5{
 	font-size: 18px;
 	color: #514f4f;
 }
-h5{
+h4{
 	margin: 20px 10px;
 	font-size: 18px;
 	color: #d9135f;
 }
 h6 {
-	font-style: italic;;
+	font-style: italic;
 	font-size: 15px;
 	color: #727272;
+}
+
+p{
+	font-family: "Lato", sans-serif;
+	font-size: 15px;
+	color: #777676;
 }
 .user-navbar{
 	font-size: 18px;
@@ -44,4 +56,61 @@ h6 {
 #board{
 	width: 400px;
 	margin: 50px auto;
+}
+.col{
+	height: 500px;
+}
+.align-bottom{
+	position:absolute;
+	text-align:right;
+	right:0;
+	bottom:0;
+	margin-bottom: 50px;
+}
+
+.align-top{
+	position:absolute;
+	text-align:left;
+	left:0;
+	top:0;
+	margin-top: 50px;
+}
+.flat-butt {
+  border-radius: 6px;
+  font-family: "Lato", sans-serif;
+  font-size: 16.5px;
+  padding: 12px 20px;
+  border: 0;
+  background: #FFFFFF;
+  border-color: #f17e8b;
+  color: #FFFFFF;
+  cursor: pointer;
+  outline: 0;
+}
+.flat-butt:hover {
+  background: #c9ced1;
+}
+
+.flat-primary-butt {
+  background: #f2ca8e;
+
+}
+.flat-primary-butt:hover {
+  background: #f2ca8e;
+}
+
+.modal-body, .modal-footer{
+	border-top: none !important;
+}
+.invite-btn{
+	border-style: solid;
+	border-radius: 6px;
+	border-color: #f17e8b;
+	background: transparent;
+	color: #f17e8b;
+	width: 80px;
+}
+.invite-btn:hover{
+	background: #f17e8b;
+	color: #ffffff;
 }
