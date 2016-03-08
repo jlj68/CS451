@@ -16,14 +16,14 @@ $(document).ready(function(event){
 		if(chess.isTurn()){
 			ws.send(JSON.stringify({'function': 'get_moves'}));
 		}
-		
+
 	};
 
 	ws.onclose = function(evt){
 		Cookies.remove('player_color', {path: '/'});
 		Cookies.remove('gameID', {path: '/'});
 		console.log("socket closed");
-		Cookies.remove('player_color'); 
+		Cookies.remove('player_color');
 		Cookies.remove('gameID');
 	};
 
@@ -45,12 +45,13 @@ $(document).ready(function(event){
 
 		if(response.function ===  "success" && response.updated_board !== undefined){
 			// todo: notify user it's opponent turn
-			
+
 		}
 		if(response.state === "MATCH"){
 			console.log("match");
 			// Todo: parse the board
-			var update_board = parseTable(response.updated_board);
+			if(response.updated_board !== undefined)
+				var update_board = parseTable(response.updated_board);
 
 			// update board
 			chess.updateBoard(updated_board);
@@ -77,7 +78,7 @@ $(document).ready(function(event){
 				chess.setGameStatus("lose");
 			}
 
-			
+
 			// pull up modal to notify that game is over
 
 		}
@@ -109,6 +110,7 @@ $(document).ready(function(event){
 });
 
 function parseTable(table){
+	console.log(table);
 	var result = {};
 	for(var i =0; i < table.length; i++){
 		var position = table[i].position;
