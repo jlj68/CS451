@@ -60,6 +60,7 @@ $(document).ready(function(event){
 
 		if(response.function === "list_moves"){
 			console.log("set possible moves");
+			chess.resetMoves();
 			chess.setMoves(response.moves);
 		}
 

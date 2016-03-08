@@ -72,7 +72,6 @@ var Game = (function(turn){
 			this.status = status;
 		},
 		setPossibleMoves: function(list){
-			console.log('in game: ' + list);
 			for(var i =0; i < list.length; i++){
 				var piece = new Piece(list[i].name, list[i].position);
 				piece.setPossibleMoves(list[i].moves);
@@ -81,7 +80,6 @@ var Game = (function(turn){
 			}
 		},
 		getPossibleMove: function(piece, position){
-
 			for(var i = 0; i < this.possibleMoves.length; i++){
 				var p = this.possibleMoves[i];
 				if(p.getName() === piece && p.getPosition() === position)
@@ -208,7 +206,6 @@ var GameLogic = (function(socket, turn, color){
 			this.removeHighlight();
 		},
 		setMoves: function(data){
-			console.log('in gamelogic: ' + data);
 			game.setPossibleMoves(data);
 		},
 		resetMoves: function(){
