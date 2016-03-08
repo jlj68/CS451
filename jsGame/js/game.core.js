@@ -187,7 +187,7 @@ var GameLogic = (function(socket, turn, color){
 		  	$('#board .square-55d63').css('background', '');
 		},
 		onMouseOver: function(square, piece){
-
+			console.log("is turn: " + game.isTurn());
 			if(game.isTurn()){
 				// get a list of possible move for this piece
 				var moves = game.getPossibleMove(piece, square);
@@ -207,7 +207,6 @@ var GameLogic = (function(socket, turn, color){
 		},
 		setMoves: function(data){
 			game.setPossibleMoves(data);
-			console.log(game.possibleMoves);
 		},
 		resetMoves: function(){
 			game.resetPossibleMove();
