@@ -48,10 +48,12 @@ class GamePageHandler(tornado.web.RequestHandler):
         print(self.get_secure_cookie('player_color'))
         color = ''
         if self.get_secure_cookie('player_color') is None:
+            print('setting color to white')
             color = 'white'
             self.set_secure_cookie('player_color', 'white')
             self.set_secure_cookie('gameID', str(gameID))
-        if color == '':
+        else:
+            print('else is black')
             color = 'black'
         self.render("./jsGame/html/game.html", gameID=gameID, color=color, currentUser=self.get_secure_cookie('username').decode('ascii'))
 
