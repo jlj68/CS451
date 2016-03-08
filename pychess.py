@@ -478,7 +478,7 @@ class ChessBoard:
             item['position'] = RowLetter(position.row).name + str(position.col)
             item['moves'] = []
             for move in moves:
-                item['moves'].append({'move': RowLetter(move.toPos.row).name + str(move.toPos.col)})
+                item['moves'].append({'move': RowLetter(move.toPos.row).name + str(move.toPos.col+1)})
             movesList.append(item)
         return movesList
 
@@ -593,5 +593,5 @@ class ChessBoard:
                     elem['color'] = elem['color'].name
                 else:
                     elem = None
-                board.append({'position': RowLetter(i).name[0]+str(j), 'piece': elem})
+                board.append({'position': RowLetter(i).name[0]+str(j+1), 'piece': elem})
         return board
