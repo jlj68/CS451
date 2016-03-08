@@ -50,7 +50,7 @@ class GamePageHandler(tornado.web.RequestHandler):
             color = 'white'
             self.set_secure_cookie('player_color', 'white')
             self.set_secure_cookie('gameID', str(gameID))
-        if color == '':
+        else:
             color = 'black'
         self.render("./jsGame/html/game.html", gameID=gameID, color=color, currentUser=self.get_secure_cookie('username').decode('ascii'))
 
@@ -154,7 +154,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 index = 1 if gamesList[gameID][2] == self else 2
                 index2 = 2 if index == 1 else 1
 
-                gamesList[gameID][index].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].getBoardJson()}))
+                gamesList[gameID][index].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].board.getBoardJson()}))
                 gamesList[gameID][index2].write_message(tornado.escape.json_encode({'function': 'success', 'state': gameBoard.state.name}))
                 gamesList[gameID][index].write_message(tornado.escape.json_encode({"function": "list_moves", "moves": gamesList[gameID][0].getPossibleMovesJSON()}))
 
@@ -162,7 +162,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
 
         elif message['function'] == 'board_state':
-            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].getBoardJson()}))
+            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].board.getBoardJson()}))
 
         elif message['function'] == 'forfeit':
             playerToForfeit = self.get_secure_cookie('username').decode('ascii')
