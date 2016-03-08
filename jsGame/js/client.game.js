@@ -56,7 +56,7 @@ $(document).ready(function(event){
 			chess.updateBoard(update_board);
 
 			// call the server to send possible moves
-			ws.send(JSON.stringify({'function': 'get_moves'}));
+			//ws.send(JSON.stringify({'function': 'get_moves'}));
 		}
 
 
