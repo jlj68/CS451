@@ -34,28 +34,32 @@ var Piece = (function(piece, position){
 
 
 var Game = (function(turn){
-	var turn;
+	var color, turn;
 	var win;
 	
 
 	var possibleMoves;
 
 
-	function Game(turn){
+	function Game(color, turn){
 		this.turn = turn;
+		this.color = color;
 		this.win = false;
 		this.possibleMoves = [];		
 	}
 
 	Game.prototype = {
 		flipTurn: function(){
-			if(this.turn === 'white')
-				this.turn = 'black';
+			if(this.turn === true)
+				this.turn = false;
 			else
-				this.turn = 'white';
+				this.turn = true;
 		},
-		getTurn: function(){
+		isTurn: function(){
 			return this.turn;
+		},
+		getColor: function(){
+			return this.color;
 		},
 		isGameOver: function(){
 			return this.win;
@@ -63,9 +67,8 @@ var Game = (function(turn){
 		setWin: function(isWin){
 			this.win = isWin;
 		},
-		setPossibleMoves: function(data){
+		setPossibleMoves: function(list){
 
-			var list = JSON.parse(data);
 			for(var i =0; i < list.length; i++){
 				var piece = new Piece(list[i].name, list[i].position);
 				piece.setPossibleMoves(list[i].moves);
@@ -94,14 +97,14 @@ var Game = (function(turn){
 
 
 
-var GameLogic = (function(socket, turn){	
+var GameLogic = (function(socket, turn, color){	
 	var board = {};	
 	var game;
 	var ws;
 
-	function GameLogic (socket, turn){
+	function GameLogic (socket, turn, color){
 		var that = this;
-			game = new Game(turn);
+			game = new Game(color, turn);
 			ws = socket;
 
 		var config_board = {
@@ -122,12 +125,14 @@ var GameLogic = (function(socket, turn){
 
 		};
 
-		board = that.init(config_board);
+		board = that.init(config_board, color);
 	}	
 
 	GameLogic.prototype = {	
-		init: function(config){
-			return ChessBoard('board', config);		
+		init: function(config, color){
+			var board_init =  ChessBoard('board', config);	
+			board_init.orientation(color);	
+			return board_init;
 		},
 		/*// fired when there is a change in move
 		onChangeMove : function(oldMove, newMove){

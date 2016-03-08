@@ -3,7 +3,11 @@ var forfeitBtn = $('#forfeit-btn');
 
 $(document).ready(function(event){
 	var ws = new WebSocket("ws://127.0.0.1:8080/game/socket");
-	chess = new GameLogic(ws);
+	var color = $('#color').text();
+
+	var turn = (color == 'white ' ? true: false);
+
+	chess = new GameLogic(ws, turn, color);
 
 	ws.onopen = function(evt){
 		console.log("socket connected");
@@ -11,13 +15,11 @@ $(document).ready(function(event){
 		// from alex -- remove if you want
 		ws.send(JSON.stringify({'function': 'get_moves'}));
 	};
+
 	ws.onclose = function(evt){
 		console.log("socket closed");
 	};
 
-	/*$(document).click(function(){
-			ws.send(JSON.stringify({'function': 'board_state'}));
-	});*/
 
 	ws.onmessage = function(msg){
 		var response = JSON.parse(msg.data);
@@ -37,6 +39,15 @@ $(document).ready(function(event){
 		if(response.state !==  undefined && response.function === "success"){
 			var board = JSON.parse(response.updated_board);
 			console.log(board);
+		}
+		if(response.state !==  undefined && response.board_state !== undefined){
+			var board = JSON.parse(response.updated_board);
+			console.log(board);
+		}
+
+		if(response.function === "list_moves"){
+			console.log("set possible moves");
+			chess.setMoves(response.moves);
 		}
 
 		// from alex -- remove if you want
