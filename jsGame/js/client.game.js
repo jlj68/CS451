@@ -43,18 +43,27 @@ $(document).ready(function(event){
 			    }, 3000));
 		}
 
-		if(response.state !==  undefined && response.function === "success"){
+		if(response.function ===  "success" && response.updated_board !== undefined){
 			var board = JSON.parse(response.updated_board);
 			console.log(board);
-		}
-		if(response.state !==  undefined && response.board_state !== undefined){
-			var board = JSON.parse(response.updated_board);
-			console.log(board);
+			// parse the board
+			var update_board;
+
+			// update board
+			chess.updateBoard(update_board);
+
+			// call the server to send possible moves
+			ws.send(JSON.stringify({'function': 'get_moves'}));
 		}
 
 		if(response.function === "list_moves"){
 			console.log("set possible moves");
 			chess.setMoves(response.moves);
+		}
+
+		if(response.function === "game_over"){
+			// pull up modal to notify that game is over
+
 		}
 
 		// from alex -- remove if you want

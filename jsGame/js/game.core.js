@@ -35,7 +35,7 @@ var Piece = (function(piece, position){
 
 var Game = (function(turn){
 	var color, turn;
-	var win;
+	var win, end;
 
 
 	var possibleMoves;
@@ -45,6 +45,7 @@ var Game = (function(turn){
 		this.turn = turn;
 		this.color = color;
 		this.win = false;
+		this.end = false;
 		this.possibleMoves = [];
 	}
 
@@ -62,7 +63,10 @@ var Game = (function(turn){
 			return this.color;
 		},
 		isGameOver: function(){
-			return this.win;
+			return this.end;
+		},
+		setGameOver: function(bool){
+			this.end = bool;
 		},
 		setWin: function(isWin){
 			this.win = isWin;
@@ -123,7 +127,9 @@ var GameLogic = (function(socket, turn, color){
 			resetMoves: that.resetMoves,
 			updateBoard: that.updateBoard,
 			sendMove: that.sendMove,
-			isTurn: that.isTurn
+			isTurn: that.isTurn,
+			setGameOver: that.setGameOver,
+			isGameOver: that.isGameOver
 			//position: that.updateBoard
 
 		};
@@ -227,6 +233,13 @@ var GameLogic = (function(socket, turn, color){
 		},
 		isTurn: function(){
 			return game.isTurn();
+		},
+		setGameOver: function(bool){
+			game.setGameOver(bool);
+			
+		},
+		isGameOver: function(){
+			return game.isGameOver();
 		}
 
 
