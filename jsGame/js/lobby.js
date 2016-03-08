@@ -75,7 +75,7 @@ $(document).ready(function(event){
 
 			$('#inviteModal').modal('show');
 			$('.modal-body').empty();
-			$('.modal-body').append("<p> You have received an invitation from" + status.sender + "</p>");
+			$('.modal-body').append("<p> You have received an invitation from" + response.sender + "</p>");
 			$('#acceptInviteBtn').val(response.sender);
 			$('#declineInviteBtn').val(response.sender);
 		}
