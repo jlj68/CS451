@@ -207,6 +207,7 @@ var GameLogic = (function(socket, turn, color){
 		},
 		setMoves: function(data){
 			game.setPossibleMoves(data);
+			console.log(game.possibleMoves);
 		},
 		resetMoves: function(){
 			game.resetPossibleMove();
