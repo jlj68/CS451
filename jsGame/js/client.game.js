@@ -5,7 +5,7 @@ $(document).ready(function(event){
 	var ws = new WebSocket("ws://127.0.0.1:8080/game/socket");
 	var color = $('#color').text();
 
-	var turn = (color == 'white ' ? true: false);
+	var turn = (color == 'white ' ? false: true);
 
 	chess = new GameLogic(ws, turn, color);
 
@@ -18,6 +18,8 @@ $(document).ready(function(event){
 
 	ws.onclose = function(evt){
 		console.log("socket closed");
+		Cookies.remove('player_color'); 
+		Cookies.remove('gameID');
 	};
 
 

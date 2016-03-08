@@ -121,6 +121,8 @@ var GameLogic = (function(socket, turn, color){
 			onMouseoutSquare: that.onMouseOut,
 			setMoves: that.setMoves,
 			resetMoves: that.resetMoves,
+			updateBoard: that.updateBoard,
+			sendMove: that.sendMove
 			//position: that.updateBoard
 
 		};
