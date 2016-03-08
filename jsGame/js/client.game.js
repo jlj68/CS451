@@ -23,8 +23,6 @@ $(document).ready(function(event){
 		Cookies.remove('player_color', {path: '/'});
 		Cookies.remove('gameID', {path: '/'});
 		console.log("socket closed");
-		Cookies.remove('player_color');
-		Cookies.remove('gameID');
 	};
 
 
@@ -62,7 +60,6 @@ $(document).ready(function(event){
 
 		if(response.function === "list_moves"){
 			console.log("set possible moves");
-			console.log(response.moves);
 			chess.setMoves(response.moves);
 		}
 
