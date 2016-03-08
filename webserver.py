@@ -157,6 +157,23 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
 
                 gamesList[gameID][index].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].board.getBoardJson()}))
                 gamesList[gameID][index2].write_message(tornado.escape.json_encode({'function': 'success', 'state': gameBoard.state.name}))
+
+                if gameBoard.state == pychess.State.BLACK_WIN or gameBoard.state == pychess.State.WHITE_WIN:
+                    print("player win")
+                    # index2 win
+                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')], "W")
+                    gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
+                    gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
+                    del gamesList[gameID]
+
+                elif gameBoard.state == pychess.State.DRAW:
+                    print('draw')
+                    # no one wins
+                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')], "D")
+                    gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
+                    gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
+                    del gamesList[gameID]
+
                 gamesList[gameID][index].write_message(tornado.escape.json_encode({"function": "list_moves", "moves": gamesList[gameID][0].getPossibleMovesJSON()}))
 
             else:
@@ -170,15 +187,8 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
             gameID = int(self.get_secure_cookie('gameID').decode('ascii'))
             index = 1 if gamesList[gameID][2] == self else 2
             gamesList[gameID][index].write_message(tornado.escape.json_encode({'function': 'request_forfeit', 'username': playerToForfeit}))
-
-        elif message['function'] == 'game_over':
-            # index 1 is black, index 2 is white
-            if message['reason'] == "DRAW":
-                print("game draw")
-            elif message['reason'] == 'FORFEIT':
-                print("some player forfeit")
-            elif message['reason'] == 'CHECKMATE':
-                print("some player won")
+            connectedUsers[playerToForfeit].updateRating(connectedUsers[gamesList[gameID][1 if index == 2 else 2].get_secure_cookie('username').decode('ascii')], "L")
+            del gamesList[gameID]
 
     def close(self):
         for key, values in gamesList.items():
