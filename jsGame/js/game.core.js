@@ -213,7 +213,7 @@ var GameLogic = (function(socket, turn, color){
 		sendMove: function(oldPos, newPos){
 			console.log("send move");
 			ws.send(JSON.stringify(
-				{'function': 'make_moves',
+				{'function': 'make_move',
 				'move': {
 					'fromPos':{
 						'rowcol': oldPos
