@@ -44,7 +44,7 @@ $(document).ready(function(event){
 		if(response.function ===  "success"){
 			// todo: notify user it's opponent turn
 			$('#game_state').html("Opponent's Turn");
-			if(response.state !== undefined response.state.match("CHECK"))
+			if(response.state !== undefined && response.state.match("CHECK"))
 				$('#game_state').append(' : ' + response.state);
 		}
 
