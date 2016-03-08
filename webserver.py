@@ -85,6 +85,9 @@ class UserDataHandler(tornado.web.RequestHandler):
         self.write(tornado.escape.json_encode({ 'user_data': userDict }))
 
 class InviteSocketHandler(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        return True
+
     def open(self):
         websocketClients[self.get_secure_cookie('username').decode('ascii')] = self
         connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
@@ -122,6 +125,9 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
         print("Socket closed")
 
 class GameSocketHandler(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        return True
+
     def open(self):
         for key, values in gamesList.items():
             if self.get_secure_cookie('username').decode('ascii') in values:
@@ -141,9 +147,8 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": []}))
 
         elif message['function'] == 'make_move':
-            fromPosLetter = message['move']['fromPos']
-            toPosLetter = message['move']['fromPos']
-
+            fromPosLetter = message['move']['fromPos']['rowcol']
+            toPosLetter = message['move']['toPos']['rowcol']
             fromPos = pychess.Position(pychess.ColLetter.fromString(fromPosLetter[0]).value, 8 - int(fromPosLetter[1]))
             toPos = pychess.Position(pychess.ColLetter.fromString(toPosLetter[0]).value, 8 - int(toPosLetter[1]))
 
@@ -161,7 +166,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 if gameBoard.state == pychess.State.BLACK_WIN or gameBoard.state == pychess.State.WHITE_WIN:
                     print("player win")
                     # index2 win
-                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')], "W")
+                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index].get_secure_cookie('username').decode('ascii')], "W")
                     gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
                     gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
                     del gamesList[gameID]
@@ -169,7 +174,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 elif gameBoard.state == pychess.State.DRAW:
                     print('draw')
                     # no one wins
-                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')], "D")
+                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index].get_secure_cookie('username').decode('ascii')], "D")
                     gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
                     gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
                     del gamesList[gameID]

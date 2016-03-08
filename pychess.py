@@ -38,7 +38,7 @@ class ColLetter(Enum):
 
     @classmethod
     def fromString(cls, string):
-        return getattr(cls, string.upper(), None)
+        return getattr(cls, string, None)
 
 class Position:
     def __init__(self, row, col):
