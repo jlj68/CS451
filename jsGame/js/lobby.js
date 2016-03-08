@@ -31,7 +31,7 @@ function updateUserRows(){
 			$('<p>Send invitation to ' + target + '? </p>').appendTo('.modal-body');
 			$('#myModal').modal('show');
 
-			$('#sendInviteBtn').unbnid().click(function(){
+			$('#sendInviteBtn').unbind().click(function(){
 
 				console.log("send invite!");
 				ws.send(JSON.stringify({
