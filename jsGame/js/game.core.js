@@ -122,7 +122,8 @@ var GameLogic = (function(socket, turn, color){
 			setMoves: that.setMoves,
 			resetMoves: that.resetMoves,
 			updateBoard: that.updateBoard,
-			sendMove: that.sendMove
+			sendMove: that.sendMove,
+			isTurn: that.isTurn
 			//position: that.updateBoard
 
 		};
@@ -223,6 +224,9 @@ var GameLogic = (function(socket, turn, color){
 					}
 				}
 			}));
+		},
+		isTurn: function(){
+			return game.isTurn();
 		}
 
 
