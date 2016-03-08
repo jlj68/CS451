@@ -50,7 +50,7 @@ class GamePageHandler(tornado.web.RequestHandler):
             color = 'white'
             self.set_secure_cookie('player_color', 'white')
             self.set_secure_cookie('gameID', str(gameID))
-        if color == '':
+        else:
             color = 'black'
         self.render("./jsGame/html/game.html", gameID=gameID, color=color, currentUser=self.get_secure_cookie('username').decode('ascii'))
 
@@ -85,8 +85,12 @@ class UserDataHandler(tornado.web.RequestHandler):
         self.write(tornado.escape.json_encode({ 'user_data': userDict }))
 
 class InviteSocketHandler(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        return True
+
     def open(self):
         websocketClients[self.get_secure_cookie('username').decode('ascii')] = self
+        connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
 
     def on_message(self, message):
         messageDict = tornado.escape.json_decode(message)
@@ -121,6 +125,9 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
         print("Socket closed")
 
 class GameSocketHandler(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        return True
+
     def open(self):
         for key, values in gamesList.items():
             if self.get_secure_cookie('username').decode('ascii') in values:
@@ -133,51 +140,60 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
         gameBoard = gamesList[gameID][0].board
 
         if message['function'] == 'get_moves':
-            if self.get_secure_cookie('player_color').decode('ascii') == gamesList[gameID][0].current.name.lower():
+            if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) == gamesList[gameID][0].current:
                 self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": gamesList[gameID][0].getPossibleMovesJSON()}))
 
             else:
                 self.write_message(tornado.escape.json_encode({"function": "list_moves", "moves": []}))
 
         elif message['function'] == 'make_move':
-            fromPosLetter = message['move']['fromPos']
-            toPosLetter = message['move']['fromPos']
-
-            fromPos = pychess.Position(pychess.RowLetter.fromString(fromPosLetter[0]).value, int(fromPosLetter[1]))
-            toPos = pychess.Position(pychess.RowLetter.fromString(toPosLetter[0]).value, int(toPosLetter[1]))
+            fromPosLetter = message['move']['fromPos']['rowcol']
+            toPosLetter = message['move']['toPos']['rowcol']
+            fromPos = pychess.Position(pychess.ColLetter.fromString(fromPosLetter[0]).value, 8 - int(fromPosLetter[1]))
+            toPos = pychess.Position(pychess.ColLetter.fromString(toPosLetter[0]).value, 8 - int(toPosLetter[1]))
 
             move = pychess.Move(fromPos, toPos)
 
-            if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) is gamesList[gameID][0].current and gameBoard.isValidMove(move, gamesList[gameID][0].current):
+            if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) == gamesList[gameID][0].current and gameBoard.isValidMove(move, gamesList[gameID][0].current):
                 gamesList[gameID][0].applyMove(move)
 
                 index = 1 if gamesList[gameID][2] == self else 2
                 index2 = 2 if index == 1 else 1
 
-                gamesList[gameID][index].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'move_made': message['move']}))
-                gamesList[gameID][index2].write_message(tornado.escape.json_encode({'state': gameBoard.state.name}))
+                gamesList[gameID][index].write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].board.getBoardJson()}))
+                gamesList[gameID][index2].write_message(tornado.escape.json_encode({'function': 'success', 'state': gameBoard.state.name}))
+
+                if gameBoard.state == pychess.State.BLACK_WIN or gameBoard.state == pychess.State.WHITE_WIN:
+                    print("player win")
+                    # index2 win
+                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index].get_secure_cookie('username').decode('ascii')], "W")
+                    gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
+                    gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
+                    del gamesList[gameID]
+
+                elif gameBoard.state == pychess.State.DRAW:
+                    print('draw')
+                    # no one wins
+                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index].get_secure_cookie('username').decode('ascii')], "D")
+                    gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
+                    gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
+                    del gamesList[gameID]
+
                 gamesList[gameID][index].write_message(tornado.escape.json_encode({"function": "list_moves", "moves": gamesList[gameID][0].getPossibleMovesJSON()}))
 
             else:
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
 
         elif message['function'] == 'board_state':
-            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name}))
+            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].board.getBoardJson()}))
 
         elif message['function'] == 'forfeit':
             playerToForfeit = self.get_secure_cookie('username').decode('ascii')
             gameID = int(self.get_secure_cookie('gameID').decode('ascii'))
             index = 1 if gamesList[gameID][2] == self else 2
             gamesList[gameID][index].write_message(tornado.escape.json_encode({'function': 'request_forfeit', 'username': playerToForfeit}))
-
-        elif message['function'] == 'game_over':
-            # index 1 is black, index 2 is white
-            if message['reason'] == "DRAW":
-                print("game draw")
-            elif message['reason'] == 'FORFEIT':
-                print("some player forfeit")
-            elif message['reason'] == 'CHECKMATE':
-                print("some player won")
+            connectedUsers[playerToForfeit].updateRating(connectedUsers[gamesList[gameID][1 if index == 2 else 2].get_secure_cookie('username').decode('ascii')], "L")
+            del gamesList[gameID]
 
     def close(self):
         for key, values in gamesList.items():

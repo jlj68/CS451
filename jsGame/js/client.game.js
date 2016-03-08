@@ -1,25 +1,36 @@
 var chess = {};
 var forfeitBtn = $('#forfeit-btn');
+
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://rpi.rawhat.net:8080/game/socket");
-	chess = new GameLogic(ws);
+	var ws = new WebSocket("ws://127.0.0.1:8080/game/socket");
+	var color = $('#color').text();
+
+	var turn = (color == 'white ' ? false: true);
+
+	chess = new GameLogic(ws, turn, color);
 
 	ws.onopen = function(evt){
 		console.log("socket connected");
 
 		// from alex -- remove if you want
-		ws.send(JSON.stringify({'function': 'get_moves'}));
-	};
-	ws.onclose = function(evt){
-		console.log("socket closed");
+		if(chess.isTurn()){
+			ws.send(JSON.stringify({'function': 'get_moves'}));
+		}
+		
 	};
 
-	$(document).click(function(){
-			ws.send(JSON.stringify({'function': 'board_state'}));
-	});
+	ws.onclose = function(evt){
+		Cookies.remove('player_color', {path: '/'});
+		Cookies.remove('gameID', {path: '/'});
+		console.log("socket closed");
+		Cookies.remove('player_color'); 
+		Cookies.remove('gameID');
+	};
+
 
 	ws.onmessage = function(msg){
 		var response = JSON.parse(msg.data);
+		console.log(response);
 
 		// other user forfeit
 		if(response.function === "request_forfeit"){
@@ -32,15 +43,31 @@ $(document).ready(function(event){
 			    }, 3000));
 		}
 
-		// from alex -- remove if you want
+		if(response.state !==  undefined && response.function === "success"){
+			var board = JSON.parse(response.updated_board);
+			console.log(board);
+		}
+		if(response.state !==  undefined && response.board_state !== undefined){
+			var board = JSON.parse(response.updated_board);
+			console.log(board);
+		}
+
 		if(response.function === "list_moves"){
+			console.log("set possible moves");
+			chess.setMoves(response.moves);
+		}
+
+		// from alex -- remove if you want
+		/*if(response.function === "list_moves"){
 			console.log(response.moves);
+			//chess.testing();
 		}
 
 		// from alex -- remove if you want
 		if(response.state !== undefined){
 			console.log("game state: " + response.state);
-		}
+			//chess.testing();
+		}*/
 	};
 
 	forfeitBtn.click(function(){

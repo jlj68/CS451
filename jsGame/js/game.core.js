@@ -34,28 +34,32 @@ var Piece = (function(piece, position){
 
 
 var Game = (function(turn){
-	var turn;
+	var color, turn;
 	var win;
-	
+
 
 	var possibleMoves;
 
 
-	function Game(turn){
+	function Game(color, turn){
 		this.turn = turn;
+		this.color = color;
 		this.win = false;
-		this.possibleMoves = [];		
+		this.possibleMoves = [];
 	}
 
 	Game.prototype = {
 		flipTurn: function(){
-			if(this.turn === 'white')
-				this.turn = 'black';
+			if(this.turn === true)
+				this.turn = false;
 			else
-				this.turn = 'white';
+				this.turn = true;
 		},
-		getTurn: function(){
+		isTurn: function(){
 			return this.turn;
+		},
+		getColor: function(){
+			return this.color;
 		},
 		isGameOver: function(){
 			return this.win;
@@ -63,16 +67,15 @@ var Game = (function(turn){
 		setWin: function(isWin){
 			this.win = isWin;
 		},
-		setPossibleMoves: function(data){
+		setPossibleMoves: function(list){
 
-			var list = JSON.parse(data);
 			for(var i =0; i < list.length; i++){
 				var piece = new Piece(list[i].name, list[i].position);
 				piece.setPossibleMoves(list[i].moves);
 				this.possibleMoves.push(piece);
-				
+
 			}
-		}, 
+		},
 		getPossibleMove: function(piece, position){
 
 			for(var i = 0; i < this.possibleMoves.length; i++){
@@ -94,20 +97,22 @@ var Game = (function(turn){
 
 
 
-var GameLogic = (function(socket, turn){	
-	var board = {};	
+var GameLogic = (function(socket, turn, color){
+	var board = {};
 	var game;
+	var ws;
 
-	function GameLogic (socket, turn){
+	function GameLogic (socket, turn, color){
 		var that = this;
-			game = new Game(turn);
+			game = new Game(color, turn);
+			ws = socket;
 
 		var config_board = {
 			orientation: 'white',
 			position: 'start',
 			draggable: true,
 			dropOffBoard: 'snapback',
-			onChange: that.onChangeMove,
+			//onChange: that.onChangeMove,
 			onDragStart: that.onDragStart,
 			onDrop: that.onDrop,
 			highlightMove: that.highlightMove,
@@ -115,41 +120,49 @@ var GameLogic = (function(socket, turn){
 			onMouseoverSquare: that.onMouseOver,
 			onMouseoutSquare: that.onMouseOut,
 			setMoves: that.setMoves,
-			resetMoves: that.resetMoves
+			resetMoves: that.resetMoves,
+			updateBoard: that.updateBoard,
+			sendMove: that.sendMove,
+			isTurn: that.isTurn
+			//position: that.updateBoard
 
 		};
 
-		board = that.init(config_board);
-	}	
+		board = that.init(config_board, color);
+	}
 
-	GameLogic.prototype = {	
-		init: function(config){
-			return ChessBoard('board', config);		
+	GameLogic.prototype = {
+		init: function(config, color){
+			var board_init =  ChessBoard('board', config);
+			board_init.orientation(color);
+			return board_init;
 		},
-		// fired when there is a change in move
+		/*// fired when there is a change in move
 		onChangeMove : function(oldMove, newMove){
 			game.flipTurn();
-			console.log("Flip side. Now turn is: " + game.getTurn());
-		},
+		},*/
 		//fired when piece is picked up. Returns false to prevent the pick up
 		onDragStart : function(source, piece, position, orientation){
-			if(game.isGameOver() === true ||
-				(game.getTurn() === 'white' && piece.search(/^b/) !== -1) ||
-      			(game.getTurn() === 'black' && piece.search(/^w/) !== -1)){
+
+			if(game.isGameOver() === true || !game.isTurn() ||
+				(game.getColor() === 'white' && piece.search(/^b/) !== -1) ||
+      			(game.getColor() === 'black' && piece.search(/^w/) !== -1)){
 				return false;
 			}
 		},
 		onDrop : function(source, target, piece){
 			this.removeHighlight();
-			
+
 			var possibleMoves = game.getPossibleMove(piece, source);
 
 			for(var i = 0; i<possibleMoves.length; i++){
 				if(possibleMoves[i].move === target){
 					//reste the possible move list of game
 					game.resetPossibleMove();
+					game.flipTurn();
+					this.sendMove(source, target)
 					return;
-				}					
+				}
 			}
 
 			//if illegal move, snapback to original place
@@ -163,22 +176,26 @@ var GameLogic = (function(socket, turn){
 				background = '#77C699';
 			}
 
-			squareE.css('background', background);	
+			squareE.css('background', background);
 		},
 		removeHighlight: function() {
 		  	$('#board .square-55d63').css('background', '');
 		},
 		onMouseOver: function(square, piece){
-			
-			// get a list of possible move for this piece
-			var moves = game.getPossibleMove(piece, square);
-			// no valid moves
-			if(moves.length === 0) return;
 
-			// highlight the possible squares
-			for(var i = 0; i < moves.length; i++){
-				this.highlightMove(moves[i].move);
+			if(game.isTurn()){
+				// get a list of possible move for this piece
+				var moves = game.getPossibleMove(piece, square);
+				// no valid moves
+				if(moves.length === 0) return;
+
+				// highlight the possible squares
+				for(var i = 0; i < moves.length; i++){
+					this.highlightMove(moves[i].move);
+				}
 			}
+
+
 		},
 		onMouseOut: function(){
 			this.removeHighlight();
@@ -188,15 +205,33 @@ var GameLogic = (function(socket, turn){
 		},
 		resetMoves: function(){
 			game.resetPossibleMove();
+		},
+		updateBoard: function(data){
+			board.position(data);
+			game.flipTurn();
+
+		},
+		sendMove: function(oldPos, newPos){
+			console.log("send move");
+			ws.send(JSON.stringify(
+				{'function': 'make_move',
+				'move': {
+					'fromPos':{
+						'rowcol': oldPos
+					},
+					'toPos': {
+						'rowcol': newPos
+					}
+				}
+			}));
+		},
+		isTurn: function(){
+			return game.isTurn();
 		}
+
 
 	};
 
 	return GameLogic;
 
 })();
-
-
-
-
-	
