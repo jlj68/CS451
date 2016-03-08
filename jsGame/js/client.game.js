@@ -17,6 +17,8 @@ $(document).ready(function(event){
 	};
 
 	ws.onclose = function(evt){
+		Cookies.remove('player_color');
+		Cookies.remove('gameID');
 		console.log("socket closed");
 	};
 
