@@ -166,7 +166,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 if gameBoard.state == pychess.State.BLACK_WIN or gameBoard.state == pychess.State.WHITE_WIN:
                     print("player win")
                     # index2 win
-                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')], "W")
+                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index].get_secure_cookie('username').decode('ascii')], "W")
                     gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
                     gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
                     del gamesList[gameID]
@@ -174,7 +174,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 elif gameBoard.state == pychess.State.DRAW:
                     print('draw')
                     # no one wins
-                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')], "D")
+                    connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index].get_secure_cookie('username').decode('ascii')], "D")
                     gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
                     gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
                     del gamesList[gameID]
