@@ -243,7 +243,7 @@ var GameLogic = (function(socket, turn, color){
 			return game.isGameOver();
 		},
 		setGameStatus: function(status){
-			game.setGameStatus(status);
+			game.setStatus(status);
 		}
 
 

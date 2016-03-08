@@ -41,11 +41,13 @@ $(document).ready(function(event){
 			    }, 3000));
 		}
 
-		if(response.function ===  "success" && response.updated_board !== undefined){
+		if(response.function ===  "success"){
 			// todo: notify user it's opponent turn
-			var updated_board = parseTable(response.updated_board);
-			chess.updateBoard(update_board);
+			$('#game_state').html("Opponent's Turn");
+			if(response.state.match("check"))
+				$('#game_state').append(' : ' + response.state);
 		}
+
 		if(response.state === "MATCH"){
 			console.log("match");
 			// Todo: parse the board
@@ -62,6 +64,11 @@ $(document).ready(function(event){
 		if(response.function === "list_moves"){
 			console.log("set possible moves");
 			chess.flipTurn(response.moves.length !== 0);
+			if(response.moves.length !== 0){
+				$('#game_state').html('Your turn.');
+				if(response.state.match("check"))
+					$('#game_state').append(' : ' + response.state);
+			}
 			chess.setMoves(response.moves);
 		}
 
