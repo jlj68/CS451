@@ -5,7 +5,7 @@ $(document).ready(function(event){
 	var ws = new WebSocket("ws://127.0.0.1:8080/game/socket");
 	var color = $('#color').text();
 
-	var turn = (color == 'white ' ? false: true);
+	var turn = (color == 'white' ? true: false);
 
 	chess = new GameLogic(ws, turn, color);
 
@@ -46,7 +46,7 @@ $(document).ready(function(event){
 		if(response.function ===  "success" && response.updated_board !== undefined){
 			var board = JSON.parse(response.updated_board);
 			console.log(board);
-			// parse the board
+			// Todo: parse the board
 			var update_board;
 
 			// update board
@@ -62,6 +62,18 @@ $(document).ready(function(event){
 		}
 
 		if(response.function === "game_over"){
+			chess.setGameOver(true);
+
+			if(response.reason === "DRAW"){
+				chess.setGameStatus("draw");
+			} else if (response.reason === "BLACK_WIN" && color === "black"
+				|| response.reason === "WHITE_WIN" && color === "white"){
+				chess.setGameStatus("win");
+			} else {
+				chess.setGameStatus("lose");
+			}
+
+			
 			// pull up modal to notify that game is over
 
 		}
