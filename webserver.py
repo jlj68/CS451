@@ -162,7 +162,7 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 self.write_message(tornado.escape.json_encode({'function': 'error', 'status': 'invalid_move'}))
 
         elif message['function'] == 'board_state':
-            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name}))
+            self.write_message(tornado.escape.json_encode({'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].getBoardJson()}))
 
         elif message['function'] == 'forfeit':
             playerToForfeit = self.get_secure_cookie('username').decode('ascii')
