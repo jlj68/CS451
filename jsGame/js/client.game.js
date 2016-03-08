@@ -50,11 +50,10 @@ $(document).ready(function(event){
 		if(response.state === "MATCH"){
 			console.log("match");
 			// Todo: parse the board
-			if(response.updated_board !== undefined)
-				var update_board = parseTable(response.updated_board);
+			var update_board = parseTable(response.updated_board);
 
 			// update board
-			chess.updateBoard(updated_board);
+			chess.updateBoard(update_board);
 
 			// call the server to send possible moves
 			ws.send(JSON.stringify({'function': 'get_moves'}));
