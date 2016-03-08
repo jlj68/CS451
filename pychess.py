@@ -530,6 +530,14 @@ class ChessBoard:
             opponentColor = Color.BLACK if fromPiece.color is Color.WHITE else Color.WHITE
             self.checkState(opponentColor)
 
+        for piece in self.board[0]:
+            if piece is not None and piece.name == "Pawn" and piece.color == Color.WHITE:
+                self.board[0][self.board[0].index(piece)] = Queen(Color.WHITE)
+
+        for i in range(0, 8):
+            if self.board[i][7] is not None and self.board[i][7].name == "Pawn" and self.board[i][7].color == Color.BLACK:
+                self.board[i][7] = Queen(Color.BLACK)
+
     def findKing(self, color):
         for i in range(len(self.board)):
             for j in range(len(self.board[i])):
