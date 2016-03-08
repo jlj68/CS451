@@ -379,7 +379,7 @@ class Player:
 class Game:
     def __init__(self):
         self.board = ChessBoard()
-        self.current = Color.BLACK
+        self.current = Color.WHITE
 
     def displayGame(self):
         print("Game State: " + str(self.board.state.name))
