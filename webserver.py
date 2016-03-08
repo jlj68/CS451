@@ -155,7 +155,8 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
 
             move = pychess.Move(fromPos, toPos)
 
-            print(gameBoard.isValidMove(move, gamesList[gameID][0].current))
+            print(move)
+            print(gameBoard.getPossibleMoves(pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii'))))
             if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) == gamesList[gameID][0].current and gameBoard.isValidMove(move, gamesList[gameID][0].current):
                 gamesList[gameID][0].applyMove(move)
 
