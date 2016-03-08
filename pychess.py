@@ -597,6 +597,7 @@ class ChessBoard:
                 if self.board[i][j] is not None:
                     elem = self.board[i][j].__dict__.copy()
                     elem['color'] = elem['color'].name
+                    elem['name'] = str(self.board[i][j])
                 else:
                     elem = None
                 board.append({'position': ColLetter(j).name[0] + str(8-i), 'piece': elem})
