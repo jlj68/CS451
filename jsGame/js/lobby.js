@@ -267,14 +267,14 @@ function cancelModal(modalid, text){
 }
 
 function resetRows(){
-	$('tr[id*="addr"]').each(function(index, item)){
+	$('tr[id*="addr"]').each(function(index, item){
 		if(index == 0){
 			$(this).html('');
 		}
 		else{
 			$(this).remove();
 		}
-	}
+	});
 }
 
 function addRow(counter, username, win, loss, rate){
