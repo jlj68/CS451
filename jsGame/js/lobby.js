@@ -164,6 +164,7 @@ $(document).ready(function(event){
 	ws.onclose = function(evt){
 		console.log("connection closed");
 		clearInterval(updateUsers);
+
 		if(($("#myModal").data('bs.modal') || {isShown: false}).isShown){
 			cancelModal("#myModal", "Invitation is cancelled!");
 		}
@@ -263,7 +264,7 @@ function cancelModal(modalid, text){
 	$('#cancelInviteBtn').addClass('hide');
 	$(modalid).data('hideInterval', setTimeout(function(){
 	            $(modalid).modal('hide');
-	    }, 2000));
+	    }, 1000));
 }
 
 function resetRows(){
