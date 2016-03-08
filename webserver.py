@@ -87,6 +87,7 @@ class UserDataHandler(tornado.web.RequestHandler):
 class InviteSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         websocketClients[self.get_secure_cookie('username').decode('ascii')] = self
+        connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
 
     def on_message(self, message):
         messageDict = tornado.escape.json_decode(message)
