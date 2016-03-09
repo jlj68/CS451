@@ -1,13 +1,19 @@
 var chess = {};
 var forfeitBtn = $('#forfeit-btn');
+var gameState = $('#game_state');
 
 $(document).ready(function(event){
 	var ws = new WebSocket("ws://192.168.1.238:8080/game/socket");
 	var color = $('#color').text();
-
+	setColor(color);
 	var turn = (color == 'white' ? true: false);
 
 	chess = new GameLogic(ws, turn, color);
+
+	//initialize game state
+	if(!turn){
+		gameState.text("Opponent's Turn");
+	}
 
 	ws.onopen = function(evt){
 		console.log("socket connected");
@@ -32,34 +38,16 @@ $(document).ready(function(event){
 		console.log(response);
 
 		// other user forfeit
-		if(response.function === "request_forfeit"){
-			$('#statusModal').modal('show');
-			$('.modal-body').empty();
-			$('.modal-body').append("<h4> Congratulation, you won!</h4>");
-			$('.modal-body').append("<p> Your opponent has forfeited.</p>");
-			$('#statusModal').data('hideInterval', setTimeout(function(){
-			            $('#statusModal').modal('hide');
-									window.location.href = "/lobby";
-			    }, 3000));
+		if(response.function === "request_forfeit"){			
+			var message = "<h5> Congratulation, you won!</h5><h6> Your opponent has forfeited.</h6>";
+			showStatusModal(message);
 		}
 
 		if(response.function ===  "success"){
 			// todo: notify user it's opponent turn
-			$('#game_state').html("Opponent's Turn");
+			gameState.text("Opponent's Turn");
 			if(response.state !== undefined && response.state.match("CHECK"))
-				$('#game_state').append(' : ' + response.state);
-		}
-
-		if(response.state === "MATCH"){
-			console.log("match");
-			// Todo: parse the board
-			var update_board = parseTable(response.updated_board);
-
-			// update board
-			chess.updateBoard(update_board);
-
-			// call the server to send possible moves
-			//ws.send(JSON.stringify({'function': 'get_moves'}));
+				gameState.append(' : ' + response.state);
 		}
 
 
@@ -84,11 +72,19 @@ $(document).ready(function(event){
 
 			if(response.reason === "DRAW"){
 				chess.setGameStatus("draw");
+				var message = "<h5> This game is a draw. Good luck next time!<h5>";
+				showStatusModal(message);
+
 			} else if (response.reason === "BLACK_WIN" && color === "black"
 				|| response.reason === "WHITE_WIN" && color === "white"){
 				chess.setGameStatus("win");
+				var message = "<h5> Congratulation! You won :)<h5>";
+				showStatusModal(message);
+
 			} else {
 				chess.setGameStatus("lose");
+				var message = "<h5> Too bad you lost! Good luck next time.<h5>";
+				showStatusModal(message);
 			}
 
 
@@ -96,17 +92,6 @@ $(document).ready(function(event){
 			window.location.href = "/lobby";
 		}
 
-		// from alex -- remove if you want
-		/*if(response.function === "list_moves"){
-			console.log(response.moves);
-			//chess.testing();
-		}
-
-		// from alex -- remove if you want
-		if(response.state !== undefined){
-			console.log("game state: " + response.state);
-			//chess.testing();
-		}*/
 	};
 
 	forfeitBtn.click(function(){
@@ -134,4 +119,25 @@ function parseTable(table){
 		}
 	}
 	return result;
+}
+
+
+function showStatusModal(message){
+
+	$('#statusModal').modal('show');
+	$('.modal-body').empty();
+	$('.modal-body').append(message);
+	$('#statusModal').data('hideInterval', setTimeout(function(){
+	            $('#statusModal').modal('hide');
+							window.location.href = "/lobby";
+	    }, 3000));
+}
+
+function setColor(color){
+	var opColor = $('#colorOp');
+	if(color === "white"){
+		opColor.text("black");		
+	} else {
+		opColor.text("white");	
+	}
 }

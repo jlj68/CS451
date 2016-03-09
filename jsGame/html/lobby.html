@@ -48,7 +48,7 @@
 	<div class="container">
 		<div class="container">
 
-			<h5>Invite other player to start your game!</h5>
+			<h4>Invite other player to start your game!</h4>
 
 			<h3>LOBBY LISTING</h3>
 
@@ -77,19 +77,20 @@
 
 	
     <!-- Modal -->
-    <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal fade" id="myModal" role="dialog" data-backdrop="static" 
+   		data-keyboard="false">
         <div class="modal-dialog">
       
 	        <!-- Modal content-->
 	        <div class="modal-content">
 	          <div class="modal-header text-center">
-	            <h4 class="modal-title">Invitation</h4>
+	            <h2 class="modal-title">Invitation</h2>
 	          </div>
 	          <div class="modal-body text-center">	            
 	          </div>
-	          <div class="modal-footer">
-	          	<button class="btn" data-dismiss="modal" aria-hidden="true" id="cancelInviteBtn">Cancel</button>
-	            <button type="button" class="btn btn-default" id="sendInviteBtn" >Send!</button>
+	          <div class="modal-footer">	          	
+	            <button class="btn btn-lg" data-dismiss="modal" aria-hidden="true" id="cancelInviteBtn">Cancel</button>
+	            <button type="button" class="btn flat-butt flat-primary-butt" id="sendInviteBtn" >Send!</button>
 	          </div>
 	        </div>
         
@@ -97,19 +98,21 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="inviteModal" role="dialog">
+    <div class="modal fade" id="inviteModal" role="dialog" data-backdrop="static" 
+   		data-keyboard="false" >
         <div class="modal-dialog">
       
 	        <!-- Modal content-->
 	        <div class="modal-content">
 	          <div class="modal-header text-center">
-	            <h4 class="modal-title">Invitation</h4>
+	            <h2 class="modal-title">Invitation</h2>
 	          </div>
 	          <div class="modal-body text-center">	            
 	          </div>
 	          <div class="modal-footer">
-	          	<button value="" class="btn" data-dismiss="modal" aria-hidden="true" id="declineInviteBtn">Decline</button>
-	            <button type="button" class="btn btn-default" id="acceptInviteBtn" value="">Accept!</button>
+	            <button class="btn btn-lg" data-dismiss="modal" aria-hidden="true" id="declineInviteBtn">Decline</button>
+	            <button type="button" class="btn flat-butt flat-primary-butt" id="acceptInviteBtn" >Accept!</button>
+
 	          </div>
 	        </div>
         
