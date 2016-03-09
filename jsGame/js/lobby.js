@@ -1,4 +1,4 @@
-var ws = new WebSocket("ws://192.168.1.238:8080/invite");
+var ws = new WebSocket("ws://rpi.rawhat.net:8080/invite");
 
 function updateUserRows(){
 	$.ajax({

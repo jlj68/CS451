@@ -36,6 +36,12 @@ The following software is required to install the game server on your computer:
 
     python3 webserver.py
 
+The server is hosted at `http://rpi.rawhat.net:8080`.  If you wish to test on a
+local machine, the `jsGame/js/client.game.js` and `jsGame/js/lobby.js` need to
+have the `var ws` url changed to `ws://localhost:8080/game/socket` and
+`ws://localhost:8080/invite`, respectively.  They are both within the few 10
+lines of these files.
+
 The server will then listen on port 8080 of the local machine.  It can be
 accessed from a browser with the URL `localhost:8080`.
 

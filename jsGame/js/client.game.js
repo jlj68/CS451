@@ -3,7 +3,7 @@ var forfeitBtn = $('#forfeit-btn');
 var gameState = $('#game_state');
 
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://192.168.1.238:8080/game/socket");
+	var ws = new WebSocket("ws://rpi.rawhat.net:8080/game/socket");
 	var color = $('#color').text();
 	setColor(color);
 	var turn = (color == 'white' ? true: false);
@@ -38,7 +38,7 @@ $(document).ready(function(event){
 		console.log(response);
 
 		// other user forfeit
-		if(response.function === "request_forfeit"){			
+		if(response.function === "request_forfeit"){
 			var message = "<h5> Congratulation, you won!</h5><h6> Your opponent has forfeited.</h6>";
 			showStatusModal(message);
 		}
@@ -136,8 +136,8 @@ function showStatusModal(message){
 function setColor(color){
 	var opColor = $('#colorOp');
 	if(color === "white"){
-		opColor.text("black");		
+		opColor.text("black");
 	} else {
-		opColor.text("white");	
+		opColor.text("white");
 	}
 }
