@@ -160,7 +160,6 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
             toPos = pychess.Position(8 - int(toPosLetter[1]), pychess.ColLetter.fromString(toPosLetter[0]).value)
 
             move = pychess.Move(fromPos, toPos)
-            print(str(move))
 
             if pychess.Color.fromString(self.get_secure_cookie('player_color').decode('ascii')) == gamesList[gameID][0].current and gameBoard.isValidMove(move, gamesList[gameID][0].current):
                 index = 1 if gamesList[gameID][2] == self else 2
