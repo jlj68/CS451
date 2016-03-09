@@ -532,7 +532,7 @@ class ChessBoard:
 
 
     def isEnPassnt(self, move, fromPiece, toPiece):
-        if fromPiece is not None and toPiece is not None and move.fromPos.col == move.toPos.col and fromPiece.name == "Pawn" and toPiece.name == "Pawn":
+        if fromPiece is not None and toPiece is not None and move.fromPos.row == move.toPos.row and fromPiece.name == "Pawn" and toPiece.name == "Pawn":
             return True
         return False
     
