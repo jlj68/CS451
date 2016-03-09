@@ -501,66 +501,73 @@ class ChessBoard:
         toPiece = self.board[move.toPos.row][move.toPos.col]
 
         # castling
-        if fromPiece is not None and toPiece is not None and fromPiece.color == toPiece.color :
-            direction = -1 if move.fromPos.col > move.toPos.col else 1
-            self.board[move.fromPos.row][move.fromPos.col] = None
-            self.board[move.fromPos.row][move.fromPos.col+2*direction] = fromPiece
-            self.board[move.toPos.row][move.toPos.col] = None
-            self.board[move.toPos.row][move.fromPos.col+direction] = toPiece
-            fromPiece.hasSecondMoved = True if fromPiece.hasMoved else False
-            fromPiece.hasMoved = True
-            return
+        if self.isCastling(move, fromPiece, toPiece):
+            self.applyCastling(move, fromPiece, toPiece)
 
         # En passant
-        if fromPiece is not None and toPiece is not None and move.fromPos.col == move.toPos.col and fromPiece.name == "Pawn" and toPiece.name == "Pawn":
-            direction = 1 if fromPiece.color == Color.BLACK else -1
-            self.board[move.fromPos.row][move.fromPos.col] = None
-            self.board[move.toPos.row+direction][move.toPos.col] = fromPiece
-            self.board[move.toPos.row][move.toPos.col] = None
-            fromPiece.hasSecondMoved = True if fromPiece.hasMoved else False
-            fromPiece.hasMoved = True
-            return
+        elif self.isEnPassnt(move, fromPiece, toPiece):
+            self.applyEnPassant(move, fromPiece, toPiece)
 
+        # normal
+        else:
+            self.applyNormalMove(move, fromPiece)
+
+        self.updatePieceInfo(fromPiece)
+        self.checkState(fromPiece.color, toPiece)
+        self.promotePawn(self)
+
+
+    def isCastling(self, move, fromPiece, toPiece):
+        if fromPiece is not None and toPiece is not None and fromPiece.color == toPiece.color :
+           return True
+        return False
+
+
+    def applyCastling(self, move, fromPiece, toPiece):
+        direction = 1 if move.fromPos.col < move.toPos.col else -1
+        self.board[move.fromPos.row][move.fromPos.col] = None
+        self.board[move.fromPos.row][move.fromPos.col+2*direction] = fromPiece
+        self.board[move.toPos.row][move.toPos.col] = None
+        self.board[move.toPos.row][move.fromPos.col+direction] = toPiece
+
+
+    def isEnPassnt(self, move, fromPiece, toPiece):
+        if fromPiece is not None and toPiece is not None and move.fromPos.col == move.toPos.col and fromPiece.name == "Pawn" and toPiece.name == "Pawn":
+            return True
+        return False
+    
+
+    def applyEnPassant(self, move, fromPiece, toPiece):
+        direction = 1 if fromPiece.color == Color.BLACK else -1
+        self.board[move.fromPos.row][move.fromPos.col] = None
+        self.board[move.toPos.row][move.toPos.col] = None
+        self.board[move.fromPos.row+direction][move.toPos.col] = fromPiece
+
+
+    def applyNormalMove(self, move, fromPiece):
         self.board[move.fromPos.row][move.fromPos.col] = None
         self.board[move.toPos.row][move.toPos.col] = fromPiece
 
+
+    def updatePieceInfo(self, fromPiece):
         fromPiece.hasSecondMoved = True if fromPiece.hasMoved else False
         fromPiece.hasMoved = True
 
-        if toPiece is not None and toPiece.name == "King":
-            self.state = State.WHITE_WIN if toPiece.color is Color.BLACK else State.BLACK_WIN
-        else:
-            opponentColor = Color.BLACK if fromPiece.color is Color.WHITE else Color.WHITE
-            self.checkState(opponentColor)
 
-        for piece in self.board[0]:
-            if piece is not None and piece.name == "Pawn" and piece.color == Color.WHITE:
-                self.board[0][self.board[0].index(piece)] = Queen(Color.WHITE)
-
-        for piece in self.board[7]:
-            if piece is not None and piece.name == "Pawn" and piece.color == Color.BLACK:
-                self.board[7][self.board[7].index(piece)] = Queen(Color.BLACK)
-
-    def findKing(self, color):
-        for i in range(len(self.board)):
-            for j in range(len(self.board[i])):
-                piece = self.board[i][j]
-                if piece != None and piece.name == "King" and piece.color == color:
-                    return Position(i, j)
-        return None
-
-    def checkState(self, color):
+    def checkState(self, color, toPiece):
         self.state = State.MATCH
-        if self.isCheck(color):
+        if toPiece is not None and toPiece.name == "King":
+            self.state = State.WHITE_WIN if color is Color.WHITE else State.BLACK_WIN
+        elif self.isCheck(color):
             self.state = State.BLACK_CHECK if color is Color.BLACK else State.WHITE_CHECK
-            if self.isCheckmate(color):
+            if isCheckmate(color):
                 self.state = State.BLACK_CHECKMATE if color is Color.BLACK else State.WHITE_CHECKMATE
 
 
     def isCheck(self, color):
         opponentColor = Color.BLACK if color is Color.WHITE else Color.WHITE
-        kingPosition = self.findKing(color)
-        possibleMoves = self.getPossibleMoves(opponentColor)
+        kingPosition = self.findKing(opponentColor)
+        possibleMoves = self.getPossibleMoves(color)
         for m in [item for sublist in possibleMoves.values() for item in sublist]:
             p = m.toPos;
             if p.row == kingPosition.row and p.col == kingPosition.col:
@@ -570,9 +577,9 @@ class ChessBoard:
 
     def isCheckmate(self, color):
         opponentColor = Color.BLACK if color is Color.WHITE else Color.WHITE
-        kingPosition = self.findKing(color)
+        kingPosition = self.findKing(opponentColor)
         kingPossibleMoves = self.getMovesFromPosition(kingPosition)
-        possibleMoves = self.getPossibleMoves(opponentColor)
+        possibleMoves = self.getPossibleMoves(color)
 
         targeted = []
         for km in kingPossibleMoves:
@@ -582,10 +589,29 @@ class ChessBoard:
                 if p.row == kp.row and p.col == kp.col and kp not in targeted:
                     targeted.append(kp)
 
-        # pdb.set_trace()
         if len(targeted) == len(kingPossibleMoves):
             return True
+
         return False
+
+
+    def findKing(self, color):
+        for i in range(len(self.board)):
+            for j in range(len(self.board[i])):
+                piece = self.board[i][j]
+                if piece != None and piece.name == "King" and piece.color == color:
+                    return Position(i, j)
+        return None
+
+
+    def promotePawn(self):
+        for piece in self.board[0]:
+            if piece is not None and piece.name == "Pawn" and piece.color == Color.WHITE:
+                self.board[0][self.board[0].index(piece)] = Queen(Color.WHITE)
+
+        for piece in self.board[7]:
+            if piece is not None and piece.name == "Pawn" and piece.color == Color.BLACK:
+                self.board[7][self.board[7].index(piece)] = Queen(Color.BLACK)
 
 
     def __str__(self):
@@ -613,3 +639,4 @@ class ChessBoard:
                     elem = None
                 board.append({'position': ColLetter(j).name[0] + str(8-i), 'piece': elem})
         return board
+
