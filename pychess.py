@@ -514,7 +514,7 @@ class ChessBoard:
 
         self.updatePieceInfo(fromPiece)
         self.checkState(fromPiece.color, toPiece)
-        self.promotePawn(self)
+        self.promotePawn()
 
 
     def isCastling(self, move, fromPiece, toPiece):
@@ -559,9 +559,10 @@ class ChessBoard:
         if toPiece is not None and toPiece.name == "King":
             self.state = State.WHITE_WIN if color is Color.WHITE else State.BLACK_WIN
         elif self.isCheck(color):
-            self.state = State.BLACK_CHECK if color is Color.BLACK else State.WHITE_CHECK
             if self.isCheckmate(color):
                 self.state = State.BLACK_CHECKMATE if color is Color.BLACK else State.WHITE_CHECKMATE
+            else:
+                self.state = State.BLACK_CHECK if color is Color.BLACK else State.WHITE_CHECK
 
 
     def isCheck(self, color):
@@ -581,6 +582,7 @@ class ChessBoard:
         kingPossibleMoves = self.getMovesFromPosition(kingPosition)
         possibleMoves = self.getPossibleMoves(color)
 
+        # pdb.set_trace()
         targeted = []
         for km in kingPossibleMoves:
             kp = km.toPos
@@ -589,7 +591,6 @@ class ChessBoard:
                 if p.row == kp.row and p.col == kp.col and kp not in targeted:
                     targeted.append(kp)
 
-        pdb.set_trace()
         if len(targeted) == len(kingPossibleMoves):
             return True
 
