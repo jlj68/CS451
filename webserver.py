@@ -171,12 +171,13 @@ class GameSocketHandler(tornado.websocket.WebSocketHandler):
                 gamesList[gameID][index].write_message(tornado.escape.json_encode({'function': 'list_moves', "moves": gamesList[gameID][0].getPossibleMovesJSON(), 'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].board.getBoardJson()}))
                 gamesList[gameID][index2].write_message(tornado.escape.json_encode({'function': 'list_moves', "moves": [], 'state': gameBoard.state.name, 'updated_board': gamesList[gameID][0].board.getBoardJson()}))
 
-                if gameBoard.state == pychess.State.BLACK_WIN or gameBoard.state == pychess.State.WHITE_WIN:
+                if gameBoard.state == pychess.State.BLACK_WIN or gameBoard.state == pychess.State.WHITE_WIN or gameBoard.state == pychess.State.WHITE_CHECKMATE or gameBoard.state == pychess.State.BLACK_CHECKMATE:
                     print("player win")
                     # index2 win
                     connectedUsers[gamesList[gameID][index2].get_secure_cookie('username').decode('ascii')].updateRating(connectedUsers[gamesList[gameID][index].get_secure_cookie('username').decode('ascii')], "W")
-                    gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
-                    gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameBoard.state.name}))
+                    gameState = gameBoard.state.name if gameBoard.state.name[6:] == "WIN" else gameBoard.state.name[:5] + "_WIN"
+                    gamesList[gameID][1].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameState}))
+                    gamesList[gameID][2].write_message(tornado.escape.json_encode({'function': 'game_over', 'reason': gameState}))
                     del gamesList[gameID]
 
                 elif gameBoard.state == pychess.State.DRAW:
