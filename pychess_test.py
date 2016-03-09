@@ -380,82 +380,84 @@ class TestPychess(unittest.TestCase):
         self.assertTrue(testBoard.isValidMove(move, pychess.Color.BLACK) == False)
 
 
-    def test_chessboard_isCheck(self):
-        testBoard1 = getTestBoard5()
-        testBoard2 = getTestBoard6()
-        self.assertTrue(testBoard1.isCheck(pychess.Color.BLACK) and not testBoard2.isCheck(pychess.Color.BLACK))
-
-
-    def test_chessboard_isCheckmate(self):
-        testBoard1 = getTestBoard5()
-        testBoard2 = getTestBoard7()
-        self.assertTrue(not testBoard1.isCheckmate(pychess.Color.BLACK) and testBoard2.isCheckmate(pychess.Color.BLACK))
-
-
-    def test_chessboard_checkstate(self):
-        testBoard = getTestBoard7()
-        testBoard.checkState(pychess.Color.BLACK)
-        state = testBoard.state
-        # pdb.set_trace()
-        self.assertTrue(state == pychess.State.BLACK_CHECKMATE)
-
-
-    def test_chessboard_applymove1(self):
-        testBoard = getTestBoard2()
-        testMove = pychess.Move(pychess.Position(0, 4), pychess.Position(0, 0))
-        testBoard.applyMove(testMove)
-        board1 = testBoard.board
-        board2 = []
-        for i in range(0, 8):
-            row = []
-            for j in range(0, 8):
-                row.append(None)
-            board2.append(row)
-
-        board2[0][2] = pychess.King(pychess.Color.BLACK)
-        board2[0][3] = pychess.Rook(pychess.Color.BLACK)
-
-        self.assertTrue(compareBoards(board1, board2))
-
-
-    def test_chessboard_applymove2(self):
-        testBoard = getTestBoard3()
-        testMove = pychess.Move(pychess.Position(4, 4), pychess.Position(4, 3))
-        testBoard.applyMove(testMove)
-        board1 = testBoard.board
-        board2 = []
-        for i in range(0, 8):
-            row = []
-            for j in range(0, 8):
-                row.append(None)
-            board2.append(row)
-
-        board2[5][3] = pychess.Pawn(pychess.Color.BLACK)
-        board2[4][5] = pychess.Pawn(pychess.Color.WHITE)
-        # pdb.set_trace()
-
-        self.assertTrue(compareBoards(board1, board2))
-
-
-    def test_chessboard_applymove3(self):
+    # check
+    def test_chessboard_checkState(self):
         testBoard = getTestBoard5()
-        testMove = pychess.Move(pychess.Position(0, 0), pychess.Position(0, 1))
-        testBoard.applyMove(testMove)
-        board1 = testBoard.board
-        board2 = []
-        for i in range(0, 8):
-            row = []
-            for j in range(0, 8):
-                row.append(None)
-            board2.append(row)
-
-        board2[0][1] = pychess.King(pychess.Color.BLACK)
-        board2[7][0] = pychess.Rook(pychess.Color.WHITE)
-        board2[7][7] = pychess.King(pychess.Color.WHITE)
+        testBoard.checkState(pychess.Color.WHITE, None)
+        self.assertTrue(testBoard.state == pychess.State.WHITE_CHECK)
 
 
-        self.assertTrue(compareBoards(board1, board2))
+    # checkmate
+    def test_chessboard_isCheckmate(self):
+        testBoard = getTestBoard7()
+        testBoard.checkState(pychess.Color.WHITE, None)
+        self.assertTrue(testBoard.state == pychess.State.WHITE_CHECKMATE)
 
+
+#     def test_chessboard_checkstate(self):
+#         testBoard = getTestBoard7()
+#         testBoard.checkState(pychess.Color.BLACK)
+#         state = testBoard.state
+#         # pdb.set_trace()
+#         self.assertTrue(state == pychess.State.BLACK_CHECKMATE)
+#
+#
+#     def test_chessboard_applymove1(self):
+#         testBoard = getTestBoard2()
+#         testMove = pychess.Move(pychess.Position(0, 4), pychess.Position(0, 0))
+#         testBoard.applyMove(testMove)
+#         board1 = testBoard.board
+#         board2 = []
+#         for i in range(0, 8):
+#             row = []
+#             for j in range(0, 8):
+#                 row.append(None)
+#             board2.append(row)
+#
+#         board2[0][2] = pychess.King(pychess.Color.BLACK)
+#         board2[0][3] = pychess.Rook(pychess.Color.BLACK)
+#
+#         self.assertTrue(compareBoards(board1, board2))
+#
+#
+#     def test_chessboard_applymove2(self):
+#         testBoard = getTestBoard3()
+#         testMove = pychess.Move(pychess.Position(4, 4), pychess.Position(4, 3))
+#         testBoard.applyMove(testMove)
+#         board1 = testBoard.board
+#         board2 = []
+#         for i in range(0, 8):
+#             row = []
+#             for j in range(0, 8):
+#                 row.append(None)
+#             board2.append(row)
+#
+#         board2[5][3] = pychess.Pawn(pychess.Color.BLACK)
+#         board2[4][5] = pychess.Pawn(pychess.Color.WHITE)
+#         # pdb.set_trace()
+#
+#         self.assertTrue(compareBoards(board1, board2))
+#
+#
+#     def test_chessboard_applymove3(self):
+#         testBoard = getTestBoard5()
+#         testMove = pychess.Move(pychess.Position(0, 0), pychess.Position(0, 1))
+#         testBoard.applyMove(testMove)
+#         board1 = testBoard.board
+#         board2 = []
+#         for i in range(0, 8):
+#             row = []
+#             for j in range(0, 8):
+#                 row.append(None)
+#             board2.append(row)
+#
+#         board2[0][1] = pychess.King(pychess.Color.BLACK)
+#         board2[7][0] = pychess.Rook(pychess.Color.WHITE)
+#         board2[7][7] = pychess.King(pychess.Color.WHITE)
+#
+#
+#         self.assertTrue(compareBoards(board1, board2))
+#
 
 if __name__ == '__main__':
     unittest.main()

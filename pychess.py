@@ -560,7 +560,7 @@ class ChessBoard:
             self.state = State.WHITE_WIN if color is Color.WHITE else State.BLACK_WIN
         elif self.isCheck(color):
             self.state = State.BLACK_CHECK if color is Color.BLACK else State.WHITE_CHECK
-            if isCheckmate(color):
+            if self.isCheckmate(color):
                 self.state = State.BLACK_CHECKMATE if color is Color.BLACK else State.WHITE_CHECKMATE
 
 
@@ -589,6 +589,7 @@ class ChessBoard:
                 if p.row == kp.row and p.col == kp.col and kp not in targeted:
                     targeted.append(kp)
 
+        pdb.set_trace()
         if len(targeted) == len(kingPossibleMoves):
             return True
 
