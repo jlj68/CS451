@@ -1,4 +1,4 @@
-var ws = new WebSocket("ws://rpi.rawhat.net:8080/invite");
+var ws = new WebSocket("ws://enjoychess.rawhat.net/invite");
 
 function updateUserRows(){
 	$.ajax({

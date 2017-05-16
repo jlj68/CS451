@@ -3,7 +3,7 @@ var forfeitBtn = $('#forfeit-btn');
 var gameState = $('#game_state');
 
 $(document).ready(function(event){
-	var ws = new WebSocket("ws://rpi.rawhat.net:8080/game/socket");
+	var ws = new WebSocket("ws://enjoychess.rawhat.net/game/socket");
 	var color = $('#color').text();
 	setColor(color);
 	var turn = (color == 'white' ? true: false);
