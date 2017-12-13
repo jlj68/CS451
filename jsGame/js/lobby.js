@@ -1,9 +1,12 @@
-var ws = new WebSocket("ws://enjoychess.rawhat.net/invite");
+var ws = new WebSocket("ws://127.0.0.1:8001/invite");
 
 function updateUserRows(){
 	$.ajax({
 		method: "GET",
-		url: "/users"
+		url: "/users",
+    xhrFields: {
+      withCredentials: true
+    }
 	}).done(function(data){
 
 		var json = JSON.parse(data);
@@ -97,6 +100,9 @@ $(document).ready(function(event){
 			$.ajax({
 				method: "PUT",
 				url: "/game",
+        xhrFields: {
+          withCredentials: true
+        },
 				data: {
 					"player2": response.target,
 				},
@@ -176,7 +182,10 @@ $(document).ready(function(event){
 
 	$.ajax({
 		method: "GET",
-		url: "/users"
+		url: "/users",
+    xhrFields: {
+      withCredentials: true
+    }
 	}).done(function(data){
 
 		var json = JSON.parse(data);

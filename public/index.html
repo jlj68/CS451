@@ -32,7 +32,7 @@
         });
       }
 
-      var ws = new WebSocket("ws://subsonic.rawhat.net:8080/invite");
+      var ws = new WebSocket("ws://127.0.0.1:8001/invite");
 
       ws.onmessage = function(event){
           var response = $.parseJSON(event.data);
@@ -44,6 +44,9 @@
             $.ajax({
               method: "PUT",
               url: "/game",
+              xhrFields: {
+                withCredentials: true
+              },
               data: {
                 "player2": currentInvite,
               },
@@ -104,6 +107,9 @@
           $.ajax({
             method: "PUT",
             url: "/game",
+            xhrFields: {
+              withCredentials: true
+            },
           }).done(function(data){
               var gameID = $.parseJSON(data).gameID;
               window.location.replace('./game/'+gameID);
@@ -117,6 +123,9 @@
            method: "PUT",
            url: "/users",
            data: { username: uname },
+           xhrFields: {
+             withCredentials: true
+           },
            statusCode: {
              201: function(){
                $('#result_area').html("User successfully created.");
@@ -133,7 +142,10 @@
           event.preventDefault();
           $.ajax({
             method: "GET",
-            url: "/users"
+            url: "/users",
+            xhrFields: {
+              withCredentials: true
+            },
           }).done(function(data){
             $('#user_area').html("<ul>");
               var users = $.parseJSON(data).users;

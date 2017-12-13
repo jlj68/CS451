@@ -7,6 +7,9 @@ var main = function() {
             method: 'PUT',
             url: '/users',
             data: { username:uname },
+            xhrFields: {
+              withCredentials: true
+            },
             statusCode: {
                 201: function() {
                     $('#result_area').html('User successfully created.');

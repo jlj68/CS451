@@ -21,16 +21,24 @@ class BaseHandler(tornado.web.RequestHandler):
 class MainHandler(BaseHandler):
     def get(self):
         if self.current_user is not None:
-            connectedUsers[self.get_secure_cookie('username').decode('ascii')] = User(self.get_secure_cookie('username').decode('ascii'))
-            self.render("./jsGame/html/lobby.html", currentUser=self.current_user)
+            username = self.get_secure_cookie('username')
+            if username is not None:
+                print('got user with username', username.decode('ascii'))
+                connectedUsers[username.decode('ascii')] = User(self.get_secure_cookie('username').decode('ascii'))
+                self.render("./jsGame/html/lobby.html", currentUser=self.current_user)
+            else:
+                self.set_status(500)
+                self.finish()
         else:
             self.render("./jsGame/html/index.html")
 
-class LobbyHandler(tornado.web.RequestHandler):
+class LobbyHandler(BaseHandler):
     def get(self):
-        if self.get_secure_cookie('username').decode('ascii') not in connectedUsers.keys():
-            connectedUsers[self.get_secure_cookie('username').decode('ascii')] = User(self.get_secure_cookie('username').decode('ascii'))
-        self.render("./jsGame/html/lobby.html", currentUser=self.get_secure_cookie('username').decode('ascii'))
+        print('current user?', self.get_current_user())
+        current_user = self.get_current_user()
+        if current_user is not None and current_user.decode('ascii') not in connectedUsers.keys():
+            connectedUsers[current_user.decode('ascii')] = User(current_user.decode('ascii'))
+        self.render("./jsGame/html/lobby.html", currentUser=current_user.decode('ascii'))
 
 class GameHandler(tornado.web.RequestHandler):
     def put(self):
@@ -60,12 +68,12 @@ class GamePageHandler(tornado.web.RequestHandler):
                 color = 'black'
             self.render("./jsGame/html/game.html", gameID=gameID, color=color, currentUser=self.get_secure_cookie('username').decode('ascii'))
 
-class UserHandler(tornado.web.RequestHandler):
+class UserHandler(BaseHandler):
     def get(self):
         userList = []
         for user in connectedUsers.keys():
             elem = connectedUsers[user].__dict__.copy()
-            if elem['status'] is not UserStatus.IN_GAME and not elem['username'] == self.get_secure_cookie('username').decode('ascii'):
+            if elem['status'] is not UserStatus.IN_GAME and not elem['username'] == self.get_current_user().decode('ascii'):
                 elem['status'] = elem['status'].name
                 userList.append(elem)
         userList = sorted(userList, key = lambda user: user['username'])
@@ -73,13 +81,19 @@ class UserHandler(tornado.web.RequestHandler):
 
     def put(self):
         username = self.get_body_argument("username")
+        print('setting username to', username)
         if username not in connectedUsers.keys():
             newUser = User(username)
             connectedUsers[username] = newUser
+            print('trying to set secure cookie')
             self.set_secure_cookie('username', username)
-            raise tornado.web.HTTPError(201)
+            print('setting secure cookie')
+            print(self.get_secure_cookie('username'))
+            self.set_status(201)
+            self.finish()
         else:
-            raise tornado.web.HTTPError(409)
+            self.set_status(409)
+            self.finish()
 
     def post(self):
         self.write("modifying user")
@@ -95,10 +109,15 @@ class InviteSocketHandler(tornado.websocket.WebSocketHandler):
         return True
 
     def open(self):
-        websocketClients[self.get_secure_cookie('username').decode('ascii')] = self
-        connectedUsers[self.get_secure_cookie('username').decode('ascii')].status = UserStatus.AVAILABLE
+        user = self.get_secure_cookie('username')
+        print('user is', user, 'and cookies are', self.request.cookies)
+        if user is not None:
+            username = user.decode('ascii')
+            websocketClients[username] = self
+            connectedUsers[username].status = UserStatus.AVAILABLE
 
     def on_message(self, message):
+        print('cookies are', self.request.cookies, 'message is', message)
         messageDict = tornado.escape.json_decode(message)
         if messageDict['function'] == "send":
             if connectedUsers[messageDict['target']].status is UserStatus.AVAILABLE:

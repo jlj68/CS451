@@ -6,4 +6,6 @@ RUN pip install --no-cache-dir tornado
 
 COPY . .
 
+EXPOSE 8001
+
 CMD ["python", "webserver.py"]

@@ -8,7 +8,7 @@
   <script type="text/javascript">
     var gameID;
 
-    var ws = new WebSocket("ws://subsonic.rawhat.net:8080/game/socket");
+    var ws = new WebSocket("ws://127.0.0.1:8001/game/socket");
 
     ws.onmessage = function(event){
         console.log($.parseJSON(event.data));
@@ -18,6 +18,9 @@
         $.ajax({
           method: "GET",
           url: "/game/" + $('.board_area').attr('id') + "/data",
+          xhrFields: {
+            withCredentials: true
+          }
         }).done(function(data){
           var board = $.parseJSON(data).board;
           var cells = document.querySelector('table').querySelectorAll('td');
@@ -47,6 +50,9 @@
                 $.ajax({
                     method: "PUT",
                     url: $('.board_area').attr('id')+"/move",
+                    xhrFields: {
+                      withCredentials: true
+                    },
                     data: {
                       fromPosRow: originPosition[0],
                       fromPosCol: originPosition[2],
@@ -67,6 +73,9 @@
                 $.ajax({
                   method: "GET",
                   url: $('.board_area').attr('id')+"/move",
+                  xhrFields: {
+                    withCredentials: true
+                  },
                   data: { row: row, col: col }
                 }).done(function(data){
                   $.each($.parseJSON(data).moves, function(index, move){

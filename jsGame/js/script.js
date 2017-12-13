@@ -1,7 +1,7 @@
 var $submitUserNameBtn = $('#submitUserName');
 var $usernameCheckText = $('#usernameCheck');
 var $toLobbyBtn = $('#toLobby');
-//var ws = new WebSocket("ws://subsonic.rawhat.net:8080/invite");
+var ws = new WebSocket("ws://127.0.0.1:8001/invite");
 
 
 $('form input').keydown(function(event){
@@ -20,10 +20,13 @@ $submitUserNameBtn.on('click', function (event) {
 		method: "PUT",
 		url: "/users",	
 		data: {username: uname},
+    xhrFields: {
+      withCredentials: true
+    },
 		statusCode: {
 			201: function(){
 				$usernameCheckText.html("User successfully created");
-				//ws.send(JSON.stringify({'function': 'register', 'name': uname}));
+        //ws.send(JSON.stringify({'function': 'register', 'name': uname}));
 				$toLobbyBtn.removeClass('hide');
 				$toLobbyBtn.addClass('btn-margin-left');
 				$submitUserNameBtn.addClass('hide');
